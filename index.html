@@ -1,0 +1,1530 @@
+<!DOCTYPE html><html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Detailed | Communication At Organizational Scale</title>
+<link rel="preload" href="DETAILED ANIMATION.webm" as="video" type="video/webm">
+<script>document.documentElement.classList.add('splash-active');</script>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        const sfPro = ["-apple-system", "BlinkMacSystemFont", "SF Pro Display", "SF Pro Text", "Helvetica Neue", "Arial", "sans-serif"];
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#ffffff",
+                        "on-primary": "#000000",
+                        "secondary": "#a1a1a1",
+                        "background": "#000000",
+                        "surface": "#000000",
+                        "surface-container": "#0a0a0a",
+                        "surface-container-high": "#111111",
+                        "outline": "#333333",
+                        "outline-variant": "#222222",
+                        "silver": "#C0C0C0",
+                        "graphite": "#383838",
+                        "titanium": "#8E8E93"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0px",
+                        "lg": "0px",
+                        "xl": "0px",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-desktop": "80px",
+                        "gutter": "40px",
+                        "margin-mobile": "24px",
+                        "margin-tablet": "48px",
+                        "unit": "10px",
+                        "container-max": "1440px",
+                        "section-gap": "160px",
+                        "section-gap-mobile": "80px"
+                    },
+                    "fontFamily": {
+                        "sans": sfPro,
+                        "display-xl": sfPro,
+                        "headline-xl": sfPro,
+                        "headline-lg": sfPro,
+                        "headline-md": sfPro,
+                        "body-lg": sfPro,
+                        "body-md": sfPro,
+                        "label-sm": sfPro,
+                        "label-md": sfPro
+                    },
+                    "fontSize": {
+                        "display-xl": ["96px", {"lineHeight": "1.05", "letterSpacing": "-0.05em", "fontWeight": "600"}],
+                        "headline-xl": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.03em", "fontWeight": "500"}],
+                        "headline-lg": ["36px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "500"}],
+                        "headline-md": ["28px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "500"}],
+                        "body-lg": ["20px", {"lineHeight": "1.6", "letterSpacing": "-0.01em", "fontWeight": "300"}],
+                        "body-md": ["17px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "300"}],
+                        "label-sm": ["11px", {"lineHeight": "1.2", "letterSpacing": "0.1em", "fontWeight": "500"}],
+                        "label-md": ["13px", {"lineHeight": "1.2", "letterSpacing": "0.08em", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 116px;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+        }
+        html, body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+        }
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .animate-scroll {
+            animation: scroll 40s linear infinite;
+        }
+        .reveal {
+            opacity: 0;
+            transform: translateY(12px);
+            transition: opacity 0.45s cubic-bezier(0.2,0.8,0.2,1), transform 0.45s cubic-bezier(0.2,0.8,0.2,1);
+            will-change: opacity, transform;
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reveal-section > .reveal:nth-child(1) { transition-delay: 0s; }
+        .reveal-section > .reveal:nth-child(2) { transition-delay: 0.04s; }
+        .reveal-section > .reveal:nth-child(3) { transition-delay: 0.08s; }
+        .reveal-section > .reveal:nth-child(4) { transition-delay: 0.12s; }
+        .reveal-section > .reveal:nth-child(5) { transition-delay: 0.16s; }
+        .logo-mark {
+            display: block;
+            flex-shrink: 0;
+            background-color: #ffffff;
+        }
+        #mobile-menu {
+            position: fixed;
+            inset: 0;
+            z-index: 60;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.97);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.55s ease-in, visibility 0.55s ease-in;
+        }
+        #mobile-menu.open {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+        #mobile-menu .mobile-menu-inner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            width: 100%;
+            height: 100%;
+            padding: 6rem 1.5rem 3rem;
+        }
+        #mobile-menu .mobile-nav-link {
+            opacity: 0;
+            transform: translateY(16px);
+            font-size: 1.25rem;
+            letter-spacing: 0.2em;
+            transition: opacity 0.5s ease-in, transform 0.5s ease-in, color 0.4s;
+        }
+        #mobile-menu.open .mobile-nav-link {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        #mobile-menu.open .mobile-nav-link:nth-child(1) { transition-delay: 0.05s; }
+        #mobile-menu.open .mobile-nav-link:nth-child(2) { transition-delay: 0.08s; }
+        #mobile-menu.open .mobile-nav-link:nth-child(3) { transition-delay: 0.11s; }
+        #mobile-menu.open .mobile-nav-link:nth-child(4) { transition-delay: 0.14s; }
+        #mobile-menu.open .mobile-nav-link:nth-child(5) { transition-delay: 0.17s; }
+        #mobile-menu.open .mobile-menu-cta { transition-delay: 0.21s; }
+        #mobile-menu .mobile-menu-cta {
+            opacity: 0;
+            transform: translateY(12px);
+            transition: opacity 0.35s ease-in, transform 0.35s ease-in;
+            margin-top: 1rem;
+            width: 100%;
+            max-width: 20rem;
+        }
+        #mobile-menu.open .mobile-menu-cta {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        body.menu-open {
+            overflow: hidden;
+        }
+        #mobile-menu-btn {
+            position: relative;
+            z-index: 70;
+        }
+        .how-we-work-track {
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            scroll-snap-type: x mandatory;
+        }
+        .how-we-work-track::-webkit-scrollbar {
+            display: none;
+        }
+        .how-we-work-slide {
+            scroll-snap-align: center;
+        }
+        .how-we-work-dots {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+        .how-we-work-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 9999px;
+            background: rgba(255, 255, 255, 0.2);
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+        .how-we-work-dot.active {
+            background: #ffffff;
+            transform: scale(1.25);
+        }
+        @media (min-width: 768px) {
+            .how-we-work-track {
+                scroll-snap-type: none;
+            }
+        }
+        .shader-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.6;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        .text-silver { color: #C0C0C0; }
+        .border-silver { border-color: #C0C0C0; }
+        .bg-graphite { background-color: #1a1a1a; }
+        
+        .architectural-grid {
+            background-image:
+                linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
+            background-size: 80px 80px;
+        }
+        @keyframes announcement-scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .animate-announcement-scroll {
+            animation: announcement-scroll 32s linear infinite;
+        }
+        /* Marquee visual tuning */
+        #marquee .font-display-xl { color: rgba(255,255,255,0.12) !important; font-weight: 600; }
+
+        @media (max-width: 767px) {
+            #globe-canvas {
+                right: auto !important;
+                left: 50% !important;
+                transform: translate(-50%, -50%) !important;
+                width: min(95vw, 520px) !important;
+                height: min(95vw, 520px) !important;
+                opacity: 0.28 !important;
+            }
+            .hero-gradient-radial {
+                background: radial-gradient(ellipse at 50% 55%, transparent 20%, black 75%) !important;
+            }
+        }
+        /* ── Splash screen & curtain transition ── */
+        html.splash-active,
+        html.splash-active body {
+            overflow: hidden;
+            height: 100%;
+        }
+        #splash-screen {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 99999;
+            background: #000;
+            overflow: hidden;
+        }
+        .splash-stage {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+            transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .splash-stage.is-hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .splash-video {
+            width: min(92vw, 1400px);
+            height: auto;
+            max-height: 92vh;
+            object-fit: contain;
+            display: block;
+            pointer-events: none;
+        }
+        .curtain-blinds {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .curtain-blinds.is-active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .curtain-panel {
+            flex: 1 1 0;
+            min-width: 0;
+            height: 100%;
+            background: #000;
+            transform: translate3d(0, 0, 0);
+            will-change: transform;
+        }
+        .curtain-blinds.is-revealing .curtain-panel {
+            animation: curtain-reveal var(--curtain-duration, 1.4s) cubic-bezier(0.77, 0, 0.175, 1) forwards;
+            animation-delay: calc(var(--panel-index) * var(--curtain-stagger, 0.045s));
+        }
+        .curtain-blinds.is-revealing .curtain-panel:nth-child(odd) {
+            animation-name: curtain-reveal-up;
+        }
+        .curtain-blinds.is-revealing .curtain-panel:nth-child(even) {
+            animation-name: curtain-reveal-down;
+        }
+        @keyframes curtain-reveal-up {
+            to { transform: translate3d(0, -100%, 0); }
+        }
+        @keyframes curtain-reveal-down {
+            to { transform: translate3d(0, 100%, 0); }
+        }
+        .dot-field-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        .dot-field-container canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+        @media (min-width: 768px) and (max-width: 1023px) {
+            #globe-canvas {
+                right: -8% !important;
+                width: min(65vh, 680px) !important;
+                height: min(65vh, 680px) !important;
+                opacity: 0.55 !important;
+            }
+        }
+
+        /* Hero layout and typography refinements for premium whitespace */
+        #hero {
+            min-height: 85vh;
+            padding-top: 140px;
+            padding-bottom: 160px;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Center inner container and constrain width for generous margins */
+        #hero > .z-10 {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .hero-content {
+            max-width: 75%; /* leave 25% clean whitespace on the right */
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Heading: fluid, crisp, and well-spaced */
+        #hero .hero-content h1 {
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            line-height: 1.2;
+            color: #FFFFFF;
+            margin: 0;
+            word-break: keep-all;
+            overflow-wrap: normal;
+        }
+
+        /* Paragraph: muted, readable, and clearly separated */
+        #hero .hero-content p {
+            font-size: clamp(1rem, 1.25vw, 1.2rem);
+            line-height: 1.6;
+            color: #A0A0A0;
+            margin-top: 40px;
+            max-width: none;
+        }
+
+        /* CTA spacing inside hero content */
+        #hero .hero-content .flex { margin-top: 28px; }
+
+        /* Mobile adjustments */
+        @media (max-width: 767px) {
+            html, body, #hero { height: 100dvh; }
+            #hero {
+                padding-top: 80px;
+                padding-bottom: 80px;
+                min-height: auto;
+            }
+            /* prevent awkward single-word wraps; scale down more aggressively */
+            #hero .hero-content h1 {
+                font-size: clamp(2rem, 8vw, 2.5rem);
+                line-height: 1.18;
+            }
+            /* hero content should use safe padding on mobile */
+            .hero-content {
+                max-width: 100%;
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+            /* increase paragraph contrast slightly on mobile */
+            #hero .hero-content p { padding-left: 0; padding-right: 0; color: #B8B8B8; }
+        }
+    </style>
+
+</head>
+<body class="bg-background text-primary font-sans font-body-md overflow-x-hidden selection:bg-silver selection:text-black">
+<div id="splash-screen" aria-hidden="false" role="presentation">
+<div class="splash-stage">
+<video class="splash-video" id="splash-video" preload="auto" playsinline muted autoplay disablePictureInPicture>
+<source src="DETAILED ANIMATION.webm" type="video/webm">
+</video>
+</div>
+<div class="curtain-blinds" id="curtain-blinds" aria-hidden="true"></div>
+</div>
+<div aria-hidden="true" class="pointer-events-none fixed top-1/2 left-1/2 z-30 hidden md:block h-[100px] w-[100px] rounded-full bg-white mix-blend-difference" id="spring-ball"></div>
+<!-- TopNavBar -->
+<header class="bg-black/80 backdrop-blur-2xl border-b border-white/10 fixed top-0 w-full z-50">
+<nav class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-unit max-w-container-max mx-auto h-[80px]">
+<a class="flex items-center gap-3 shrink-0" href="#">
+<span class="logo-mark h-6 w-6" aria-hidden="true"></span>
+<span class="font-display-xl text-[20px] font-semibold tracking-[-0.05em] text-white">Detailed</span>
+</a>
+<div class="hidden md:flex items-center gap-10">
+<a class="font-label-md text-label-md uppercase tracking-widest text-silver/60 hover:text-white transition-colors duration-500" href="#services">Services</a>
+<a class="font-label-md text-label-md uppercase tracking-widest text-silver/60 hover:text-white transition-colors duration-500" href="#approach">Approach</a>
+<a class="font-label-md text-label-md uppercase tracking-widest text-silver/60 hover:text-white transition-colors duration-500" href="#values">Values</a>
+<a class="font-label-md text-label-md uppercase tracking-widest text-silver/60 hover:text-white transition-colors duration-500" href="#insights">Insights</a>
+<a class="font-label-md text-label-md uppercase tracking-widest text-silver/60 hover:text-white transition-colors duration-500" href="#contact">Contact</a>
+</div>
+<div class="flex items-center gap-3">
+<button aria-controls="mobile-menu" aria-expanded="false" aria-label="Open navigation menu" class="md:hidden flex items-center justify-center w-10 h-10 text-white" id="mobile-menu-btn" type="button">
+<span class="material-symbols-outlined text-[22px]" id="mobile-menu-icon">menu</span>
+</button>
+<button class="hidden md:inline-flex items-center border border-white/20 text-white font-label-md text-label-md uppercase tracking-widest px-4 py-3 md:px-8 md:py-3.5 hover:bg-white hover:text-black transition-all duration-500 whitespace-nowrap">
+<span class="hidden md:inline">Book Consultation</span>
+</button>
+</div>
+</nav>
+<div aria-hidden="true" class="md:hidden fixed inset-0 z-[60]" id="mobile-menu">
+<div class="mobile-menu-inner">
+<a class="mobile-nav-link font-label-md uppercase tracking-widest text-silver/60 hover:text-white" href="#services">Services</a>
+<a class="mobile-nav-link font-label-md uppercase tracking-widest text-silver/60 hover:text-white" href="#approach">Approach</a>
+<a class="mobile-nav-link font-label-md uppercase tracking-widest text-silver/60 hover:text-white" href="#values">Values</a>
+<a class="mobile-nav-link font-label-md uppercase tracking-widest text-silver/60 hover:text-white" href="#insights">Insights</a>
+<a class="mobile-nav-link font-label-md uppercase tracking-widest text-silver/60 hover:text-white" href="#contact">Contact</a>
+</div>
+</div>
+</header>
+<div class="bg-white text-black py-2.5 fixed top-[80px] w-full z-40 overflow-hidden">
+<div class="flex animate-announcement-scroll whitespace-nowrap">
+<div class="flex items-center gap-8 md:gap-16 px-4 shrink-0">
+<span class="font-label-sm text-label-sm uppercase tracking-widest font-bold">Featured Engagements</span>
+<div class="h-1 w-1 bg-black/20 rounded-full shrink-0"></div>
+<span class="font-label-sm text-label-sm uppercase tracking-widest">Executive Communications Forum • June 25</span>
+<div class="h-1 w-1 bg-black/20 rounded-full shrink-0"></div>
+<span class="font-label-sm text-label-sm uppercase tracking-widest">Leadership Messaging Workshop • July 4</span>
+<div class="h-1 w-1 bg-black/20 rounded-full shrink-0"></div>
+<span class="font-label-sm text-label-sm uppercase tracking-widest">Organizational Storytelling Summit • July 16</span>
+</div>
+<div class="flex items-center gap-8 md:gap-16 px-4 shrink-0" aria-hidden="true">
+<span class="font-label-sm text-label-sm uppercase tracking-widest font-bold">Featured Engagements</span>
+<div class="h-1 w-1 bg-black/20 rounded-full shrink-0"></div>
+<span class="font-label-sm text-label-sm uppercase tracking-widest">Executive Communications Forum • June 25</span>
+<div class="h-1 w-1 bg-black/20 rounded-full shrink-0"></div>
+<span class="font-label-sm text-label-sm uppercase tracking-widest">Leadership Messaging Workshop • July 4</span>
+<div class="h-1 w-1 bg-black/20 rounded-full shrink-0"></div>
+<span class="font-label-sm text-label-sm uppercase tracking-widest">Organizational Storytelling Summit • July 16</span>
+</div>
+</div>
+</div>
+<main class="mt-[116px]">
+<!-- Hero Section -->
+<section id="hero" class="relative min-h-[85vh] flex flex-col justify-center px-margin-mobile md:px-margin-desktop w-full overflow-hidden reveal" aria-label="Hero">
+<div class="absolute inset-0 z-0">
+    <canvas id="globe-canvas" style="position:absolute;top:50%;transform:translateY(-50%);right:-4%;width:min(80vh,900px);height:min(80vh,900px);opacity:0.78;filter:grayscale(1) brightness(0.90) contrast(1.12);"></canvas>
+    <div class="hero-gradient-side absolute inset-0 bg-gradient-to-r from-black from-[42%] to-transparent hidden md:block"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-black/90 via-black/45 to-black/80 md:hidden"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/45"></div>
+    <div class="hero-gradient-radial absolute inset-0 bg-[radial-gradient(ellipse_at_68%_50%,transparent_35%,black_82%)]"></div>
+</div>
+<div class="z-10 relative mx-auto" style="max-width:1200px;">
+<div class="hero-content">
+<h1 class="font-display-xl text-[48px] sm:text-[64px] lg:text-display-xl mb-8 md:mb-12 reveal">Architecting Launch Narratives<br>for High‑Stakes Moments.</h1>
+<p class="font-body-lg text-body-md md:text-body-lg text-silver/70 mb-10 md:mb-16 max-w-3xl reveal" style="transition-delay: 0.2s;">
+        We craft launch narratives—product and company launches, keynotes, strategic announcements, and leadership transitions. Clear, aligned, decisive communication when it matters most.
+            </p>
+<div class="flex flex-col sm:flex-row gap-4 md:gap-8 reveal" style="transition-delay: 0.4s;">
+<button class="bg-white text-black font-label-md text-label-md uppercase tracking-widest px-8 md:px-12 py-4 md:py-5 font-semibold hover:opacity-90 transition-opacity text-center">Book A Consultation</button>
+<button class="border border-white/30 text-white font-label-md text-label-md uppercase tracking-widest px-8 md:px-12 py-4 md:py-5 hover:bg-white hover:text-black transition-all duration-500 text-center">Discuss a Launch</button>
+</div>
+</div>
+</div>
+<!-- Architectural Line -->
+<div class="absolute bottom-0 left-margin-mobile md:left-margin-desktop right-margin-mobile md:right-margin-desktop h-[1px] bg-white/10"></div>
+</section>
+<!-- Marquee Section -->
+<section id="marquee" class="py-12 md:py-20 border-b border-white/5 bg-black overflow-hidden reveal">
+<div class="flex whitespace-nowrap animate-scroll">
+<div class="flex gap-12 md:gap-24 items-center px-6 md:px-12">
+<span class="font-display-xl text-[48px] md:text-[80px] uppercase text-white/5 tracking-tighter">Clarity</span>
+<div class="w-[1px] h-12 bg-white/10"></div>
+<span class="font-display-xl text-[48px] md:text-[80px] uppercase text-white/5 tracking-tighter">Confidentiality</span>
+<div class="w-[1px] h-12 bg-white/10"></div>
+<span class="font-display-xl text-[48px] md:text-[80px] uppercase text-white/5 tracking-tighter">Precision</span>
+<div class="w-[1px] h-12 bg-white/10"></div>
+<span class="font-display-xl text-[48px] md:text-[80px] uppercase text-white/5 tracking-tighter">Alignment</span>
+<div class="w-[1px] h-12 bg-white/10"></div>
+</div>
+<!-- Duplicate for infinite scroll -->
+<div class="flex gap-12 md:gap-24 items-center px-6 md:px-12">
+<span class="font-display-xl text-[48px] md:text-[80px] uppercase text-white/5 tracking-tighter">Clarity</span>
+<div class="w-[1px] h-12 bg-white/10"></div>
+<span class="font-display-xl text-[48px] md:text-[80px] uppercase text-white/5 tracking-tighter">Confidentiality</span>
+<div class="w-[1px] h-12 bg-white/10"></div>
+<span class="font-display-xl text-[48px] md:text-[80px] uppercase text-white/5 tracking-tighter">Precision</span>
+<div class="w-[1px] h-12 bg-white/10"></div>
+<span class="font-display-xl text-[48px] md:text-[80px] uppercase text-white/5 tracking-tighter">Alignment</span>
+<div class="w-[1px] h-12 bg-white/10"></div>
+</div>
+</div>
+</section>
+<!-- About Section -->
+<section class="py-section-gap-mobile md:py-section-gap px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-gutter architectural-grid reveal" id="approach">
+<div class="md:col-span-5 flex flex-col justify-center reveal">
+<span class="font-label-sm text-label-sm uppercase tracking-[0.2em] text-silver/40 block mb-6 md:mb-10">Alignment First</span>
+<h2 class="font-headline-xl text-[32px] md:text-headline-xl mb-8 md:mb-12 leading-[1.1] text-white">When the moment matters, strategy must be spoken with precision.</h2>
+<p class="font-body-md text-body-md text-silver/60 leading-relaxed mb-12 max-w-md">
+    We partner with founders, CEOs, and communications leaders to translate strategic intent into launch-ready narratives. From market-defining product introductions to executive keynotes and investor communications—DetailedGroup structures the story, aligns stakeholders, and prepares leaders to deliver with authority.
+            </p>
+<a class="group inline-flex items-center gap-4 font-label-md text-label-md uppercase tracking-widest text-white" href="#">
+<span class="">Learn about our launch methodology</span>
+<span class="material-symbols-outlined text-[18px] group-hover:translate-x-2 transition-transform duration-500">arrow_forward</span>
+</a>
+<div class="mt-8 w-24 h-[1px] bg-white/20"></div>
+</div>
+<div class="md:col-start-7 md:col-span-6 reveal" style="transition-delay: 0.3s;">
+<div class="aspect-[4/5] bg-surface-container relative overflow-hidden group border border-white/5">
+<img class="object-cover w-full h-full grayscale opacity-60 group-hover:scale-105 transition-transform duration-[2s] ease-out" data-alt="A sophisticated, high-contrast black and white architectural photograph of a minimalist office lobby." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjNaW8U8b25uH1wCRWqsccrgAcKLnPe4eh1TYYuVPFofBtrEBab4tC1Lni49bRNNwA1zIx05aAL4UxKHl3lGVlpLZEpAIT_eiP2fbJqWqOY8cBAcu48fdGWa6v9Jy_2PzF73rP49FX0IReqpaIBNPi5rJKrSTFhjSRCBQQ_ZPJZ2LZHVonu8Txduf2NFB7KuaMtiCMnQNhWs2xAWgALub3B7sfxQrimQowzEZwRKzo3Y8mFc2N8DPzdnIk5BbGbaeTJKMGPaI1zg">
+<div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-40"></div>
+</div>
+</div>
+</section>
+<!-- Services Section -->
+<section class="py-section-gap-mobile md:py-section-gap bg-surface-container px-margin-mobile md:px-margin-desktop reveal" id="services">
+<div class="max-w-container-max mx-auto">
+<div class="mb-12 md:mb-24 reveal text-center">
+<span class="font-label-sm text-label-sm uppercase tracking-[0.3em] text-silver/40 block mb-6">Expertise</span>
+<h2 class="font-display-xl text-[40px] md:text-[64px] mb-8 text-white">Core Competencies</h2>
+<div class="w-16 h-[1px] bg-white/30 mx-auto"></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-0 border border-white/10">
+<!-- Service 1 -->
+<div class="border-b md:border-b-0 border-white/10 md:border-r p-8 md:p-16 flex flex-col gap-6 relative group hover:bg-white/5 transition-all duration-700 reveal">
+<div>
+<span class="material-symbols-outlined text-[32px] mb-8 md:mb-12 block text-silver/40 group-hover:text-white transition-colors duration-500">campaign</span>
+<h3 class="font-headline-md text-headline-md mb-6 text-white">Executive Communications</h3>
+<p class="text-silver/50 font-body-md group-hover:text-silver/80 transition-colors duration-500">Ghostwriting, message architecture, and platform development for C-suite leaders.</p>
+</div>
+<div class="mt-12 md:mt-20 border-t border-white/10 pt-8">
+<div class="flex items-center justify-between w-full">
+  <span class="font-label-sm text-label-sm uppercase tracking-[0.2em] text-silver/30 group-hover:text-silver/50">Strategic Advisory</span>
+</div>
+</div>
+</div>
+<!-- Service 2 -->
+<div class="border-b md:border-b-0 border-white/10 md:border-r p-8 md:p-16 flex flex-col gap-6 relative group hover:bg-white/5 transition-all duration-700 reveal" style="transition-delay: 0.1s;">
+<div>
+<span class="material-symbols-outlined text-[32px] mb-8 md:mb-12 block text-silver/40 group-hover:text-white transition-colors duration-500">hub</span>
+<h3 class="font-headline-md text-headline-md mb-6 text-white">Internal Communications</h3>
+<p class="text-silver/50 font-body-md group-hover:text-silver/80 transition-colors duration-500">Designing the infrastructure for global organizational alignment and cultural shift.</p>
+</div>
+<div class="mt-12 md:mt-20 border-t border-white/10 pt-8">
+<div class="flex items-center justify-between w-full">
+  <span class="font-label-sm text-label-sm uppercase tracking-[0.2em] text-silver/30 group-hover:text-silver/50">Operational Design</span>
+</div>
+</div>
+</div>
+<!-- Service 3 -->
+<div class="border-b lg:border-b-0 border-white/10 md:border-r p-8 md:p-16 flex flex-col gap-6 relative group hover:bg-white/5 transition-all duration-700 reveal" style="transition-delay: 0.2s;">
+<div>
+<span class="material-symbols-outlined text-[32px] mb-8 md:mb-12 block text-silver/40 group-hover:text-white transition-colors duration-500">space_dashboard</span>
+<h3 class="font-headline-md text-headline-md mb-6 text-white">Presentation Systems</h3>
+<p class="text-silver/50 font-body-md group-hover:text-silver/80 transition-colors duration-500">Precision-engineered visual narratives for boardrooms and investor relations.</p>
+</div>
+<div class="mt-12 md:mt-20 border-t border-white/10 pt-8">
+<div class="flex items-center justify-between w-full">
+  <span class="font-label-sm text-label-sm uppercase tracking-[0.2em] text-silver/30 group-hover:text-silver/50">Visual Narrative</span>
+</div>
+</div>
+</div>
+<!-- Service 4 -->
+<div class="p-8 md:p-16 flex flex-col gap-6 relative group hover:bg-white/5 transition-all duration-700 reveal" style="transition-delay: 0.3s;">
+<div>
+<span class="material-symbols-outlined text-[32px] mb-8 md:mb-12 block text-silver/40 group-hover:text-white transition-colors duration-500">auto_stories</span>
+<h3 class="font-headline-md text-headline-md mb-6 text-white">Organizational Storytelling</h3>
+<p class="text-silver/50 font-body-md group-hover:text-silver/80 transition-colors duration-500">Translating historical legacy and future vision into a coherent corporate identity.</p>
+</div>
+<div class="mt-12 md:mt-20 border-t border-white/10 pt-8">
+<div class="flex items-center justify-between w-full">
+  <span class="font-label-sm text-label-sm uppercase tracking-[0.2em] text-silver/30 group-hover:text-silver/50">Cultural Asset</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Trust Section (Architectural Monochrome) -->
+<section class="py-section-gap-mobile md:py-section-gap px-margin-mobile md:px-margin-desktop bg-black text-white relative overflow-hidden reveal">
+<div class="absolute inset-0 architectural-grid opacity-10"></div>
+<div class="max-w-container-max mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-gutter items-center relative z-10">
+<div class="reveal">
+<span class="font-label-sm text-label-sm uppercase tracking-[0.3em] text-silver/40 block mb-6 md:mb-10">Governance &amp; Trust</span>
+<h2 class="font-display-xl text-[40px] md:text-[72px] mb-8 md:mb-12 leading-[1.0] text-white">Built On Trust.</h2>
+<p class="font-body-lg text-body-md md:text-body-lg text-silver/60 mb-10 md:mb-16 max-w-xl">
+                    We operate as a confidential extension of the executive office. Our systems are designed for maximum security, discretion, and absolute strategic fidelity.
+                </p>
+<div class="grid grid-cols-2 gap-8 md:gap-16 border-t border-white/10 pt-10 md:pt-16">
+<div>
+<span class="font-display-xl text-[40px] md:text-[64px] block mb-2 font-light text-white">98%</span>
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-silver/40">Retention Rate</span>
+</div>
+<div>
+<span class="font-display-xl text-[40px] md:text-[64px] block mb-2 font-light text-white">12+</span>
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-silver/40">Fortune 500 Partners</span>
+</div>
+</div>
+</div>
+<div class="reveal" style="transition-delay: 0.4s;">
+<div class="aspect-square border border-white/10 flex items-center justify-center p-10 md:p-20 bg-gradient-to-br from-white/[0.02] to-transparent">
+<div class="w-full h-full border border-white/5 relative flex items-center justify-center">
+<div class="absolute inset-4 md:inset-10 border border-white/10"></div>
+<div class="absolute inset-8 md:inset-20 border border-white/20"></div>
+<div class="absolute inset-12 md:inset-32 border border-white/30"></div>
+<div class="w-2 h-2 bg-white shadow-[0_0_20px_rgba(255,255,255,0.8)]"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Values Section -->
+<section class="py-section-gap-mobile md:py-section-gap px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto reveal" id="values">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-0 border border-white/10">
+<div class="reveal p-10 md:p-20 border-b md:border-b-0 border-white/10 md:border-r group hover:bg-white/5 transition-all duration-700">
+<span class="font-display-xl text-[36px] md:text-[48px] text-white/10 mb-8 md:mb-12 block group-hover:text-white/30 transition-colors duration-500">01</span>
+<h3 class="font-headline-md text-headline-md mb-6 text-white">Clarity</h3>
+<p class="text-silver/50 font-body-md">Strip away the noise to find the essential signal of the message.</p>
+</div>
+<div class="reveal p-10 md:p-20 border-b md:border-b-0 border-white/10 md:border-r group hover:bg-white/5 transition-all duration-700" style="transition-delay: 0.1s;">
+<span class="font-display-xl text-[36px] md:text-[48px] text-white/10 mb-8 md:mb-12 block group-hover:text-white/30 transition-colors duration-500">02</span>
+<h3 class="font-headline-md text-headline-md mb-6 text-white">Discretion</h3>
+<p class="text-silver/50 font-body-md">Maintaining absolute confidentiality is the foundation of our advisory.</p>
+</div>
+<div class="reveal p-10 md:p-20 group hover:bg-white/5 transition-all duration-700" style="transition-delay: 0.2s;">
+<span class="font-display-xl text-[36px] md:text-[48px] text-white/10 mb-8 md:mb-12 block group-hover:text-white/30 transition-colors duration-500">03</span>
+<h3 class="font-headline-md text-headline-md mb-6 text-white">Integrity</h3>
+<p class="text-silver/50 font-body-md">Consistency between corporate values and communication outputs.</p>
+</div>
+</div>
+</section>
+<!-- Process Section -->
+<section class="py-section-gap-mobile md:py-section-gap px-margin-mobile md:px-margin-desktop bg-surface-container border-y border-white/5 reveal" id="process">
+<div class="max-w-container-max mx-auto">
+<h2 class="font-display-xl text-[40px] md:text-[64px] mb-12 md:mb-24 reveal text-white text-center">How We Prepare for High‑Stakes Communication</h2>
+<p class="text-silver/60 max-w-3xl mx-auto mb-12">Narrative development, message architecture, executive preparation, audience prioritization, launch planning, and execution—our five-phase approach ensures leaders deliver clarity and command during critical moments.</p>
+<div class="relative">
+<div class="hidden lg:block absolute top-[40px] left-0 w-full h-[1px] bg-white/10"></div>
+<div class="how-we-work-track flex md:grid md:grid-cols-2 lg:grid-cols-5 gap-6 md:gap-12 relative z-10 overflow-x-auto md:overflow-visible -mx-margin-mobile px-margin-mobile md:mx-0 md:px-0 scroll-smooth" id="how-we-work-carousel">
+<div class="how-we-work-slide reveal flex-shrink-0 w-[min(85vw,320px)] md:w-auto border border-white/10 md:border-0 p-8 md:p-0">
+<div class="w-16 h-16 md:w-20 md:h-20 bg-white mb-8 md:mb-12 mx-auto sm:mx-0" aria-hidden="true"></div>
+<h4 class="font-label-md text-label-md uppercase tracking-[0.2em] mb-4 md:mb-6 text-white text-center sm:text-left">Discovery</h4>
+<p class="text-silver/50 font-body-md text-center sm:text-left">In-depth stakeholder analysis and narrative audit.</p>
+</div>
+<div class="how-we-work-slide reveal flex-shrink-0 w-[min(85vw,320px)] md:w-auto border border-white/10 md:border-0 p-8 md:p-0">
+<div class="w-16 h-16 md:w-20 md:h-20 bg-white mb-8 md:mb-12 mx-auto sm:mx-0" aria-hidden="true"></div>
+<h4 class="font-label-md text-label-md uppercase tracking-[0.2em] mb-4 md:mb-6 text-white text-center sm:text-left">Synthesis</h4>
+<p class="text-silver/50 font-body-md text-center sm:text-left">Distilling complex objectives into strategic pillars.</p>
+</div>
+<div class="how-we-work-slide reveal flex-shrink-0 w-[min(85vw,320px)] md:w-auto border border-white/10 md:border-0 p-8 md:p-0">
+<div class="w-16 h-16 md:w-20 md:h-20 bg-white mb-8 md:mb-12 mx-auto sm:mx-0" aria-hidden="true"></div>
+<h4 class="font-label-md text-label-md uppercase tracking-[0.2em] mb-4 md:mb-6 text-white text-center sm:text-left">Architecture</h4>
+<p class="text-silver/50 font-body-md text-center sm:text-left">Building the structural framework for the message.</p>
+</div>
+<div class="how-we-work-slide reveal flex-shrink-0 w-[min(85vw,320px)] md:w-auto border border-white/10 md:border-0 p-8 md:p-0">
+<div class="w-16 h-16 md:w-20 md:h-20 bg-white mb-8 md:mb-12 mx-auto sm:mx-0" aria-hidden="true"></div>
+<h4 class="font-label-md text-label-md uppercase tracking-[0.2em] mb-4 md:mb-6 text-white text-center sm:text-left">Refinement</h4>
+<p class="text-silver/50 font-body-md text-center sm:text-left">Iterative precision-tuning for maximum impact.</p>
+</div>
+<div class="how-we-work-slide reveal flex-shrink-0 w-[min(85vw,320px)] md:w-auto border border-white/10 md:border-0 p-8 md:p-0">
+<div class="w-16 h-16 md:w-20 md:h-20 bg-white mb-8 md:mb-12 mx-auto sm:mx-0" aria-hidden="true"></div>
+<h4 class="font-label-md text-label-md uppercase tracking-[0.2em] mb-4 md:mb-6 text-white text-center sm:text-left">Deployment</h4>
+<p class="text-silver/50 font-body-md text-center sm:text-left">Seamless execution across all leadership channels.</p>
+</div>
+</div>
+<div class="how-we-work-dots md:hidden" id="how-we-work-dots" aria-hidden="true"></div>
+</div>
+</div>
+</section>
+<!-- Use Cases Section -->
+<section class="py-section-gap-mobile md:py-section-gap px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto reveal" id="insights">
+<h2 class="font-display-xl text-[36px] md:text-[56px] mb-12 md:mb-20 reveal text-white">Strategic Challenges</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16">
+<article class="group reveal cursor-pointer">
+<div class="aspect-[16/9] overflow-hidden mb-8 md:mb-10 border border-white/10">
+<img class="w-full h-full object-cover grayscale opacity-50 transition-all duration-[1.5s] group-hover:scale-105 group-hover:opacity-80" data-alt="A moody, cinematic aerial shot of a glass skyscraper." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJDlv5wN6Jdxs6qoQk5laiowpl940y0mAsfdysaQf9xIxQcSZygfKSUOsXa6X-NbhMkHM9vK7BpPy_FCqRnmyEv0KmIs7O7p-STRIpCeBodz7ByVW6_Oee2GOVrtRDjF5Rg0cdnLDZPbdvxDw-KqT3BLtjS7YuRi00i8fjQ4XSanoY9G4s-3PH97_sW_8fON8H8YFwHICbb9piTQ_eeNwQpB9LnOOodmppAlG7Tq1VkVOF4beE57GZlgKHhthR69HAGouXHsjosg">
+</div>
+<div class="flex items-center gap-4 mb-4">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-silver/30">01 / Challenge</span>
+<div class="h-[1px] w-8 bg-white/10"></div>
+</div>
+<h3 class="font-headline-xl text-[24px] md:text-[32px] mb-4 md:mb-6 text-white group-hover:text-silver transition-colors duration-500">Change Management</h3>
+<p class="text-silver/50 font-body-md max-w-lg leading-relaxed">Navigating complex M&amp;A communications and leadership transitions with absolute precision.</p>
+</article>
+<article class="group reveal cursor-pointer" style="transition-delay: 0.2s;">
+<div class="aspect-[16/9] overflow-hidden mb-8 md:mb-10 border border-white/10">
+<img class="w-full h-full object-cover grayscale opacity-50 transition-all duration-[1.5s] group-hover:scale-105 group-hover:opacity-80" data-alt="A macro photograph of a sleek presentation screen." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhgzIvHaufi6klQz2MW_sz8X0eJilWl2Mz3JxgJ4Ejd3w0j8-mWQjvDHTHN20V8D1LJ77zXARHxPSjfTohV6bj4upH4BaFoWb1X8I_S4-_1hNUwJLFuAYr5L3VLSPTVVMtCTooqPzgSGsgF0mN7-p89MPYOL1a-_ho1I-UdRgShVeQd2GFe3G8EZ6n0_IRfB4cc5flEvGyKQhEyAFAA58__u1AUz3dEttwsB0DeiOxmBr6NwITdYvyb8zH0BRnE6sQ7P6ZVMqEWA">
+</div>
+<div class="flex items-center gap-4 mb-4">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-silver/30">02 / Challenge</span>
+<div class="h-[1px] w-8 bg-white/10"></div>
+</div>
+<h3 class="font-headline-xl text-[24px] md:text-[32px] mb-4 md:mb-6 text-white group-hover:text-silver transition-colors duration-500">Executive Presentations</h3>
+<p class="text-silver/50 font-body-md max-w-lg leading-relaxed">Transforming data-heavy reports into persuasive strategic narratives for the board.</p>
+</article>
+</div>
+</section>
+<!-- Statement Section -->
+<section class="min-h-[70vh] md:min-h-screen flex items-center justify-center bg-white text-black px-margin-mobile md:px-margin-desktop text-center relative overflow-hidden py-16 md:py-0 reveal" id="statement-section">
+<div aria-hidden="true" class="dot-field-container absolute inset-0 z-0 pointer-events-none" id="statement-dot-field"></div>
+<h2 class="font-display-xl text-[36px] sm:text-[48px] md:text-[64px] lg:text-[100px] max-w-6xl leading-[0.95] reveal relative z-10 font-bold uppercase tracking-tighter">
+    We Architect and Deliver the Narratives Behind an Organization’s Most Important Moments.
+</h2>
+</section>
+<!-- Contact Section -->
+<section class="py-section-gap-mobile md:py-section-gap px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto reveal" id="contact">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-gutter">
+<div class="md:col-span-5 reveal">
+<span class="font-label-sm text-label-sm uppercase tracking-[0.3em] text-silver/40 block mb-6 md:mb-10">Get In Touch</span>
+<h2 class="font-display-xl text-[40px] md:text-[64px] mb-8 md:mb-12 text-white leading-tight">Let's Clarify The Message.</h2>
+<p class="font-body-lg text-body-md md:text-body-lg text-silver/60 mb-10 md:mb-16 max-w-md">
+        Contact us to prepare and execute your next launch, keynote, strategic announcement, or leadership transition—precision narrative, executive readiness, and stakeholder alignment.
+                </p>
+<div class="space-y-8 border-t border-white/10 pt-10 md:pt-16">
+<div>
+<p class="font-label-sm text-label-sm uppercase tracking-widest text-silver/30 mb-2">Global Presence</p>
+<p class="font-body-md text-white font-medium">London / New York / Singapore</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm uppercase tracking-widest text-silver/30 mb-2">Secure Channel</p>
+<p class="font-body-md text-white font-medium hover:text-silver transition-colors cursor-pointer">advisory@detailed.com</p>
+</div>
+</div>
+</div>
+<div class="md:col-start-7 md:col-span-6 reveal" style="transition-delay: 0.3s;">
+<form class="space-y-10 md:space-y-16">
+<div class="relative group">
+<label class="font-label-sm text-label-sm uppercase tracking-widest text-silver/40 mb-4 block group-focus-within:text-white transition-colors">Full Name</label>
+<input class="w-full bg-transparent border-0 border-b border-white/10 focus:ring-0 focus:border-white px-0 py-4 md:py-6 text-white text-[18px] md:text-[20px] transition-all placeholder:text-white/10" placeholder="Johnathan Doe" type="text">
+</div>
+<div class="relative group">
+<label class="font-label-sm text-label-sm uppercase tracking-widest text-silver/40 mb-4 block group-focus-within:text-white transition-colors">Corporate Email</label>
+<input class="w-full bg-transparent border-0 border-b border-white/10 focus:ring-0 focus:border-white px-0 py-4 md:py-6 text-white text-[18px] md:text-[20px] transition-all placeholder:text-white/10" placeholder="j.doe@organization.com" type="email">
+</div>
+<div class="relative group">
+<label class="font-label-sm text-label-sm uppercase tracking-widest text-silver/40 mb-4 block group-focus-within:text-white transition-colors">Subject of Inquiry</label>
+<textarea class="w-full bg-transparent border-0 border-b border-white/10 focus:ring-0 focus:border-white px-0 py-4 md:py-6 text-white text-[18px] md:text-[20px] transition-all min-h-[120px] md:min-h-[140px] placeholder:text-white/10" placeholder="Briefly describe the context of your inquiry..."></textarea>
+</div>
+<button class="bg-white text-black font-label-md text-label-md uppercase tracking-[0.3em] px-10 md:px-16 py-5 md:py-6 font-bold hover:bg-silver transition-all duration-500 w-full md:w-auto">Submit Consultation Request</button>
+</form>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-black border-t border-white/10 py-16 md:py-32 reveal">
+<div class="flex flex-col md:flex-row justify-between items-start w-full px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto gap-12 md:gap-24">
+<div class="max-w-md reveal">
+<div class="flex items-center gap-3 mb-8 md:mb-12">
+<span class="logo-mark h-8 w-8" aria-hidden="true"></span>
+<span class="font-display-xl text-[28px] font-bold tracking-tighter text-white">Detailed.</span>
+</div>
+<p class="font-body-md text-silver/40 leading-relaxed max-w-xs">
+                © 2024 Detailed. All rights reserved. Strategic Internal Communications. Precision-engineered narratives for the world's most influential organizations.
+            </p>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-10 md:gap-24 w-full md:w-auto reveal">
+<div class="flex flex-col gap-6 reveal">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-white font-bold">Explore</span>
+<a class="font-body-md text-silver/40 hover:text-white transition-colors" href="#">Services</a>
+<a class="font-body-md text-silver/40 hover:text-white transition-colors" href="#">Approach</a>
+<a class="font-body-md text-silver/40 hover:text-white transition-colors" href="#">Values</a>
+</div>
+<div class="flex flex-col gap-6 reveal">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-white font-bold">Legal</span>
+<a class="font-body-md text-silver/40 hover:text-white transition-colors" href="#">Privacy</a>
+<a class="font-body-md text-silver/40 hover:text-white transition-colors" href="#">Terms</a>
+<a class="font-body-md text-silver/40 hover:text-white transition-colors" href="#">Insights</a>
+</div>
+<div class="flex flex-col gap-6 reveal">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-white font-bold">Connect</span>
+<a class="font-body-md text-silver/40 hover:text-white transition-colors" href="#">LinkedIn</a>
+<a class="font-body-md text-silver/40 hover:text-white transition-colors" href="#">Contact</a>
+</div>
+</div>
+</div>
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script>
+    // ── Splash screen configuration ──
+    const SPLASH_CONFIG = {
+        enabled: true,
+        videoPath: 'DETAILED ANIMATION.webm',
+        playbackRate: 2,
+        curtainPanelCount: 14,
+        curtainDuration: 1.4,
+        curtainStagger: 0.045
+    };
+
+    (function initSplashScreen() {
+        const splash = document.getElementById('splash-screen');
+        const video = document.getElementById('splash-video');
+        const curtains = document.getElementById('curtain-blinds');
+        const stage = splash && splash.querySelector('.splash-stage');
+
+        if (!SPLASH_CONFIG.enabled || !splash || !video || !curtains || !stage) {
+            document.documentElement.classList.remove('splash-active');
+            if (splash) splash.remove();
+            return;
+        }
+
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            finishSplash();
+            return;
+        }
+
+        curtains.style.setProperty('--curtain-duration', SPLASH_CONFIG.curtainDuration + 's');
+        curtains.style.setProperty('--curtain-stagger', SPLASH_CONFIG.curtainStagger + 's');
+
+        for (let i = 0; i < SPLASH_CONFIG.curtainPanelCount; i++) {
+            const panel = document.createElement('div');
+            panel.className = 'curtain-panel';
+            panel.style.setProperty('--panel-index', i);
+            curtains.appendChild(panel);
+        }
+
+        let transitionStarted = false;
+
+        function finishSplash() {
+            document.documentElement.classList.remove('splash-active');
+            splash.remove();
+        }
+
+        function startCurtainTransition() {
+            if (transitionStarted) return;
+            transitionStarted = true;
+
+            stage.classList.add('is-hidden');
+            splash.style.background = 'transparent';
+            curtains.classList.add('is-active');
+
+            requestAnimationFrame(function () {
+                requestAnimationFrame(function () {
+                    curtains.classList.add('is-revealing');
+                    curtains.setAttribute('aria-hidden', 'false');
+                });
+            });
+
+            const panels = curtains.querySelectorAll('.curtain-panel');
+            const lastPanel = panels[panels.length - 1];
+            const totalMs = (SPLASH_CONFIG.curtainDuration + SPLASH_CONFIG.curtainStagger * (panels.length - 1)) * 1000 + 120;
+
+            function onCurtainDone() {
+                finishSplash();
+            }
+
+            if (lastPanel) {
+                lastPanel.addEventListener('animationend', onCurtainDone, { once: true });
+            }
+            setTimeout(onCurtainDone, totalMs);
+        }
+
+        function applyPlaybackRate() {
+            video.playbackRate = SPLASH_CONFIG.playbackRate;
+        }
+
+        function attemptPlay() {
+            applyPlaybackRate();
+            const playPromise = video.play();
+            if (playPromise && typeof playPromise.catch === 'function') {
+                playPromise.catch(function () {
+                    document.addEventListener('click', function onGesture() {
+                        document.removeEventListener('click', onGesture);
+                        document.removeEventListener('touchstart', onGesture);
+                        attemptPlay();
+                    }, { once: true });
+                    document.addEventListener('touchstart', function onGesture() {
+                        document.removeEventListener('click', onGesture);
+                        document.removeEventListener('touchstart', onGesture);
+                        attemptPlay();
+                    }, { once: true, passive: true });
+                });
+            }
+        }
+
+        video.addEventListener('loadedmetadata', applyPlaybackRate);
+        video.addEventListener('ratechange', applyPlaybackRate);
+        video.addEventListener('ended', startCurtainTransition);
+
+        video.addEventListener('error', function () {
+            startCurtainTransition();
+        });
+
+        attemptPlay();
+    })();
+</script>
+<script>
+    // Scroll fade-in reveal (ease-in)
+    function initScrollReveal() {
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const revealElements = document.querySelectorAll('.reveal');
+
+        if (prefersReduced) {
+            revealElements.forEach((el) => el.classList.add('active'));
+            return;
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.12,
+            rootMargin: '0px 0px -40px 0px'
+        });
+
+        revealElements.forEach((el) => observer.observe(el));
+    }
+
+    function startScrollRevealWhenReady() {
+        if (!document.documentElement.classList.contains('splash-active')) {
+            initScrollReveal();
+            return;
+        }
+        const splashWatcher = setInterval(() => {
+            if (!document.getElementById('splash-screen')) {
+                clearInterval(splashWatcher);
+                initScrollReveal();
+            }
+        }, 100);
+    }
+
+    startScrollRevealWhenReady();
+
+    // Smooth scroll with fixed header offset
+    (function initSmoothScroll() {
+        const headerOffset = 116;
+
+        document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+            anchor.addEventListener('click', (e) => {
+                const href = anchor.getAttribute('href');
+                if (!href || href === '#') return;
+                const target = document.querySelector(href);
+                if (!target) return;
+                e.preventDefault();
+                const top = target.getBoundingClientRect().top + window.pageYOffset - headerOffset;
+                window.scrollTo({ top, behavior: 'smooth' });
+            });
+        });
+    })();
+
+    // Mobile "How We Work" carousel
+    (function initHowWeWorkCarousel() {
+        const track = document.getElementById('how-we-work-carousel');
+        const dotsContainer = document.getElementById('how-we-work-dots');
+        if (!track || !dotsContainer) return;
+
+        const slides = track.querySelectorAll('.how-we-work-slide');
+        if (!slides.length) return;
+
+        slides.forEach((_, index) => {
+            const dot = document.createElement('button');
+            dot.type = 'button';
+            dot.className = 'how-we-work-dot' + (index === 0 ? ' active' : '');
+            dot.setAttribute('aria-label', 'Go to step ' + (index + 1));
+            dot.addEventListener('click', () => {
+                slides[index].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            });
+            dotsContainer.appendChild(dot);
+        });
+
+        const dots = dotsContainer.querySelectorAll('.how-we-work-dot');
+
+        function updateDots() {
+            if (window.innerWidth >= 768) return;
+            let activeIndex = 0;
+            let minDistance = Infinity;
+            const trackCenter = track.scrollLeft + track.clientWidth / 2;
+            slides.forEach((slide, index) => {
+                const slideCenter = slide.offsetLeft + slide.offsetWidth / 2;
+                const distance = Math.abs(trackCenter - slideCenter);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    activeIndex = index;
+                }
+            });
+            dots.forEach((dot, index) => dot.classList.toggle('active', index === activeIndex));
+        }
+
+        track.addEventListener('scroll', updateDots, { passive: true });
+        window.addEventListener('resize', updateDots);
+        updateDots();
+    })();
+
+    // Mobile navigation menu
+    (function () {
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuIcon = document.getElementById('mobile-menu-icon');
+        const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+        const mobileMenuCta = document.querySelector('.mobile-menu-cta');
+
+        if (!menuBtn || !mobileMenu) return;
+
+        function closeMenu() {
+            mobileMenu.classList.remove('open');
+            mobileMenu.setAttribute('aria-hidden', 'true');
+            menuBtn.setAttribute('aria-expanded', 'false');
+            menuBtn.setAttribute('aria-label', 'Open navigation menu');
+            menuIcon.textContent = 'menu';
+            document.body.classList.remove('menu-open');
+        }
+
+        function openMenu() {
+            mobileMenu.classList.add('open');
+            mobileMenu.setAttribute('aria-hidden', 'false');
+            menuBtn.setAttribute('aria-expanded', 'true');
+            menuBtn.setAttribute('aria-label', 'Close navigation menu');
+            menuIcon.textContent = 'close';
+            document.body.classList.add('menu-open');
+        }
+
+        menuBtn.addEventListener('click', () => {
+            if (mobileMenu.classList.contains('open')) {
+                closeMenu();
+            } else {
+                openMenu();
+            }
+        });
+
+        mobileNavLinks.forEach((link) => {
+            link.addEventListener('click', closeMenu);
+        });
+
+        if (mobileMenuCta) {
+            mobileMenuCta.addEventListener('click', closeMenu);
+        }
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 768) closeMenu();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeMenu();
+        });
+    })();
+
+    // WebGL Shader Implementation for Hero
+    const canvas = document.getElementById('gl-canvas');
+    if (canvas) {
+    const gl = canvas.getContext('webgl');
+
+    if (gl) {
+        const vsSource = `
+            attribute vec4 a_position;
+            varying vec2 v_texCoord;
+            void main() {
+                v_texCoord = a_position.xy * 0.5 + 0.5;
+                v_texCoord.y = 1.0 - v_texCoord.y;
+                gl_Position = a_position;
+            }
+        `;
+
+        const fsSource = `
+            precision highp float;
+            uniform float u_time;
+            uniform vec2 u_resolution;
+            varying vec2 v_texCoord;
+
+            void main() {
+                vec2 uv = v_texCoord;
+                vec2 grid = fract(uv * 20.0);
+                float line = smoothstep(0.02, 0.0, grid.x) + smoothstep(0.02, 0.0, grid.y);
+                float glint = smoothstep(0.1, 0.0, abs(uv.x - 0.5 + sin(u_time * 0.3) * 0.8));
+                vec3 color = vec3(0.0);
+                color = mix(color, vec3(0.05), line);
+                color += vec3(0.15) * glint * line;
+                gl_FragColor = vec4(color, 1.0);
+            }
+        `;
+
+        const createShader = (gl, type, source) => {
+            const shader = gl.createShader(type);
+            gl.shaderSource(shader, source);
+            gl.compileShader(shader);
+            return shader;
+        };
+
+        const program = gl.createProgram();
+        gl.attachShader(program, createShader(gl, gl.VERTEX_SHADER, vsSource));
+        gl.attachShader(program, createShader(gl, gl.FRAGMENT_SHADER, fsSource));
+        gl.linkProgram(program);
+
+        const positionBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]), gl.STATIC_DRAW);
+
+        const positionLocation = gl.getAttribLocation(program, 'a_position');
+        const timeLocation = gl.getUniformLocation(program, 'u_time');
+        const resolutionLocation = gl.getUniformLocation(program, 'u_resolution');
+
+        const render = (time) => {
+            time *= 0.001;
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+            gl.viewport(0, 0, canvas.width, canvas.height);
+            gl.useProgram(program);
+            gl.enableVertexAttribArray(positionLocation);
+            gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+            gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+            gl.uniform1f(timeLocation, time);
+            gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
+            gl.drawArrays(gl.TRIANGLES, 0, 6);
+            requestAnimationFrame(render);
+        };
+        requestAnimationFrame(render);
+    }
+    }
+</script>
+
+<script>
+    // Three.js premium architectural globe
+    (function () {
+        const canvas = document.getElementById('globe-canvas');
+        if (!canvas || typeof THREE === 'undefined') return;
+
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setClearColor(0x000000, 0);
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(36, 1, 0.1, 100);
+        camera.position.z = 2.4;
+
+        // Globe group with Earth's axial tilt
+        const globeGroup = new THREE.Group();
+        globeGroup.rotation.z = THREE.MathUtils.degToRad(-23.5);
+        scene.add(globeGroup);
+
+        // Sphere base — dark charcoal
+        const sphereMat = new THREE.MeshPhongMaterial({
+            color: 0x0c0c0c,
+            emissive: 0x060606,
+            specular: 0x1c1c1c,
+            shininess: 18,
+            transparent: true,
+            opacity: 0.97
+        });
+        globeGroup.add(new THREE.Mesh(new THREE.SphereGeometry(1, 80, 60), sphereMat));
+
+        function makeLine(pts, opacity) {
+            return new THREE.Line(
+                new THREE.BufferGeometry().setFromPoints(pts),
+                new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity })
+            );
+        }
+
+        function latLineOpacity(lat) {
+            if (lat === 0) return 0.28;
+            if (Math.abs(lat) === 30) return 0.18;
+            if (Math.abs(lat) === 60) return 0.13;
+            return 0.07;
+        }
+
+        function lngLineOpacity(lng) {
+            if (lng === 0 || lng === 180) return 0.24;
+            if (lng === 90 || lng === 270) return 0.16;
+            return 0.07;
+        }
+
+        // Primary latitude grid lines
+        for (let lat = -75; lat <= 75; lat += 15) {
+            const phi = THREE.MathUtils.degToRad(lat);
+            const r = Math.cos(phi), y = Math.sin(phi);
+            const pts = [];
+            for (let i = 0; i <= 120; i++) {
+                const t = (i / 120) * Math.PI * 2;
+                pts.push(new THREE.Vector3(r * Math.cos(t), y, r * Math.sin(t)));
+            }
+            globeGroup.add(makeLine(pts, latLineOpacity(lat)));
+        }
+
+        // Fine contour latitude bands between main lines
+        for (let lat = -80; lat <= 80; lat += 5) {
+            if (lat % 15 === 0) continue;
+            const phi = THREE.MathUtils.degToRad(lat);
+            const r = Math.cos(phi), y = Math.sin(phi);
+            const pts = [];
+            for (let i = 0; i <= 90; i++) {
+                const t = (i / 90) * Math.PI * 2;
+                pts.push(new THREE.Vector3(r * Math.cos(t), y, r * Math.sin(t)));
+            }
+            globeGroup.add(makeLine(pts, 0.034));
+        }
+
+        // Primary longitude grid lines
+        for (let lng = 0; lng < 360; lng += 15) {
+            const t = THREE.MathUtils.degToRad(lng);
+            const pts = [];
+            for (let i = 0; i <= 90; i++) {
+                const phi = THREE.MathUtils.degToRad(-90 + 180 * i / 90);
+                pts.push(new THREE.Vector3(Math.cos(phi) * Math.cos(t), Math.sin(phi), Math.cos(phi) * Math.sin(t)));
+            }
+            globeGroup.add(makeLine(pts, lngLineOpacity(lng)));
+        }
+
+        // Fine contour longitude bands
+        for (let lng = 7; lng < 360; lng += 15) {
+            const t = THREE.MathUtils.degToRad(lng);
+            const pts = [];
+            for (let i = 0; i <= 60; i++) {
+                const phi = THREE.MathUtils.degToRad(-90 + 180 * i / 60);
+                pts.push(new THREE.Vector3(Math.cos(phi) * Math.cos(t), Math.sin(phi), Math.cos(phi) * Math.sin(t)));
+            }
+            globeGroup.add(makeLine(pts, 0.030));
+        }
+
+        // Orbital rings — world space, independent of globe rotation
+        function makeRing(radius, tiltX, tiltZ, opacity) {
+            const pts = [];
+            for (let i = 0; i <= 200; i++) {
+                const t = (i / 200) * Math.PI * 2;
+                pts.push(new THREE.Vector3(radius * Math.cos(t), 0, radius * Math.sin(t)));
+            }
+            const ring = new THREE.Line(
+                new THREE.BufferGeometry().setFromPoints(pts),
+                new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity })
+            );
+            ring.rotation.x = THREE.MathUtils.degToRad(tiltX);
+            ring.rotation.z = THREE.MathUtils.degToRad(tiltZ);
+            return ring;
+        }
+
+        const ring1 = makeRing(1.24, 12, 8, 0.17);    // Near-equatorial
+        const ring2 = makeRing(1.37, 62, 22, 0.10);    // Inclined orbit
+        const ring3 = makeRing(1.50, 80, -18, 0.065);  // Near-polar orbit
+        scene.add(ring1, ring2, ring3);
+
+        // Atmospheric depth — faint outer sphere for perceived volume
+        const atmMat = new THREE.MeshLambertMaterial({
+            color: 0x1a1a1a,
+            transparent: true,
+            opacity: 0.05,
+            side: THREE.BackSide
+        });
+        scene.add(new THREE.Mesh(new THREE.SphereGeometry(1.07, 40, 30), atmMat));
+
+        // Lighting — key from upper-right-front, rim from behind-left for edge definition
+        scene.add(new THREE.AmbientLight(0xffffff, 0.10));
+        const keyLight = new THREE.DirectionalLight(0xffffff, 0.95);
+        keyLight.position.set(3, 2, 3);
+        scene.add(keyLight);
+        const rimLight = new THREE.DirectionalLight(0xffffff, 0.28);
+        rimLight.position.set(-3, -1, -2);
+        scene.add(rimLight);
+        const fillLight = new THREE.DirectionalLight(0xffffff, 0.07);
+        fillLight.position.set(0, -3, 1);
+        scene.add(fillLight);
+
+        function resize() {
+            const w = canvas.clientWidth, h = canvas.clientHeight;
+            if (w === 0 || h === 0) return;
+            renderer.setSize(w, h, false);
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        (function animate() {
+            requestAnimationFrame(animate);
+            globeGroup.rotation.y += 0.0007;  // Slow, dignified rotation
+            ring1.rotation.y += 0.00012;       // Imperceptible orbital drift
+            renderer.render(scene, camera);
+        })();
+    })();
+</script>
+<script>
+    (function initDotField(container, options) {
+        if (!container || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+        const props = {
+            dotRadius: 1.5,
+            dotSpacing: 14,
+            cursorRadius: 500,
+            cursorForce: 0.1,
+            bulgeOnly: true,
+            bulgeStrength: 67,
+            sparkle: false,
+            waveAmplitude: 0,
+            gradientFrom: "#545454",
+            gradientTo: "#545454",
+            ...options
+        };
+
+        const TWO_PI = Math.PI * 2;
+        const canvas = document.createElement("canvas");
+        container.appendChild(canvas);
+
+        const ctx = canvas.getContext("2d", { alpha: true });
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        let dots = [];
+        let rafId = null;
+        let resizeTimer = null;
+        let frameCount = 0;
+        let engagement = 0;
+        const size = { w: 0, h: 0 };
+        const mouse = { x: -9999, y: -9999, prevX: -9999, prevY: -9999, speed: 0 };
+
+        function buildDots(w, h) {
+            const step = props.dotRadius + props.dotSpacing;
+            const cols = Math.floor(w / step);
+            const rows = Math.floor(h / step);
+            const padX = (w % step) / 2;
+            const padY = (h % step) / 2;
+            dots = new Array(rows * cols);
+            let idx = 0;
+
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    const ax = padX + col * step + step / 2;
+                    const ay = padY + row * step + step / 2;
+                    dots[idx++] = { ax, ay, sx: ax, sy: ay, vx: 0, vy: 0, x: ax, y: ay };
+                }
+            }
+        }
+
+        function doResize() {
+            const rect = container.getBoundingClientRect();
+            const w = rect.width;
+            const h = rect.height;
+            if (w === 0 || h === 0) return;
+
+            canvas.width = w * dpr;
+            canvas.height = h * dpr;
+            canvas.style.width = w + "px";
+            canvas.style.height = h + "px";
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            size.w = w;
+            size.h = h;
+            buildDots(w, h);
+        }
+
+        function resize() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(doResize, 100);
+        }
+
+        function onMouseMove(e) {
+            const rect = container.getBoundingClientRect();
+            mouse.x = e.clientX - rect.left;
+            mouse.y = e.clientY - rect.top;
+        }
+
+        function updateMouseSpeed() {
+            const dx = mouse.prevX - mouse.x;
+            const dy = mouse.prevY - mouse.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            mouse.speed += (dist - mouse.speed) * 0.5;
+            if (mouse.speed < 0.001) mouse.speed = 0;
+            mouse.prevX = mouse.x;
+            mouse.prevY = mouse.y;
+        }
+
+        function tick() {
+            frameCount++;
+            const len = dots.length;
+            const { w, h } = size;
+            const t = frameCount * 0.02;
+            const targetEngagement = Math.min(mouse.speed / 5, 1);
+            engagement += (targetEngagement - engagement) * 0.06;
+            if (engagement < 0.001) engagement = 0;
+            const eng = engagement;
+
+            ctx.clearRect(0, 0, w, h);
+
+            const grad = ctx.createLinearGradient(0, 0, w, h);
+            grad.addColorStop(0, props.gradientFrom);
+            grad.addColorStop(1, props.gradientTo);
+            ctx.fillStyle = grad;
+
+            const cr = props.cursorRadius;
+            const crSq = cr * cr;
+            const rad = props.dotRadius / 2;
+            const isBulge = props.bulgeOnly;
+
+            ctx.beginPath();
+
+            for (let i = 0; i < len; i++) {
+                const d = dots[i];
+                const dx = mouse.x - d.ax;
+                const dy = mouse.y - d.ay;
+                const distSq = dx * dx + dy * dy;
+
+                if (distSq < crSq && eng > 0.01) {
+                    const dist = Math.sqrt(distSq);
+                    if (isBulge) {
+                        const bulgeT = 1 - dist / cr;
+                        const push = bulgeT * bulgeT * props.bulgeStrength * eng;
+                        const angle = Math.atan2(dy, dx);
+                        d.sx += (d.ax - Math.cos(angle) * push - d.sx) * 0.15;
+                        d.sy += (d.ay - Math.sin(angle) * push - d.sy) * 0.15;
+                    } else {
+                        const angle = Math.atan2(dy, dx);
+                        const move = (500 / dist) * (mouse.speed * props.cursorForce);
+                        d.vx += Math.cos(angle) * -move;
+                        d.vy += Math.sin(angle) * -move;
+                    }
+                } else if (isBulge) {
+                    d.sx += (d.ax - d.sx) * 0.1;
+                    d.sy += (d.ay - d.sy) * 0.1;
+                }
+
+                if (!isBulge) {
+                    d.vx *= 0.9;
+                    d.vy *= 0.9;
+                    d.x = d.ax + d.vx;
+                    d.y = d.ay + d.vy;
+                    d.sx += (d.x - d.sx) * 0.1;
+                    d.sy += (d.y - d.sy) * 0.1;
+                }
+
+                let drawX = d.sx;
+                let drawY = d.sy;
+                if (props.waveAmplitude > 0) {
+                    drawY += Math.sin(d.ax * 0.03 + t) * props.waveAmplitude;
+                    drawX += Math.cos(d.ay * 0.03 + t * 0.7) * props.waveAmplitude * 0.5;
+                }
+
+                if (props.sparkle) {
+                    const hash = ((i * 2654435761) ^ (frameCount >> 3)) >>> 0;
+                    if (hash % 100 < 3) {
+                        ctx.moveTo(drawX + rad * 1.8, drawY);
+                        ctx.arc(drawX, drawY, rad * 1.8, 0, TWO_PI);
+                    } else {
+                        ctx.moveTo(drawX + rad, drawY);
+                        ctx.arc(drawX, drawY, rad, 0, TWO_PI);
+                    }
+                } else {
+                    ctx.moveTo(drawX + rad, drawY);
+                    ctx.arc(drawX, drawY, rad, 0, TWO_PI);
+                }
+            }
+
+            ctx.fill();
+            rafId = requestAnimationFrame(tick);
+        }
+
+        doResize();
+        window.addEventListener("resize", resize);
+        window.addEventListener("mousemove", onMouseMove, { passive: true });
+        const speedInterval = setInterval(updateMouseSpeed, 20);
+        rafId = requestAnimationFrame(tick);
+
+        return function destroy() {
+            cancelAnimationFrame(rafId);
+            clearInterval(speedInterval);
+            clearTimeout(resizeTimer);
+            window.removeEventListener("resize", resize);
+            window.removeEventListener("mousemove", onMouseMove);
+        };
+    })(document.getElementById("statement-dot-field"));
+</script>
+<script type="module">
+    import { frame, motionValue, springValue } from "https://cdn.jsdelivr.net/npm/motion@12.40.0/+esm";
+
+    const spring = { damping: 3, stiffness: 50, restDelta: 0.001 };
+    const ball = document.getElementById("spring-ball");
+
+    if (ball && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        const xPoint = motionValue(0);
+        const yPoint = motionValue(0);
+        const x = springValue(xPoint, spring);
+        const y = springValue(yPoint, spring);
+
+        const syncTransform = () => {
+            ball.style.transform = `translate(calc(-50% + ${x.get()}px), calc(-50% + ${y.get()}px))`;
+        };
+
+        x.on("change", syncTransform);
+        y.on("change", syncTransform);
+
+        const handlePointerMove = ({ clientX, clientY }) => {
+            frame.read(() => {
+                xPoint.set(clientX - ball.offsetLeft - ball.offsetWidth / 2);
+                yPoint.set(clientY - ball.offsetTop - ball.offsetHeight / 2);
+            });
+        };
+
+        window.addEventListener("pointermove", handlePointerMove);
+    }
+</script>
+
+
+</body></html>
