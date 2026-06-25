@@ -25,7 +25,7 @@ module.exports = async function handler(req, res) {
 
   const SEND_TO = process.env.TO_EMAIL || 'hello@detailedgroup.co';
   const API_KEY = process.env.EMAIL_SERVICE_API_KEY;
-  const FROM_EMAIL = process.env.EMAIL_FROM;
+  const FROM_EMAIL = "DetailedGroup <hello@detailedgroup.co>";
 
   if (!API_KEY) {
     return res.status(500).json({ error: 'Email service API key is not configured.' });
