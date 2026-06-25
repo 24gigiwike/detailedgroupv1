@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Insights | DetailedGroup</title>
+
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+
+body{
+
+    background:#050505;
+    color:#fff;
+    font-family:"Fustat", Arial, sans-serif;
+
+}
+
+
+.container{
+
+    max-width:1200px;
+    margin:auto;
+    padding:100px 30px;
+
+}
+
+
+
+/* HERO */
+
+.label{
+
+    text-transform:uppercase;
+    letter-spacing:4px;
+    font-size:12px;
+    color:#777;
+    margin-bottom:30px;
+
+}
+
+
+h1{
+
+    font-size:clamp(48px,7vw,95px);
+    font-weight:500;
+    line-height:1;
+    max-width:900px;
+
+}
+
+
+.hero-text{
+
+    margin-top:35px;
+    max-width:650px;
+    color:#999;
+    font-size:18px;
+    line-height:1.8;
+
+}
+
+
+.divider{
+
+    height:1px;
+    background:#222;
+    margin:90px 0;
+
+}
+
+
+
+
+
+/* INSIGHTS GRID */
+
+
+.insights{
+
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:35px;
+
+}
+
+
+
+.card{
+
+    border-top:1px solid #222;
+    padding-top:30px;
+    transition:.4s ease;
+
+}
+
+
+.card:hover{
+
+    transform:translateY(-8px);
+
+}
+
+
+
+.category{
+
+    font-size:12px;
+    letter-spacing:3px;
+    text-transform:uppercase;
+    color:#777;
+    margin-bottom:25px;
+
+}
+
+
+
+.card h2{
+
+    font-size:28px;
+    font-weight:500;
+    line-height:1.3;
+    margin-bottom:20px;
+
+}
+
+
+
+.card p{
+
+    color:#999;
+    font-size:15px;
+    line-height:1.8;
+
+}
+
+
+
+.read{
+
+    display:inline-block;
+    margin-top:30px;
+    color:white;
+    text-decoration:none;
+    border-bottom:1px solid #555;
+    padding-bottom:5px;
+
+}
+
+
+
+
+/* FEATURED INSIGHT */
+
+
+.feature{
+
+    margin-top:100px;
+    padding:60px 0;
+    border-top:1px solid #222;
+    border-bottom:1px solid #222;
+
+}
+
+
+.feature h2{
+
+    font-size:clamp(35px,5vw,65px);
+    font-weight:500;
+    max-width:900px;
+    line-height:1.2;
+
+}
+
+
+.feature p{
+
+    margin-top:25px;
+    max-width:650px;
+    color:#999;
+    font-size:18px;
+
+}
+
+
+
+
+
+
+/* FOOTER */
+
+
+footer{
+
+    margin-top:100px;
+    padding-top:30px;
+    border-top:1px solid #222;
+    color:#666;
+    font-size:14px;
+
+}
+
+.email-link {
+
+    display:inline-block;
+    margin-top:15px;
+    color:white;
+    text-decoration:none;
+    border:1px solid #555;
+    padding:10px;
+
+}
+
+
+
+
+
+@media(max-width:900px){
+
+
+.insights{
+
+    grid-template-columns:1fr;
+
+}
+
+
+.container{
+
+    padding:70px 20px;
+
+}
+
+
+.card h2{
+
+    font-size:24px;
+
+}
+
+
+}
+
+
+</style>
+
+
+</head>
+
+
+
+<body>
+
+
+<main class="container">
+
+
+
+<section>
+
+
+<div class="label">
+Insights
+</div>
+
+
+<h1>
+Ideas shaping the future of communication.
+</h1>
+
+
+<p class="hero-text">
+
+Explore perspectives on strategic communication,
+executive messaging, visual storytelling, organizational
+alignment, and the moments where communication matters most.
+
+</p>
+
+ <a class="email-link" href="index.html">
+            Back to home
+</a>
+
+</section>
+
+
+
+
+
+<div class="divider"></div>
+
+
+
+
+
+
+<section class="insights">
+
+
+
+<article class="card">
+
+
+<div class="category">
+Communication Strategy
+</div>
+
+
+<h2>
+Building narratives for moments that matter.
+</h2>
+
+
+<p>
+
+How organizations can create communication systems
+that bring clarity, alignment, and confidence during
+important transitions.
+
+</p>
+
+
+<a href="#" class="read">
+Read Insight →
+</a>
+
+
+</article>
+
+
+
+
+
+
+
+<article class="card">
+
+
+<div class="category">
+Executive Communication
+</div>
+
+
+<h2>
+The power of clear leadership communication.
+</h2>
+
+
+<p>
+
+Why executive messaging requires more than information —
+it requires intention, structure, and audience understanding.
+
+</p>
+
+
+<a href="#" class="read">
+Read Insight →
+</a>
+
+
+</article>
+
+
+
+
+
+
+
+<article class="card">
+
+
+<div class="category">
+Visual Storytelling
+</div>
+
+
+<h2>
+Turning complex ideas into meaningful visuals.
+</h2>
+
+
+<p>
+
+How premium visual communication helps organizations
+deliver ideas with clarity and impact.
+
+</p>
+
+
+<a href="#" class="read">
+Read Insight →
+</a>
+
+
+</article>
+
+
+
+</section>
+
+
+
+
+
+
+
+<section class="feature">
+
+
+<h2>
+
+Communication is not just about what is said.
+It is about what people understand.
+
+</h2>
+
+
+<p>
+
+Detailed Group explores the strategies, systems,
+and stories behind effective communication.
+
+</p>
+
+ <a class="email-link" href="index.html">
+            Back to home
+        </a>
+
+
+</section>
+
+
+
+
+
+
+
+<footer>
+
+© 2026 Detailed Group. All rights reserved.
+
+</footer>
+
+
+
+
+</main>
+
+
+
+</body>
+</html>
