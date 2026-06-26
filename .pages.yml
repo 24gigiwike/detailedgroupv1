@@ -1,4 +1,4 @@
-collections:
+content:
   - name: marquee_settings
     label: "Header Marquee"
     type: file
