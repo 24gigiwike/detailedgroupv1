@@ -1,0 +1,15 @@
+collections:
+  - name: marquee_settings
+    label: "Header Marquee"
+    type: file
+    path: "data/marquee.json" # Relative path to your JSON data folder
+    fields:
+      - name: events
+        label: "Events List"
+        type: list
+        fields:
+          - name: text
+            label: "Event Text"
+            type: text
+            type_options:
+              placeholder: "EXECUTIVE COMMUNICATIONS FORUM • JUNE 25"
