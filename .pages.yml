@@ -4,7 +4,7 @@ content:
     type: file
     path: "data/marquee.json"
     fields:
-      - name: events
+      - name: items
         label: "Events List"
         type: list
         fields:
