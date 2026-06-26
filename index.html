@@ -145,61 +145,124 @@
             position: fixed;
             inset: 0;
             z-index: 60;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.97);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            opacity: 0;
             visibility: hidden;
             pointer-events: none;
-            transition: opacity 0.55s ease-in, visibility 0.55s ease-in;
         }
         #mobile-menu.open {
-            opacity: 1;
             visibility: visible;
             pointer-events: auto;
+        }
+        #mobile-menu .mobile-menu-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.72);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            opacity: 0;
+            transition: opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        #mobile-menu.open .mobile-menu-backdrop {
+            opacity: 1;
+        }
+        #mobile-menu .mobile-menu-panel {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            flex-direction: column;
+            max-height: 100vh;
+            max-height: 100dvh;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.98);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            transform: translateY(-100%);
+            opacity: 0;
+            transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        #mobile-menu.open .mobile-menu-panel {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        #mobile-menu .mobile-menu-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            height: 80px;
+            padding: 0 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        #mobile-menu .mobile-menu-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        #mobile-menu-close {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            color: #ffffff;
+            transition: opacity 0.3s ease;
+        }
+        #mobile-menu-close:hover {
+            opacity: 0.65;
         }
         #mobile-menu .mobile-menu-inner {
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 2rem;
-            width: 100%;
-            height: 100%;
-            padding: 6rem 1.5rem 3rem;
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 2.5rem 24px 2rem;
+        }
+        #mobile-menu .mobile-menu-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
         }
         #mobile-menu .mobile-nav-link {
+            display: block;
             opacity: 0;
-            transform: translateY(16px);
-            font-size: 1.25rem;
-            letter-spacing: 0.2em;
-            transition: opacity 0.5s ease-in, transform 0.5s ease-in, color 0.4s;
+            transform: translateY(12px);
+            padding: 1.125rem 0;
+            font-size: 0.8125rem;
+            letter-spacing: 0.14em;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            transition: opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1), transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), color 0.35s ease;
+        }
+        #mobile-menu .mobile-nav-link:first-child {
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
         }
         #mobile-menu.open .mobile-nav-link {
             opacity: 1;
             transform: translateY(0);
         }
-        #mobile-menu.open .mobile-nav-link:nth-child(1) { transition-delay: 0.05s; }
-        #mobile-menu.open .mobile-nav-link:nth-child(2) { transition-delay: 0.08s; }
-        #mobile-menu.open .mobile-nav-link:nth-child(3) { transition-delay: 0.11s; }
-        #mobile-menu.open .mobile-nav-link:nth-child(4) { transition-delay: 0.14s; }
-        #mobile-menu.open .mobile-nav-link:nth-child(5) { transition-delay: 0.17s; }
-        #mobile-menu.open .mobile-menu-cta { transition-delay: 0.21s; }
+        #mobile-menu.open .mobile-nav-link:nth-child(1) { transition-delay: 0.08s; }
+        #mobile-menu.open .mobile-nav-link:nth-child(2) { transition-delay: 0.12s; }
+        #mobile-menu.open .mobile-nav-link:nth-child(3) { transition-delay: 0.16s; }
+        #mobile-menu.open .mobile-nav-link:nth-child(4) { transition-delay: 0.20s; }
+        #mobile-menu.open .mobile-nav-link:nth-child(5) { transition-delay: 0.24s; }
         #mobile-menu .mobile-menu-cta {
             opacity: 0;
             transform: translateY(12px);
-            transition: opacity 0.35s ease-in, transform 0.35s ease-in;
-            margin-top: 1rem;
+            transition: opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1), transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.5s ease, color 0.5s ease;
+            margin-top: 2rem;
             width: 100%;
-            max-width: 20rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1rem 1.5rem;
+            font-size: 0.8125rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #ffffff;
         }
         #mobile-menu.open .mobile-menu-cta {
             opacity: 1;
             transform: translateY(0);
+            transition-delay: 0.28s;
         }
         body.menu-open {
             overflow: hidden;
@@ -412,17 +475,32 @@
         }
 
         /* Card flip interaction and premium video showcase styles */
-        .flip-card { perspective: 1400px; overflow: hidden; transform-style: preserve-3d; -webkit-transform-style: preserve-3d; }
-        .flip-inner { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; -webkit-transform-style: preserve-3d; transition: transform 0.8s cubic-bezier(0.2,0.9,0.18,1); transform-origin: center center; }
+        .flip-card.reveal {
+            opacity: 0;
+            transform: none;
+            transition: opacity 0.45s cubic-bezier(0.2,0.8,0.2,1);
+        }
+        .flip-card.reveal.active {
+            opacity: 1;
+            transform: none;
+        }
+        .flip-card { perspective: 1400px; overflow: visible; }
+        .flip-inner { position: relative; width: 100%; min-height: 100%; transform-style: preserve-3d; -webkit-transform-style: preserve-3d; transition: transform 0.75s cubic-bezier(0.2,0.9,0.18,1); transform-origin: center center; }
         .flip-card.is-flipped .flip-inner { transform: rotateY(180deg); }
-        .flip-front, .flip-back { backface-visibility: hidden; -webkit-backface-visibility: hidden; width: 100%; }
+        .flip-front, .flip-back { backface-visibility: hidden; -webkit-backface-visibility: hidden; width: 100%; transform-style: preserve-3d; -webkit-transform-style: preserve-3d; }
         .flip-front { position: relative; transform: rotateY(0deg); background: transparent; color: #fff; z-index: 2; }
-        .flip-back { position: absolute; inset: 0; transform: rotateY(180deg); background: #fff; color: #000; padding: 1.25rem; box-sizing: border-box; }
-        .flip-front .flip-indicator, .flip-back .flip-indicator { display:inline-flex; align-items:center; gap:0.75rem; font-weight:600; }
+        .flip-back { position: absolute; inset: 0; transform: rotateY(180deg); background: #fff; color: #000; padding: 1.25rem; box-sizing: border-box; overflow: hidden; }
+        .flip-front .flip-indicator, .flip-back .flip-indicator { display: inline-flex; align-items: center; gap: 0.75rem; font-weight: 600; cursor: pointer; transition: opacity 0.25s ease, transform 0.25s ease; }
+        .flip-front .flip-indicator:hover, .flip-back .flip-toggle:hover { opacity: 0.65; }
+        .flip-back .flip-toggle { cursor: pointer; background: none; border: none; color: inherit; font-size: 18px; font-weight: 600; padding: 0; transition: opacity 0.25s ease; }
         .flip-indicator { font-size: 18px; }
         .flip-card .card-body { min-height: 100px; }
+        .flip-back ul { color: rgba(0, 0, 0, 0.65) !important; }
+        .flip-back ul li { color: rgba(0, 0, 0, 0.65) !important; }
+        .flip-back p { color: rgba(0, 0, 0, 0.75) !important; }
         /* Ensure smooth, contained flip on mobile */
         @media (max-width: 767px) {
+            .flip-card { overflow: hidden; }
             .flip-inner { transition: transform 0.65s cubic-bezier(0.22,0.9,0.2,1); }
         }
 
@@ -431,9 +509,14 @@
             #services { transition: background-color 0.45s cubic-bezier(0.2,0.8,0.2,1), color 0.35s ease; }
             #services.inverted { background-color: #ffffff !important; color: #000000 !important; }
             #services.inverted .font-headline-md, #services.inverted .font-label-sm, #services.inverted h3, #services.inverted p, #services.inverted .flip-indicator { color: #000000 !important; }
-            /* Reduce padding to make cards more compact on desktop */
-            .flip-card { padding: 1.5rem 1.75rem !important; }
+            #services.inverted .flip-card:not(.is-flipped) .flip-front { color: #000; }
+            #services.inverted .flip-card:not(.is-flipped) .flip-front h3,
+            #services.inverted .flip-card:not(.is-flipped) .flip-front p,
+            #services.inverted .flip-card:not(.is-flipped) .flip-front .material-symbols-outlined,
+            #services.inverted .flip-card:not(.is-flipped) .flip-front .font-label-sm { color: #000 !important; }
+            .flip-card { padding: 1.5rem 1.75rem !important; overflow: hidden; }
             .flip-card .card-body { min-height: 80px; }
+            .flip-inner { min-height: 320px; }
         }
 
         /* Video showcase */
@@ -486,7 +569,7 @@
 <header class="bg-black/80 backdrop-blur-2xl border-b border-white/10 fixed top-0 w-full z-50">
 <nav class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-unit max-w-container-max mx-auto h-[80px]">
 <a class="flex items-center gap-3 shrink-0" href="#">
-<span class="logo-mark h-6 w-6" aria-hidden="true"></span>
+<span class="logo-mark h-3 w-3" aria-hidden="true"></span>
 <span class="font-display-xl text-[20px] font-semibold tracking-[-0.05em] text-white">Detailed</span>
 </a>
 <div class="hidden md:flex items-center gap-10">
@@ -506,12 +589,27 @@
 </div>
 </nav>
 <div aria-hidden="true" class="md:hidden fixed inset-0 z-[60]" id="mobile-menu">
+<div class="mobile-menu-backdrop" aria-hidden="true"></div>
+<div class="mobile-menu-panel">
+<div class="mobile-menu-header">
+<div class="mobile-menu-brand">
+<span class="logo-mark h-3 w-3" aria-hidden="true"></span>
+<span class="font-display-xl text-[20px] font-semibold tracking-[-0.05em] text-white">Detailed</span>
+</div>
+<button aria-label="Close navigation menu" id="mobile-menu-close" type="button">
+<span class="material-symbols-outlined text-[22px]">close</span>
+</button>
+</div>
 <div class="mobile-menu-inner">
-<a class="mobile-nav-link font-label-md uppercase tracking-widest text-silver/60 hover:text-white" href="#services">Services</a>
-<a class="mobile-nav-link font-label-md uppercase tracking-widest text-silver/60 hover:text-white" href="#approach">Approach</a>
-<a class="mobile-nav-link font-label-md uppercase tracking-widest text-silver/60 hover:text-white" href="#values">Values</a>
-<a class="mobile-nav-link font-label-md uppercase tracking-widest text-silver/60 hover:text-white" href="#insights">Insights</a>
-<a class="mobile-nav-link font-label-md uppercase tracking-widest text-silver/60 hover:text-white" href="#contact">Contact</a>
+<nav aria-label="Mobile navigation" class="mobile-menu-nav">
+<a class="mobile-nav-link font-label-md uppercase tracking-widest text-silver/60 hover:text-white transition-colors duration-500" href="#services">Services</a>
+<a class="mobile-nav-link font-label-md uppercase tracking-widest text-silver/60 hover:text-white transition-colors duration-500" href="#approach">Approach</a>
+<a class="mobile-nav-link font-label-md uppercase tracking-widest text-silver/60 hover:text-white transition-colors duration-500" href="#values">Values</a>
+<a class="mobile-nav-link font-label-md uppercase tracking-widest text-silver/60 hover:text-white transition-colors duration-500" href="#insights">Insights</a>
+<a class="mobile-nav-link font-label-md uppercase tracking-widest text-silver/60 hover:text-white transition-colors duration-500" href="#contact">Contact</a>
+</nav>
+<a class="mobile-menu-cta font-label-md uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-500" href="#contact">Book Consultation</a>
+</div>
 </div>
 </div>
 </header>
@@ -922,7 +1020,7 @@
 <div class="flex flex-col md:flex-row justify-between items-start w-full px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto gap-12 md:gap-24">
 <div class="max-w-md reveal">
 <div class="flex items-center gap-3 mb-8 md:mb-12">
-<span class="logo-mark h-8 w-8" aria-hidden="true"></span>
+<span class="logo-mark h-4 w-4" aria-hidden="true"></span>
 <span class="font-display-xl text-[28px] font-bold tracking-tighter text-white">Detailed.</span>
 </div>
 <p class="font-body-md text-silver/40 leading-relaxed max-w-xs">
@@ -1098,9 +1196,10 @@
     (function () {
         const menuBtn = document.getElementById('mobile-menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
-        const menuIcon = document.getElementById('mobile-menu-icon');
-        const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
-        const mobileMenuCta = document.querySelector('.mobile-menu-cta');
+        const menuCloseBtn = document.getElementById('mobile-menu-close');
+        const mobileNavLinks = document.querySelectorAll('#mobile-menu .mobile-nav-link');
+        const mobileMenuCta = document.querySelector('#mobile-menu .mobile-menu-cta');
+        const mobileMenuBackdrop = mobileMenu ? mobileMenu.querySelector('.mobile-menu-backdrop') : null;
 
         if (!menuBtn || !mobileMenu) return;
 
@@ -1109,26 +1208,26 @@
             mobileMenu.setAttribute('aria-hidden', 'true');
             menuBtn.setAttribute('aria-expanded', 'false');
             menuBtn.setAttribute('aria-label', 'Open navigation menu');
-            menuIcon.textContent = 'menu';
             document.body.classList.remove('menu-open');
         }
 
         function openMenu() {
+            if (mobileMenu.classList.contains('open')) return;
             mobileMenu.classList.add('open');
             mobileMenu.setAttribute('aria-hidden', 'false');
             menuBtn.setAttribute('aria-expanded', 'true');
-            menuBtn.setAttribute('aria-label', 'Close navigation menu');
-            menuIcon.textContent = 'close';
             document.body.classList.add('menu-open');
         }
 
-        menuBtn.addEventListener('click', () => {
-            if (mobileMenu.classList.contains('open')) {
-                closeMenu();
-            } else {
-                openMenu();
-            }
-        });
+        menuBtn.addEventListener('click', openMenu);
+
+        if (menuCloseBtn) {
+            menuCloseBtn.addEventListener('click', closeMenu);
+        }
+
+        if (mobileMenuBackdrop) {
+            mobileMenuBackdrop.addEventListener('click', closeMenu);
+        }
 
         mobileNavLinks.forEach((link) => {
             link.addEventListener('click', closeMenu);
@@ -1143,7 +1242,7 @@
         });
 
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeMenu();
+            if (e.key === 'Escape' && mobileMenu.classList.contains('open')) closeMenu();
         });
     })();
 
@@ -1595,54 +1694,78 @@
 
 <!-- Flip card interaction and video parallax behavior -->
 <script>
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-    // Card flip handlers
+(function initFlipCardsAndVideo() {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const servicesSection = document.getElementById('services');
+    const isDesktop = () => window.innerWidth >= 768;
+
     function updateSectionInverted() {
         if (!servicesSection) return;
         const anyFlipped = Array.from(document.querySelectorAll('.flip-card')).some(c => c.classList.contains('is-flipped'));
-        if (window.innerWidth >= 768 && anyFlipped) servicesSection.classList.add('inverted');
+        if (isDesktop() && anyFlipped) servicesSection.classList.add('inverted');
         else servicesSection.classList.remove('inverted');
     }
 
-    // Attach per-card listeners and delegated fallback for robustness
+    function setCardFlipped(card, flipped) {
+        card.classList.toggle('is-flipped', flipped);
+        if (prefersReducedMotion) {
+            card.querySelector('.flip-inner').style.transition = 'none';
+        }
+        updateSectionInverted();
+    }
+
     document.querySelectorAll('.flip-card').forEach(card => {
         const toggles = card.querySelectorAll('.flip-toggle');
-        function toggleCard() { card.classList.toggle('is-flipped'); updateSectionInverted(); }
-        toggles.forEach(t => t.addEventListener('click', function(e){ e.stopPropagation(); toggleCard(); }));
-        card.addEventListener('click', function(e){
-            // Only flip when clicking the front area (avoid flipping when interacting with inner controls)
-            if (!card.classList.contains('is-flipped')) { card.classList.add('is-flipped'); updateSectionInverted(); }
-        });
-        card.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.classList.toggle('is-flipped'); updateSectionInverted(); } });
-    });
 
-    // Delegated handler: if any element with .flip-toggle is clicked (including spans), flip its parent card.
-    document.addEventListener('click', function(e){
-        const toggle = e.target.closest('.flip-toggle');
-        if (!toggle) return;
-        const card = toggle.closest('.flip-card');
-        if (!card) return;
-        e.preventDefault();
-        card.classList.toggle('is-flipped');
-        updateSectionInverted();
-    }, { passive: false });
+        toggles.forEach(toggle => {
+            toggle.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                setCardFlipped(card, !card.classList.contains('is-flipped'));
+            });
+            toggle.addEventListener('keydown', function (e) {
+                if (e.key !== 'Enter' && e.key !== ' ') return;
+                e.preventDefault();
+                e.stopPropagation();
+                setCardFlipped(card, !card.classList.contains('is-flipped'));
+            });
+        });
+
+        card.addEventListener('click', function (e) {
+            if (isDesktop()) return;
+            if (e.target.closest('.flip-toggle')) return;
+            if (!card.classList.contains('is-flipped')) {
+                setCardFlipped(card, true);
+            }
+        });
+
+        card.addEventListener('keydown', function (e) {
+            if (isDesktop()) return;
+            if (e.key !== 'Enter' && e.key !== ' ') return;
+            if (e.target.closest('.flip-toggle')) return;
+            e.preventDefault();
+            setCardFlipped(card, !card.classList.contains('is-flipped'));
+        });
+    });
 
     window.addEventListener('resize', updateSectionInverted);
 
-    // Demo video parallax
     const demo = document.getElementById('demo-video');
     const container = demo ? demo.closest('.video-inner') : null;
-    if (demo && container) {
+    if (demo && container && !prefersReducedMotion) {
         let ticking = false;
         function update() {
             const rect = container.getBoundingClientRect();
-            const translate = (rect.top - window.innerHeight/2) * -0.08; // subtle
+            const translate = (rect.top - window.innerHeight / 2) * -0.08;
             demo.style.transform = `translateY(${translate}px) scale(1.02)`;
             ticking = false;
         }
-        window.addEventListener('scroll', function() { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+        window.addEventListener('scroll', function () {
+            if (!ticking) {
+                ticking = true;
+                requestAnimationFrame(update);
+            }
+        }, { passive: true });
         update();
     }
 })();
