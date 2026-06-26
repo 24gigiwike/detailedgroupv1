@@ -6,10 +6,10 @@ content:
     fields:
       - name: items
         label: "Events List"
-        type: list
+        type: object
+        list: true
         fields:
           - name: text
             label: "Event Text"
             type: text
-            type_options:
-              placeholder: "EXECUTIVE COMMUNICATIONS FORUM • JUNE 25"
+            placeholder: "EXECUTIVE COMMUNICATIONS FORUM • JUNE 25"
