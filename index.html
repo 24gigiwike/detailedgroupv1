@@ -1683,14 +1683,15 @@
       const data = await response.json();
       const track = document.getElementById('marquee-track');
       
-      if (!track || !data.events || data.events.length === 0) return;
+      // 2. Updated data targets 'data.items' instead of 'data.events'
+      if (!track || !data.items || data.items.length === 0) return;
 
-      // 2. Map data into your exact Tailwind class elements
-      const itemsHTML = data.events.map(event => {
+      // 3. Map list items into your styled layout elements
+      const itemsHTML = data.items.map(event => {
         return `<span class="font-label-sm text-label-sm uppercase tracking-widest">${event.text.trim()}</span>`;
       }).join('<div class="h-1 w-1 bg-black/20 rounded-full shrink-0"></div>');
 
-      // 3. Duplicate content once back-to-back to create a seamless, gapless infinite animation loop
+      // 4. Duplicate components back-to-back for seamless continuous looping
       const divider = '<div class="h-1 w-1 bg-black/20 rounded-full shrink-0"></div>';
       track.innerHTML = `${itemsHTML}${divider}${itemsHTML}`;
       
@@ -1699,9 +1700,6 @@
     }
   }
 
-  // Execute as soon as the DOM tree finishes loading
   document.addEventListener('DOMContentLoaded', loadCmsMarquee);
-
-
 </script>
 </body></html>
