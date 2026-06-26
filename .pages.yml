@@ -2,7 +2,7 @@ collections:
   - name: marquee_settings
     label: "Header Marquee"
     type: file
-    path: "data/marquee.json" # Relative path to your JSON data folder
+    path: "data/marquee.json"
     fields:
       - name: events
         label: "Events List"
