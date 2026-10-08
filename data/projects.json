@@ -1,5 +1,6 @@
 {
   "schemaVersion": 1,
+  "contentRoot": "content/projects",
   "taxonomy": {
     "competencies": [
       {

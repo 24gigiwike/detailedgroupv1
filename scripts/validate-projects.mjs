@@ -5,12 +5,8 @@
  * Error text identifies the project index and field. It does not print
  * client names, logos, or other free-text field values.
  */
-import { readFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
-
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const DATA_PATH = join(ROOT, 'data', 'projects.json');
+import { pathToFileURL } from 'node:url';
+import { loadPortfolio } from './load-projects.mjs';
 
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const EMAIL_RE = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i;
@@ -31,7 +27,7 @@ const RESERVED_SLUGS = new Set([
   'docs',
 ]);
 
-const TOP_LEVEL_KEYS = new Set(['schemaVersion', 'taxonomy', 'projects']);
+const TOP_LEVEL_KEYS = new Set(['schemaVersion', 'taxonomy', 'projects', 'contentRoot']);
 const TAXONOMY_KEYS = new Set(['competencies']);
 const COMPETENCY_KEYS = new Set(['value', 'label']);
 const PROJECT_KEYS = new Set([
@@ -62,10 +58,24 @@ const PROJECT_KEYS = new Set([
   'seoTitle',
   'seoDescription',
   'ogImage',
+  'blocks',
 ]);
 const MEDIA_KEYS = new Set(['src', 'alt', 'caption']);
 const ALWAYS_REQUIRED = ['id', 'slug', 'title', 'clientVisibility', 'featured', 'sortOrder', 'status'];
-const PUBLISHED_REQUIRED = ['summary', 'description', 'category', 'services', 'coverImage'];
+const PUBLISHED_REQUIRED = ['summary', 'category', 'services', 'coverImage'];
+const BLOCK_TYPES = new Set(['narrative', 'image', 'gallery', 'image-pair', 'video', 'heading', 'quote', 'workstream']);
+const BLOCK_KEYS = {
+  narrative: new Set(['type', 'text']),
+  image: new Set(['type', 'src', 'alt', 'caption']),
+  gallery: new Set(['type', 'images']),
+  'image-pair': new Set(['type', 'primary', 'secondary']),
+  video: new Set(['type', 'url', 'caption']),
+  heading: new Set(['type', 'text']),
+  quote: new Set(['type', 'text', 'attribution', 'role']),
+  workstream: new Set(['type', 'title', 'summary', 'text']),
+};
+const MARKDOWN_IMAGE = /!\[[^\]]*\]\([^)]*\)/;
+const RAW_HTML = /<[a-z!/?]/i;
 const OPTIONAL_TEXT_FIELDS = [
   'summary',
   'description',
@@ -266,6 +276,91 @@ function validateCompetencies(data, errors) {
   return values;
 }
 
+function validateMarkdown(errors, path, value, allowEmail) {
+  validateText(errors, path, value, { required: true, max: 8000, allowEmail });
+  if (typeof value !== 'string') return;
+  if (RAW_HTML.test(value)) push(errors, path, 'must not contain raw HTML');
+  if (MARKDOWN_IMAGE.test(value)) push(errors, path, 'must not contain markdown images; use an image block');
+  const linkRe = /\[[^\]]*\]\(([^)]*)\)/g;
+  let match;
+  while ((match = linkRe.exec(value)) !== null) {
+    const problem = urlProblem(match[1]);
+    if (problem) push(errors, path, 'links must be site-root paths or https URLs');
+  }
+}
+
+function validateVideoUrl(errors, path, value, allowEmail) {
+  if (typeof value !== 'string') {
+    push(errors, path, 'must be a string');
+    return;
+  }
+  const problem = urlProblem(value);
+  if (problem) push(errors, path, problem);
+  else if (!value.startsWith('https://')) push(errors, path, 'must be an https URL');
+  if (!allowEmail && typeof value === 'string' && EMAIL_RE.test(value)) {
+    push(errors, path, 'must not contain an email address');
+  }
+}
+
+function validateBlock(block, index, errors, label, allowEmail) {
+  const path = `${label}.blocks[${index}]`;
+  if (!isPlainObject(block)) {
+    push(errors, path, 'must be an object');
+    return;
+  }
+  if (!BLOCK_TYPES.has(block.type)) {
+    push(errors, `${path}.type`, 'must be a supported content block');
+    return;
+  }
+  for (const key of unknownKeys(block, BLOCK_KEYS[block.type])) {
+    push(errors, `${path}.${key}`, 'is not allowed on this block');
+  }
+  if (block.type === 'narrative' || block.type === 'heading') {
+    validateMarkdown(errors, `${path}.text`, block.text, allowEmail);
+  }
+  if (block.type === 'image') {
+    const image = { src: block.src, alt: block.alt };
+    if (Object.hasOwn(block, 'caption')) image.caption = block.caption;
+    validateMedia(errors, path, image, { required: true, allowEmail });
+  }
+  if (block.type === 'gallery') {
+    if (!Array.isArray(block.images) || block.images.length === 0) {
+      push(errors, `${path}.images`, 'must contain at least one image');
+    } else if (block.images.length > 24) {
+      push(errors, `${path}.images`, 'must contain 24 images or fewer');
+    } else {
+      block.images.forEach((image, imageIndex) => {
+        validateMedia(errors, `${path}.images[${imageIndex}]`, image, { required: true, allowEmail });
+      });
+    }
+  }
+  if (block.type === 'image-pair') {
+    validateMedia(errors, `${path}.primary`, block.primary, { required: true, allowEmail });
+    validateMedia(errors, `${path}.secondary`, block.secondary, { required: true, allowEmail });
+  }
+  if (block.type === 'video') {
+    if (!Object.hasOwn(block, 'url')) push(errors, `${path}.url`, 'is required');
+    else validateVideoUrl(errors, `${path}.url`, block.url, allowEmail);
+    if (Object.hasOwn(block, 'caption') && block.caption !== null) {
+      validateText(errors, `${path}.caption`, block.caption, { required: true, max: TEXT_LIMITS.caption, allowEmail });
+    }
+  }
+  if (block.type === 'quote') {
+    validateMarkdown(errors, `${path}.text`, block.text, allowEmail);
+    for (const field of ['attribution', 'role']) {
+      if (!Object.hasOwn(block, field) || block[field] === null) continue;
+      validateText(errors, `${path}.${field}`, block[field], { required: true, max: 160, allowEmail });
+    }
+  }
+  if (block.type === 'workstream') {
+    validateText(errors, `${path}.title`, block.title, { required: true, max: 140, allowEmail });
+    validateText(errors, `${path}.summary`, block.summary, { required: true, max: 400, allowEmail });
+    if (Object.hasOwn(block, 'text') && block.text !== null) {
+      validateMarkdown(errors, `${path}.text`, block.text, allowEmail);
+    }
+  }
+}
+
 function validateProject(project, index, errors, competencyValues, seenIds, seenSlugs, seenSortOrders) {
   const label = projectLabel(index);
   if (!isPlainObject(project)) {
@@ -432,9 +527,25 @@ function validateProject(project, index, errors, competencyValues, seenIds, seen
     }
   }
 
+  if (Object.hasOwn(project, 'blocks') && project.blocks !== null) {
+    if (!Array.isArray(project.blocks)) {
+      push(errors, `${label}.blocks`, 'must be an array');
+    } else if (project.blocks.length > 40) {
+      push(errors, `${label}.blocks`, 'must contain 40 blocks or fewer');
+    } else {
+      project.blocks.forEach((block, blockIndex) => {
+        validateBlock(block, blockIndex, errors, label, allowEmail);
+      });
+    }
+  }
+
   if (project.status === 'published') {
     for (const field of PUBLISHED_REQUIRED) {
       if (!isPresent(project[field])) push(errors, `${label}.${field}`, 'is required when status is "published"');
+    }
+    const hasBlocks = Array.isArray(project.blocks) && project.blocks.length > 0;
+    if (!hasBlocks && !isPresent(project.description)) {
+      push(errors, `${label}.description`, 'is required when status is "published" and no content blocks are present');
     }
     if (Array.isArray(project.services) && project.services.length === 0) {
       push(errors, `${label}.services`, 'must include at least one competency when status is "published"');
@@ -454,6 +565,12 @@ export function validatePortfolioData(data) {
     push(errors, key, 'is not an allowed top-level field');
   }
   if (data.schemaVersion !== 1) push(errors, 'schemaVersion', 'must be 1');
+  if (Object.hasOwn(data, 'contentRoot')) {
+    const root = data.contentRoot;
+    if (typeof root !== 'string' || root.trim() !== root || root === '' || root.startsWith('/') || root.includes('\\') || root.split('/').includes('..')) {
+      push(errors, 'contentRoot', 'must be a relative directory inside the repository');
+    }
+  }
   const competencyValues = validateCompetencies(data, errors);
   if (!Array.isArray(data.projects)) {
     push(errors, 'projects', 'must be an array');
@@ -492,29 +609,22 @@ function summarize(data) {
 }
 
 if (isDirectRun()) {
-  let raw;
-  try {
-    raw = readFileSync(DATA_PATH, 'utf8');
-  } catch (error) {
-    console.error('data/projects.json: could not be read');
+  const loaded = loadPortfolio();
+  if (!loaded.ok) {
+    console.error('Result: invalid');
+    for (const error of loaded.errors) console.error(`- ${error}`);
     process.exit(1);
   }
-  let data;
-  try {
-    data = JSON.parse(raw);
-  } catch {
-    console.error('data/projects.json: is not valid JSON');
-    process.exit(1);
-  }
-  const result = validatePortfolioData(data);
-  const summary = summarize(data);
-  console.log('Validated data/projects.json');
+  const result = validatePortfolioData(loaded.data);
+  const summary = summarize(loaded.data);
+  console.log('Validated portfolio content');
   console.log(`schemaVersion: ${summary.schemaVersion}`);
   console.log(`competencies: ${summary.competencies}`);
   console.log(`projects: ${summary.projects}`);
   console.log(`published: ${summary.published}`);
   console.log(`drafts: ${summary.drafts}`);
   console.log(`featured published: ${summary.featuredPublished}`);
+  console.log(`content files: ${loaded.contentFiles}`);
   if (!result.ok) {
     console.error(`Result: invalid (${result.errors.length})`);
     for (const error of result.errors) console.error(`- ${error}`);
