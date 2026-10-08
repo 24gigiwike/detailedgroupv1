@@ -1,0 +1,898 @@
+#!/usr/bin/env node
+/**
+ * Generate static /work/ pages from data/projects.json.
+ * Uses the Step 1 validator. No dependencies.
+ *
+ *   node scripts/generate-work.mjs
+ *   node scripts/generate-work.mjs --data path.json --out /tmp/work-preview
+ *
+ * Output must be the repository work directory or a directory under the OS temp path.
+ * Validation failure writes nothing.
+ */
+import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { validatePortfolioData } from './validate-projects.mjs';
+
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+const DEFAULT_DATA = join(ROOT, 'data', 'projects.json');
+const DEFAULT_OUT = join(ROOT, 'work');
+const SITE = 'https://www.detailedgroup.co';
+const MARKER = 'detailed-group:generated-work';
+const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const YT_ID = /^[A-Za-z0-9_-]{11}$/;
+const MONTHS = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
+
+const NAV = [
+  { href: '/#services', label: 'Services' },
+  { href: '/work/', label: 'Work', key: 'work' },
+  { href: '/#approach', label: 'Approach' },
+  { href: '/#values', label: 'Values' },
+  { href: '/#insights', label: 'Insights' },
+  { href: '/#contact', label: 'Contact' },
+];
+
+function isDirectRun() {
+  const entry = process.argv[1];
+  if (!entry) return false;
+  return import.meta.url === pathToFileURL(entry).href;
+}
+
+function present(value) {
+  return value !== undefined && value !== null && !(typeof value === 'string' && value.trim() === '');
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function urlProblem(value) {
+  if (typeof value !== 'string' || value.length === 0 || value.trim() !== value) return 'is not a usable URL';
+  if (value.startsWith('//') || value.includes('\\') || value.includes('..') || /\s/.test(value) || /[<>]/.test(value)) {
+    return 'is not a safe URL';
+  }
+  if (/^[a-z][a-z0-9+.-]*:/i.test(value)) {
+    let url;
+    try {
+      url = new URL(value);
+    } catch {
+      return 'is not a valid URL';
+    }
+    if (url.username || url.password || url.protocol !== 'https:') return 'is not a safe URL';
+    return null;
+  }
+  if (!value.startsWith('/')) return 'is not a site-root path or https URL';
+  return null;
+}
+
+function assertSafeUrl(value, label) {
+  const problem = urlProblem(value);
+  if (problem) throw new Error(`${label} ${problem}`);
+}
+
+function absoluteUrl(src) {
+  assertSafeUrl(src, 'image');
+  if (src.startsWith('https://')) return src;
+  return `${SITE}${src}`;
+}
+
+function formatDate(iso) {
+  const [year, month, day] = iso.split('-').map(Number);
+  return `${MONTHS[month - 1]} ${day}, ${year}`;
+}
+
+function paragraphs(text) {
+  return String(text)
+    .split(/\n{2,}/)
+    .map((block) => block.trim())
+    .filter(Boolean)
+    .map((block) => `<p class="font-body-md text-silver/70 leading-relaxed">${escapeHtml(block).replace(/\n/g, '<br>')}</p>`)
+    .join('\n');
+}
+
+function labelFor(labels, value) {
+  return labels.get(value) || value;
+}
+
+function compareProjects(a, b) {
+  if (a.featured !== b.featured) return a.featured ? -1 : 1;
+  if (a.sortOrder !== b.sortOrder) return a.sortOrder - b.sortOrder;
+  if (a.slug < b.slug) return -1;
+  if (a.slug > b.slug) return 1;
+  return 0;
+}
+
+export function publishedProjects(data) {
+  const labels = new Map(data.taxonomy.competencies.map((entry) => [entry.value, entry.label]));
+  const published = data.projects
+    .filter((project) => project && project.status === 'published')
+    .map((project) => {
+      const next = { ...project, gallery: Array.isArray(project.gallery) ? project.gallery : [] };
+      if (next.clientVisibility === 'confidential') {
+        next.clientName = null;
+        next.clientLogo = null;
+      }
+      return next;
+    })
+    .sort(compareProjects);
+  for (const project of published) {
+    if (!SLUG_RE.test(project.slug)) throw new Error('refusing to use an unsafe project slug');
+  }
+  return { labels, published };
+}
+
+function clientLine(project) {
+  if (project.clientVisibility === 'confidential') {
+    return present(project.clientDescriptor) ? project.clientDescriptor : null;
+  }
+  if (present(project.clientName)) return project.clientName;
+  if (present(project.clientDescriptor)) return project.clientDescriptor;
+  return null;
+}
+
+function videoPresentation(url) {
+  assertSafeUrl(url, 'video');
+  const parsed = new URL(url);
+  const host = parsed.hostname.replace(/^www\./, '');
+  if (host === 'youtu.be') {
+    const id = parsed.pathname.split('/').filter(Boolean)[0];
+    if (YT_ID.test(id || '')) return { kind: 'iframe', src: `https://www.youtube-nocookie.com/embed/${id}` };
+  }
+  if (host === 'youtube.com' || host === 'm.youtube.com' || host === 'youtube-nocookie.com') {
+    const fromQuery = parsed.searchParams.get('v');
+    const parts = parsed.pathname.split('/').filter(Boolean);
+    const id = YT_ID.test(fromQuery || '') ? fromQuery : ((parts[0] === 'embed' || parts[0] === 'shorts') ? parts[1] : '');
+    if (YT_ID.test(id || '')) return { kind: 'iframe', src: `https://www.youtube-nocookie.com/embed/${id}` };
+  }
+  if (host === 'vimeo.com' || host === 'player.vimeo.com') {
+    const id = parsed.pathname.split('/').filter(Boolean).reverse().find((part) => /^\d+$/.test(part));
+    if (id) return { kind: 'iframe', src: `https://player.vimeo.com/video/${id}` };
+  }
+  if (/\.(mp4|webm|ogv|ogg)$/i.test(parsed.pathname)) return { kind: 'file', src: url };
+  return { kind: 'link', href: url, host: parsed.hostname };
+}
+
+function imageTag(image, { eager = false, frame = 'color' } = {}) {
+  assertSafeUrl(image.src, 'image');
+  const tone = frame === 'card'
+    ? 'w-full h-full object-cover grayscale opacity-50 transition-all duration-[1.5s] group-hover:scale-105 group-hover:opacity-80'
+    : 'w-full h-full object-cover';
+  const loading = eager ? 'eager' : 'lazy';
+  return `<img class="${tone}" src="${escapeHtml(image.src)}" alt="${escapeHtml(image.alt)}" loading="${loading}" decoding="async">`;
+}
+
+function cardHtml(project, index, labels) {
+  const number = String(index + 1).padStart(2, '0');
+  const category = labelFor(labels, project.category);
+  const line = clientLine(project);
+  const client = line ? `<p class="font-label-sm text-label-sm uppercase tracking-widest text-silver/40 mt-6">${escapeHtml(line)}</p>` : '';
+  return `<article class="reveal">
+<a class="group block focus-visible:outline focus-visible:outline-1 focus-visible:outline-white focus-visible:outline-offset-4" href="/work/${escapeHtml(project.slug)}/">
+<div class="aspect-[16/9] overflow-hidden mb-8 border border-white/10 bg-surface-container">
+${imageTag(project.coverImage, { frame: 'card' })}
+</div>
+<p class="font-label-sm text-label-sm uppercase tracking-widest text-silver/40 mb-4">${number} / ${escapeHtml(category)}</p>
+<h3 class="font-headline-md text-[24px] md:text-[32px] text-white group-hover:text-silver transition-colors duration-500">${escapeHtml(project.title)}</h3>
+<p class="font-body-md text-silver/60 mt-4 max-w-lg leading-relaxed">${escapeHtml(project.summary)}</p>
+${client}
+</a>
+</article>`;
+}
+
+function cardGrid(projects, labels, indexBySlug) {
+  return `<div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16">
+${projects.map((project) => cardHtml(project, indexBySlug.get(project.slug), labels)).join('\n')}
+</div>`;
+}
+
+function listingSections(published, labels) {
+  if (published.length === 0) return '';
+  const indexBySlug = new Map(published.map((project, index) => [project.slug, index]));
+  const featured = published.filter((project) => project.featured);
+  const rest = published.filter((project) => !project.featured);
+  const sections = [];
+  if (featured.length > 0 && rest.length > 0) {
+    sections.push(`<section class="mt-20 md:mt-28" aria-labelledby="featured-heading">
+<h2 id="featured-heading" class="font-headline-lg text-[32px] md:text-headline-lg text-white mb-12">Selected</h2>
+${cardGrid(featured, labels, indexBySlug)}
+</section>`);
+    sections.push(`<section class="mt-20 md:mt-28" aria-labelledby="listing-heading">
+<h2 id="listing-heading" class="font-headline-lg text-[32px] md:text-headline-lg text-white mb-12">Further work</h2>
+${cardGrid(rest, labels, indexBySlug)}
+</section>`);
+  } else if (featured.length > 0) {
+    sections.push(`<section class="mt-20 md:mt-28" aria-labelledby="featured-heading">
+<h2 id="featured-heading" class="font-headline-lg text-[32px] md:text-headline-lg text-white mb-12">Selected</h2>
+${cardGrid(featured, labels, indexBySlug)}
+</section>`);
+  } else {
+    sections.push(`<section class="mt-20 md:mt-28" aria-labelledby="listing-heading">
+<h2 id="listing-heading" class="font-headline-lg text-[32px] md:text-headline-lg text-white mb-12">Case studies</h2>
+${cardGrid(published, labels, indexBySlug)}
+</section>`);
+  }
+  return sections.join('\n');
+}
+
+function relatedProjects(project, published) {
+  const others = published.filter((item) => item.slug !== project.slug);
+  if (others.length === 0) return [];
+  const same = others.filter((item) => item.category === project.category);
+  return (same.length > 0 ? same : others).slice(0, 3);
+}
+
+function metaRows(project, labels) {
+  const rows = [];
+  rows.push(['Category', labelFor(labels, project.category)]);
+  const services = (project.services || []).map((value) => labelFor(labels, value));
+  if (services.length > 0) rows.push(['Services', services.join(', ')]);
+  if (project.clientVisibility !== 'confidential' && project.clientLogo) {
+    assertSafeUrl(project.clientLogo.src, 'logo');
+  }
+  const line = clientLine(project);
+  if (line || (project.clientVisibility !== 'confidential' && project.clientLogo)) {
+    const logo = project.clientVisibility !== 'confidential' && project.clientLogo
+      ? `<img class="h-8 w-auto max-w-[160px] object-contain" src="${escapeHtml(project.clientLogo.src)}" alt="${escapeHtml(project.clientLogo.alt)}" loading="lazy" decoding="async">`
+      : '';
+    const text = line ? `<span>${escapeHtml(line)}</span>` : '';
+    rows.push(['Client', `<span class="flex flex-wrap items-center gap-4">${logo}${text}</span>`, true]);
+  }
+  if (present(project.industry)) rows.push(['Industry', project.industry]);
+  if (present(project.completionDate)) rows.push(['Completed', formatDate(project.completionDate), false, project.completionDate]);
+  return `<dl class="mt-12 border-t border-white/10">
+${rows.map((row) => {
+    const [term, value, raw, date] = row;
+    const body = raw
+      ? value
+      : (date
+        ? `<time datetime="${escapeHtml(date)}">${escapeHtml(value)}</time>`
+        : escapeHtml(value));
+    return `<div class="grid grid-cols-1 sm:grid-cols-[160px_1fr] gap-2 py-5 border-b border-white/10">
+<dt class="font-label-sm text-label-sm uppercase tracking-widest text-silver/40">${escapeHtml(term)}</dt>
+<dd class="font-body-md text-white">${body}</dd>
+</div>`;
+  }).join('\n')}
+</dl>`;
+}
+
+function storyHtml(project) {
+  const blocks = [
+    ['challenge', 'Challenge'],
+    ['approach', 'Approach'],
+    ['solution', 'Solution'],
+    ['outcomes', 'Outcomes'],
+  ].filter(([key]) => present(project[key]));
+  if (blocks.length === 0) return '';
+  const lastRowStart = blocks.length % 2 === 0 ? blocks.length - 2 : blocks.length - 1;
+  return `<div class="grid grid-cols-1 md:grid-cols-2 gap-0 border border-white/10 mt-16 md:mt-24">
+${blocks.map(([key, title], index) => {
+    const borderB = index < lastRowStart ? 'border-b' : 'border-b md:border-b-0';
+    const borderR = index % 2 === 0 && index + 1 < blocks.length ? 'md:border-r' : '';
+    return `<section id="${key}" class="p-8 md:p-12 border-white/10 ${borderB} ${borderR}">
+<p class="font-display-xl text-[32px] text-white/10 mb-8">${String(index + 1).padStart(2, '0')}</p>
+<h2 class="font-headline-md text-headline-md text-white mb-6">${title}</h2>
+${paragraphs(project[key])}
+</section>`;
+  }).join('\n')}
+</div>`;
+}
+
+function galleryHtml(project) {
+  if (!project.gallery || project.gallery.length === 0) return '';
+  return `<section class="mt-16 md:mt-24" aria-labelledby="gallery-heading">
+<h2 id="gallery-heading" class="font-headline-lg text-[32px] md:text-headline-lg text-white mb-10">Gallery</h2>
+<ul class="grid grid-cols-1 md:grid-cols-2 gap-8">
+${project.gallery.map((image) => {
+    assertSafeUrl(image.src, 'gallery image');
+    const caption = present(image.caption) ? `<figcaption class="font-body-md text-silver/50 px-4 py-4">${escapeHtml(image.caption)}</figcaption>` : '';
+    return `<li><figure class="border border-white/10 bg-surface-container">
+<div class="aspect-[16/9] overflow-hidden">${imageTag(image)}</div>
+${caption}
+</figure></li>`;
+  }).join('\n')}
+</ul>
+</section>`;
+}
+
+function videoHtml(project) {
+  if (!present(project.videoUrl)) return '';
+  const video = videoPresentation(project.videoUrl);
+  let body;
+  if (video.kind === 'iframe') {
+    body = `<div class="aspect-[16/9] border border-white/10 bg-black">
+<iframe class="w-full h-full" src="${escapeHtml(video.src)}" title="${escapeHtml(project.title)} film" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>`;
+  } else if (video.kind === 'file') {
+    body = `<video class="w-full border border-white/10 bg-black" controls playsinline preload="metadata">
+<source src="${escapeHtml(video.src)}">
+</video>`;
+  } else {
+    body = `<a class="inline-flex border border-white/30 px-8 py-4 font-label-md text-label-md uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-500" href="${escapeHtml(video.href)}">Watch film</a>
+<p class="font-label-sm text-label-sm uppercase tracking-widest text-silver/40 mt-4">${escapeHtml(video.host)}</p>`;
+  }
+  return `<section class="mt-16 md:mt-24" aria-labelledby="film-heading">
+<h2 id="film-heading" class="font-headline-lg text-[32px] md:text-headline-lg text-white mb-10">Film</h2>
+${body}
+</section>`;
+}
+
+function relatedHtml(project, published, labels) {
+  const related = relatedProjects(project, published);
+  if (related.length === 0) return '';
+  const indexBySlug = new Map(published.map((item, index) => [item.slug, index]));
+  return `<section class="mt-20 md:mt-28" aria-labelledby="related-heading">
+<h2 id="related-heading" class="font-headline-lg text-[32px] md:text-headline-lg text-white mb-12">Related work</h2>
+${cardGrid(related, labels, indexBySlug)}
+</section>`;
+}
+
+function heroHtml(project) {
+  const image = project.heroImage || project.coverImage;
+  assertSafeUrl(image.src, 'hero image');
+  const caption = present(image.caption) ? `<figcaption class="font-body-md text-silver/50 mt-4">${escapeHtml(image.caption)}</figcaption>` : '';
+  return `<figure class="mt-12 md:mt-16">
+<div class="aspect-[16/9] overflow-hidden border border-white/10 bg-surface-container">${imageTag(image, { eager: true })}</div>
+${caption}
+</figure>`;
+}
+
+function detailMain(project, published, labels) {
+  return `<p class="mb-10"><a class="font-label-md text-label-md uppercase tracking-widest text-silver/60 hover:text-white transition-colors" href="/work/">All work</a></p>
+<p class="font-label-sm text-label-sm uppercase tracking-[0.2em] text-silver/40 mb-6">${escapeHtml(labelFor(labels, project.category))}</p>
+<h1 class="font-display-xl text-[40px] md:text-[64px] leading-[1.05] text-white max-w-5xl break-words">${escapeHtml(project.title)}</h1>
+<p class="font-body-lg text-body-md md:text-body-lg text-silver/70 max-w-3xl mt-8">${escapeHtml(project.summary)}</p>
+${metaRows(project, labels)}
+${heroHtml(project)}
+<section class="mt-16 md:mt-24 max-w-3xl" aria-labelledby="overview-heading">
+<h2 id="overview-heading" class="font-headline-lg text-[32px] md:text-headline-lg text-white mb-8">Overview</h2>
+<div class="space-y-6">${paragraphs(project.description)}</div>
+</section>
+${storyHtml(project)}
+${galleryHtml(project)}
+${videoHtml(project)}
+${relatedHtml(project, published, labels)}`;
+}
+
+function overviewMain(published, labels) {
+  const hasProjects = published.length > 0;
+  const title = hasProjects ? 'Selected case studies.' : 'Case studies will be published here.';
+  const body = hasProjects
+    ? 'Approved accounts of Detailed Group’s communication work. A project appears here only after it is cleared for publication.'
+    : 'Detailed Group will publish approved case studies here. Each study will describe the communication problem, the approach, and the work that was delivered. Nothing is listed until that account is approved.';
+  const introLink = hasProjects ? '' : `<a class="inline-flex bg-white text-black font-label-md text-label-md uppercase tracking-widest px-8 md:px-12 py-4 md:py-5 mt-12 hover:opacity-90 transition-opacity" href="/#contact">Book a Consultation</a>`;
+  return `<p class="font-label-sm text-label-sm uppercase tracking-[0.2em] text-silver/40 mb-6">Work</p>
+<h1 id="work-heading" class="font-display-xl text-[40px] md:text-[64px] leading-[1.05] text-white max-w-5xl break-words">${title}</h1>
+<p class="font-body-lg text-body-md md:text-body-lg text-silver/70 max-w-3xl mt-8">${body}</p>
+${introLink}
+${listingSections(published, labels)}`;
+}
+
+function contactBand() {
+  return `<section class="py-section-gap-mobile md:py-section-gap px-margin-mobile md:px-margin-desktop border-t border-white/10" aria-labelledby="contact-cta">
+<div class="max-w-container-max mx-auto">
+<p class="font-label-sm text-label-sm uppercase tracking-[0.2em] text-silver/40 mb-6">Get in touch</p>
+<h2 id="contact-cta" class="font-display-xl text-[40px] md:text-[64px] text-white max-w-4xl">Let's Clarify The Message.</h2>
+<p class="font-body-lg text-silver/60 max-w-xl mt-8">Contact Detailed Group about a launch, keynote, strategic announcement, or leadership transition.</p>
+<a class="inline-flex border border-white/30 text-white font-label-md text-label-md uppercase tracking-widest px-8 md:px-12 py-4 md:py-5 mt-12 hover:bg-white hover:text-black transition-all duration-500" href="/#contact">Book a Consultation</a>
+</div>
+</section>`;
+}
+
+function navLinks(current) {
+  return NAV.map((item) => {
+    const currentAttr = item.key === 'work' && current === 'overview' ? ' aria-current="page"' : '';
+    const tone = item.key === 'work' && current === 'overview' ? 'text-white' : 'text-silver/60 hover:text-white';
+    return `<a class="font-label-md text-label-md uppercase tracking-widest ${tone} transition-colors duration-500"${currentAttr} href="${item.href}">${item.label}</a>`;
+  }).join('\n');
+}
+
+function mobileLinks(current) {
+  return NAV.map((item) => {
+    const currentAttr = item.key === 'work' && current === 'overview' ? ' aria-current="page"' : '';
+    const tone = item.key === 'work' && current === 'overview' ? 'text-white' : 'text-silver/60 hover:text-white';
+    return `<a class="mobile-nav-link font-label-md uppercase tracking-widest ${tone} transition-colors duration-500"${currentAttr} href="${item.href}">${item.label}</a>`;
+  }).join('\n');
+}
+
+function chrome(current) {
+  return `<a class="skip-link" href="#content">Skip to content</a>
+<header class="bg-black/80 backdrop-blur-2xl border-b border-white/10 fixed top-0 w-full z-50">
+<nav class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-unit max-w-container-max mx-auto h-[80px]" aria-label="Primary">
+<a class="flex items-center gap-3 shrink-0" href="/">
+<span class="logo-mark h-3 w-3" aria-hidden="true"></span>
+<span class="font-display-xl text-[20px] font-semibold tracking-[-0.05em] text-white">Detailed</span>
+</a>
+<div class="hidden lg:flex items-center gap-8 xl:gap-10">
+${navLinks(current)}
+</div>
+<div class="flex items-center gap-3">
+<button aria-controls="mobile-menu" aria-expanded="false" aria-label="Open navigation menu" class="lg:hidden flex items-center justify-center w-10 h-10 text-white" id="mobile-menu-btn" type="button">
+<span class="material-symbols-outlined text-[22px]" id="mobile-menu-icon">menu</span>
+</button>
+<a href="/#contact" class="hidden lg:inline-flex items-center border border-white/20 text-white font-label-md text-label-md uppercase tracking-widest px-4 py-3 lg:px-8 lg:py-3.5 hover:bg-white hover:text-black transition-all duration-500 whitespace-nowrap">Book Consultation</a>
+</div>
+</nav>
+<div aria-hidden="true" class="lg:hidden fixed inset-0 z-[60]" id="mobile-menu">
+<div class="mobile-menu-backdrop" aria-hidden="true"></div>
+<div class="mobile-menu-panel">
+<div class="mobile-menu-header">
+<div class="mobile-menu-brand">
+<span class="logo-mark h-3 w-3" aria-hidden="true"></span>
+<span class="font-display-xl text-[20px] font-semibold tracking-[-0.05em] text-white">Detailed</span>
+</div>
+<button aria-label="Close navigation menu" id="mobile-menu-close" type="button">
+<span class="material-symbols-outlined text-[22px]">close</span>
+</button>
+</div>
+<div class="mobile-menu-inner">
+<nav aria-label="Mobile navigation" class="mobile-menu-nav">
+${mobileLinks(current)}
+</nav>
+<a class="mobile-menu-cta font-label-md uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-500" href="/#contact">Book Consultation</a>
+</div>
+</div>
+</div>
+</header>
+<div class="bg-white text-black py-2.5 fixed top-[80px] w-full z-40 overflow-hidden" aria-label="Announcements">
+<div class="flex animate-announcement-scroll whitespace-nowrap">
+<div class="flex items-center gap-8 md:gap-16 px-4 shrink-0" id="marquee-track"></div>
+</div>
+</div>`;
+}
+
+function footerHtml() {
+  return `<footer class="bg-black border-t border-white/10 py-16 md:py-32">
+<div class="flex flex-col md:flex-row justify-between items-start w-full px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto gap-12 md:gap-24">
+<div class="max-w-md">
+<div class="flex items-center gap-3 mb-8 md:mb-12">
+<span class="logo-mark h-4 w-4" aria-hidden="true"></span>
+<span class="font-display-xl text-[28px] font-bold tracking-tighter text-white">Detailed.</span>
+</div>
+<p class="font-body-md text-silver/40 leading-relaxed max-w-xs">© 2026 Detailed. All rights reserved. Strategic Internal Communications. Precision-engineered narratives for the world's most influential organizations.</p>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-10 md:gap-24 w-full md:w-auto">
+<div class="flex flex-col gap-6">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-white font-bold">Explore</span>
+<a class="font-body-md text-silver/40 hover:text-white transition-colors" href="/#services">Services</a>
+<a class="font-body-md text-silver/40 hover:text-white transition-colors" href="/#approach">Approach</a>
+<a class="font-body-md text-silver/40 hover:text-white transition-colors" href="/#values">Values</a>
+<a class="font-body-md text-silver/40 hover:text-white transition-colors" href="/work/">Work</a>
+</div>
+<div class="flex flex-col gap-6">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-white font-bold">Legal</span>
+<a class="font-body-md text-silver/40 hover:text-white transition-colors" href="/privacy.html">Privacy</a>
+<a class="font-body-md text-silver/40 hover:text-white transition-colors" href="/terms.html">Terms</a>
+<a class="font-body-md text-silver/40 hover:text-white transition-colors" href="/insights.html">Insights</a>
+</div>
+<div class="flex flex-col gap-6">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-white font-bold">Connect</span>
+<a class="font-body-md text-silver/40 hover:text-white transition-colors" href="https://www.linkedin.com/company/detailedgroup">LinkedIn</a>
+<a class="font-body-md text-silver/40 hover:text-white transition-colors" href="https://www.instagram.com/detailedgroup">Instagram</a>
+</div>
+</div>
+</div>
+</footer>`;
+}
+
+function pageDocument({ title, description, canonical, image, robots, current, main }) {
+  const jsonLd = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: title,
+    description,
+    url: canonical,
+  }).replace(/</g, '\\u003c');
+  return `<!-- ${MARKER} -->
+<!DOCTYPE html>
+<html class="scroll-smooth" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${escapeHtml(title)}</title>
+<meta name="description" content="${escapeHtml(description)}">
+<meta name="robots" content="${robots}">
+<link rel="canonical" href="${escapeHtml(canonical)}">
+<meta property="og:title" content="${escapeHtml(title)}">
+<meta property="og:description" content="${escapeHtml(description)}">
+<meta property="og:image" content="${escapeHtml(image)}">
+<meta property="og:url" content="${escapeHtml(canonical)}">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${escapeHtml(title)}">
+<meta name="twitter:description" content="${escapeHtml(description)}">
+<meta name="twitter:image" content="${escapeHtml(image)}">
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon_io/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon_io/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon_io/favicon-16x16.png">
+<link rel="manifest" href="/favicon_io/site.webmanifest">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+const sfPro = ["-apple-system", "BlinkMacSystemFont", "SF Pro Display", "SF Pro Text", "Helvetica Neue", "Arial", "sans-serif"];
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        primary: "#ffffff",
+        "on-primary": "#000000",
+        secondary: "#a1a1a1",
+        background: "#000000",
+        surface: "#000000",
+        "surface-container": "#0a0a0a",
+        "surface-container-high": "#111111",
+        outline: "#333333",
+        "outline-variant": "#222222",
+        silver: "#C0C0C0",
+        graphite: "#383838",
+        titanium: "#8E8E93"
+      },
+      borderRadius: { DEFAULT: "0px", lg: "0px", xl: "0px", full: "9999px" },
+      spacing: {
+        "margin-desktop": "80px",
+        gutter: "40px",
+        "margin-mobile": "24px",
+        "margin-tablet": "48px",
+        unit: "10px",
+        "container-max": "1440px",
+        "section-gap": "160px",
+        "section-gap-mobile": "80px"
+      },
+      fontFamily: {
+        sans: sfPro, "display-xl": sfPro, "headline-xl": sfPro, "headline-lg": sfPro,
+        "headline-md": sfPro, "body-lg": sfPro, "body-md": sfPro, "label-sm": sfPro, "label-md": sfPro
+      },
+      fontSize: {
+        "display-xl": ["96px", { lineHeight: "1.05", letterSpacing: "-0.05em", fontWeight: "600" }],
+        "headline-xl": ["48px", { lineHeight: "1.1", letterSpacing: "-0.03em", fontWeight: "500" }],
+        "headline-lg": ["36px", { lineHeight: "1.2", letterSpacing: "-0.02em", fontWeight: "500" }],
+        "headline-md": ["28px", { lineHeight: "1.3", letterSpacing: "-0.01em", fontWeight: "500" }],
+        "body-lg": ["20px", { lineHeight: "1.6", letterSpacing: "-0.01em", fontWeight: "300" }],
+        "body-md": ["17px", { lineHeight: "1.6", letterSpacing: "0", fontWeight: "300" }],
+        "label-sm": ["11px", { lineHeight: "1.2", letterSpacing: "0.1em", fontWeight: "500" }],
+        "label-md": ["13px", { lineHeight: "1.2", letterSpacing: "0.08em", fontWeight: "500" }]
+      }
+    }
+  }
+};
+</script>
+<style>
+html { scroll-behavior: smooth; scroll-padding-top: 116px; }
+html, body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif; }
+body { background: #000; color: #fff; -webkit-font-smoothing: antialiased; }
+.logo-mark { display: block; flex-shrink: 0; background: #fff; }
+.skip-link { position: absolute; left: 24px; top: -48px; z-index: 80; background: #fff; color: #000; padding: 0.75rem 1rem; }
+.skip-link:focus { top: 12px; }
+a:focus-visible, button:focus-visible { outline: 1px solid #fff; outline-offset: 3px; }
+.bg-white a:focus-visible, .bg-white button:focus-visible { outline-color: #000; }
+.reveal { opacity: 0; transform: translateY(12px); transition: opacity 0.45s cubic-bezier(0.2,0.8,0.2,1), transform 0.45s cubic-bezier(0.2,0.8,0.2,1); }
+.reveal.active { opacity: 1; transform: none; }
+@keyframes announcement-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.animate-announcement-scroll { animation: announcement-scroll 32s linear infinite; }
+#mobile-menu { position: fixed; inset: 0; z-index: 60; visibility: hidden; pointer-events: none; }
+#mobile-menu.open { visibility: visible; pointer-events: auto; }
+#mobile-menu .mobile-menu-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.72); backdrop-filter: blur(20px); opacity: 0; transition: opacity 0.45s cubic-bezier(0.22,1,0.36,1); }
+#mobile-menu.open .mobile-menu-backdrop { opacity: 1; }
+#mobile-menu .mobile-menu-panel { position: absolute; top: 0; left: 0; right: 0; display: flex; flex-direction: column; max-height: 100dvh; overflow: hidden; background: rgba(0,0,0,0.98); border-bottom: 1px solid rgba(255,255,255,0.08); transform: translateY(-100%); opacity: 0; transition: transform 0.5s cubic-bezier(0.22,1,0.36,1), opacity 0.4s cubic-bezier(0.22,1,0.36,1); }
+#mobile-menu.open .mobile-menu-panel { transform: none; opacity: 1; }
+#mobile-menu .mobile-menu-header { display: flex; align-items: center; justify-content: space-between; height: 80px; padding: 0 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+#mobile-menu .mobile-menu-brand { display: flex; align-items: center; gap: 0.75rem; }
+#mobile-menu-close { display: flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; color: #fff; }
+#mobile-menu .mobile-menu-inner { display: flex; flex-direction: column; flex: 1; overflow-y: auto; padding: 2.5rem 24px 2rem; }
+#mobile-menu .mobile-nav-link { display: block; opacity: 0; transform: translateY(12px); padding: 1.125rem 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+#mobile-menu .mobile-nav-link:first-child { border-top: 1px solid rgba(255,255,255,0.06); }
+#mobile-menu.open .mobile-nav-link { opacity: 1; transform: none; }
+#mobile-menu.open .mobile-nav-link:nth-child(1) { transition-delay: 0.08s; }
+#mobile-menu.open .mobile-nav-link:nth-child(2) { transition-delay: 0.12s; }
+#mobile-menu.open .mobile-nav-link:nth-child(3) { transition-delay: 0.16s; }
+#mobile-menu.open .mobile-nav-link:nth-child(4) { transition-delay: 0.20s; }
+#mobile-menu.open .mobile-nav-link:nth-child(5) { transition-delay: 0.24s; }
+#mobile-menu.open .mobile-nav-link:nth-child(6) { transition-delay: 0.28s; }
+#mobile-menu .mobile-menu-cta { opacity: 0; transform: translateY(12px); margin-top: 2rem; width: 100%; text-align: center; border: 1px solid rgba(255,255,255,0.2); padding: 1rem 1.5rem; letter-spacing: 0.1em; text-transform: uppercase; color: #fff; }
+#mobile-menu.open .mobile-menu-cta { opacity: 1; transform: none; transition-delay: 0.32s; }
+body.menu-open { overflow: hidden; }
+#mobile-menu-btn { position: relative; z-index: 70; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .animate-announcement-scroll { animation: none; }
+  .group-hover\\:scale-105, img { transition: none !important; }
+  #mobile-menu .mobile-menu-panel, #mobile-menu .mobile-menu-backdrop, #mobile-menu .mobile-nav-link, #mobile-menu .mobile-menu-cta { transition: none; }
+}
+</style>
+<script type="application/ld+json">${jsonLd}</script>
+</head>
+<body class="bg-background text-primary font-sans overflow-x-hidden selection:bg-silver selection:text-black">
+${chrome(current)}
+<main id="content" class="mt-[116px]">
+<section class="py-section-gap-mobile md:py-section-gap px-margin-mobile md:px-margin-desktop">
+<div class="max-w-container-max mx-auto min-w-0">
+${main}
+</div>
+</section>
+${contactBand()}
+</main>
+${footerHtml()}
+<script>
+(function () {
+  var menuBtn = document.getElementById('mobile-menu-btn');
+  var mobileMenu = document.getElementById('mobile-menu');
+  var menuCloseBtn = document.getElementById('mobile-menu-close');
+  if (!menuBtn || !mobileMenu) return;
+  function closeMenu() {
+    mobileMenu.classList.remove('open');
+    mobileMenu.setAttribute('aria-hidden', 'true');
+    menuBtn.setAttribute('aria-expanded', 'false');
+    menuBtn.setAttribute('aria-label', 'Open navigation menu');
+    document.body.classList.remove('menu-open');
+  }
+  function openMenu() {
+    mobileMenu.classList.add('open');
+    mobileMenu.setAttribute('aria-hidden', 'false');
+    menuBtn.setAttribute('aria-expanded', 'true');
+    menuBtn.setAttribute('aria-label', 'Close navigation menu');
+    document.body.classList.add('menu-open');
+    if (menuCloseBtn) menuCloseBtn.focus();
+  }
+  menuBtn.addEventListener('click', openMenu);
+  if (menuCloseBtn) menuCloseBtn.addEventListener('click', closeMenu);
+  var backdrop = mobileMenu.querySelector('.mobile-menu-backdrop');
+  if (backdrop) backdrop.addEventListener('click', closeMenu);
+  mobileMenu.querySelectorAll('a').forEach(function (link) { link.addEventListener('click', closeMenu); });
+  window.addEventListener('resize', function () { if (window.innerWidth >= 1024) closeMenu(); });
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape' && mobileMenu.classList.contains('open')) {
+      closeMenu();
+      menuBtn.focus();
+    }
+  });
+})();
+(function () {
+  var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var nodes = document.querySelectorAll('.reveal');
+  if (prefersReduced || !('IntersectionObserver' in window)) {
+    nodes.forEach(function (node) { node.classList.add('active'); });
+    return;
+  }
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add('active');
+      observer.unobserve(entry.target);
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  nodes.forEach(function (node) { observer.observe(node); });
+})();
+(function () {
+  function escapeText(value) {
+    return String(value).replace(/[&<>"']/g, function (char) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char];
+    });
+  }
+  function loadCmsMarquee() {
+    var track = document.getElementById('marquee-track');
+    if (!track) return;
+    fetch('/data/marquee.json').then(function (response) { return response.json(); }).then(function (data) {
+      if (!data.items || !data.items.length) return;
+      var items = data.items.map(function (event) {
+        return '<span class="font-label-sm text-label-sm uppercase tracking-widest">' + escapeText(String(event.text || '').trim()) + '</span>';
+      }).join('<div class="h-1 w-1 bg-black/20 rounded-full shrink-0"></div>');
+      var divider = '<div class="h-1 w-1 bg-black/20 rounded-full shrink-0"></div>';
+      track.innerHTML = items + divider + items;
+    }).catch(function () {});
+  }
+  document.addEventListener('DOMContentLoaded', loadCmsMarquee);
+})();
+</script>
+</body>
+</html>
+`;
+}
+
+function overviewMeta(published) {
+  if (published.length === 0) {
+    return {
+      title: 'Work | DetailedGroup',
+      description: 'Approved Detailed Group case studies will be published here. No project is listed until it is cleared for publication.',
+      robots: 'noindex, follow',
+      image: `${SITE}/social-preview.jpg`,
+    };
+  }
+  return {
+    title: 'Work | DetailedGroup',
+    description: 'Approved case studies from Detailed Group. A project appears only after it is cleared for publication.',
+    robots: 'index, follow',
+    image: absoluteUrl((published[0].ogImage || published[0].coverImage).src),
+  };
+}
+
+function detailMeta(project) {
+  const title = present(project.seoTitle) ? project.seoTitle : `${project.title} | DetailedGroup`;
+  const description = present(project.seoDescription) ? project.seoDescription : project.summary;
+  const image = project.ogImage || project.coverImage || project.heroImage;
+  return {
+    title,
+    description,
+    robots: 'index, follow',
+    image: absoluteUrl(image.src),
+    canonical: `${SITE}/work/${project.slug}/`,
+  };
+}
+
+export function renderWorkSite(data) {
+  const { labels, published } = publishedProjects(data);
+  for (const project of published) {
+    assertSafeUrl(project.coverImage.src, 'cover image');
+    if (project.heroImage) assertSafeUrl(project.heroImage.src, 'hero image');
+    if (project.ogImage) assertSafeUrl(project.ogImage.src, 'social image');
+    if (project.clientVisibility !== 'confidential' && project.clientLogo) assertSafeUrl(project.clientLogo.src, 'logo');
+    for (const image of project.gallery) assertSafeUrl(image.src, 'gallery image');
+    if (present(project.videoUrl)) videoPresentation(project.videoUrl);
+  }
+  const overview = overviewMeta(published);
+  const files = [{
+    relativePath: 'index.html',
+    html: pageDocument({
+      ...overview,
+      canonical: `${SITE}/work/`,
+      current: 'overview',
+      main: overviewMain(published, labels),
+    }),
+  }];
+  for (const project of published) {
+    const meta = detailMeta(project);
+    files.push({
+      relativePath: `${project.slug}/index.html`,
+      html: pageDocument({
+        ...meta,
+        current: 'detail',
+        main: detailMain(project, published, labels),
+      }),
+    });
+  }
+  return files;
+}
+
+function assertSafeOutDir(outDir) {
+  const resolved = resolve(outDir);
+  const tempRoot = resolve(tmpdir());
+  const tempRel = relative(tempRoot, resolved);
+  const inTemp = tempRel === '' || (tempRel !== '' && !tempRel.startsWith('..') && !isAbsolute(tempRel));
+  if (resolved !== resolve(DEFAULT_OUT) && !inTemp) {
+    throw new Error('output must be the repository work directory or a temporary directory');
+  }
+  if (resolved === resolve(ROOT) || resolved === resolve('/')) {
+    throw new Error('refusing to use a protected directory as output');
+  }
+}
+
+function assertRelativeOutput(root, relativePath) {
+  if (!relativePath || relativePath.includes('..') || relativePath.startsWith('/') || relativePath.includes('\\')) {
+    throw new Error('refusing an unsafe output path');
+  }
+  const destination = resolve(root, relativePath);
+  const rel = relative(root, destination);
+  if (rel.startsWith('..') || isAbsolute(rel)) throw new Error('refusing to write outside the output directory');
+  return destination;
+}
+
+function removeStaleProjects(root, liveSlugs) {
+  if (!existsSync(root)) return;
+  for (const entry of readdirSync(root, { withFileTypes: true })) {
+    if (entry.isSymbolicLink() || !entry.isDirectory()) continue;
+    if (!SLUG_RE.test(entry.name) || liveSlugs.has(entry.name)) continue;
+    const dir = resolve(root, entry.name);
+    const rel = relative(root, dir);
+    if (rel.startsWith('..') || isAbsolute(rel) || rel.includes(sep)) continue;
+    let dirStat;
+    try {
+      dirStat = lstatSync(dir);
+    } catch {
+      continue;
+    }
+    if (dirStat.isSymbolicLink() || !dirStat.isDirectory()) continue;
+    const names = readdirSync(dir);
+    const indexPath = join(dir, 'index.html');
+    if (names.length !== 1 || names[0] !== 'index.html' || !existsSync(indexPath)) {
+      console.error(`Leaving ${entry.name}/ in place because it contains files this generator did not create.`);
+      continue;
+    }
+    if (lstatSync(indexPath).isSymbolicLink()) {
+      console.error(`Leaving ${entry.name}/ in place because its index is a link.`);
+      continue;
+    }
+    const html = readFileSync(indexPath, 'utf8');
+    if (!html.includes(MARKER)) {
+      console.error(`Leaving ${entry.name}/ in place because it was not generated by this script.`);
+      continue;
+    }
+    rmSync(dir, { recursive: true, force: false });
+  }
+}
+
+export function writeWorkSite(outDir, files) {
+  assertSafeOutDir(outDir);
+  const root = resolve(outDir);
+  mkdirSync(root, { recursive: true });
+  const liveSlugs = new Set();
+  for (const file of files) {
+    const destination = assertRelativeOutput(root, file.relativePath);
+    const parentRel = relative(root, dirname(destination));
+    if (parentRel !== '') {
+      if (!SLUG_RE.test(parentRel)) throw new Error('refusing to create an unsafe project directory');
+      liveSlugs.add(parentRel);
+    }
+    mkdirSync(dirname(destination), { recursive: true });
+    const html = file.html.endsWith('\n') ? file.html : `${file.html}\n`;
+    writeFileSync(destination, html);
+  }
+  removeStaleProjects(root, liveSlugs);
+}
+
+function parseArgs(argv) {
+  const args = { dataPath: DEFAULT_DATA, outDir: DEFAULT_OUT };
+  for (let index = 0; index < argv.length; index += 1) {
+    const arg = argv[index];
+    if (arg === '--data') {
+      args.dataPath = argv[index + 1];
+      index += 1;
+      if (!args.dataPath) throw new Error('--data requires a path');
+    } else if (arg === '--out') {
+      args.outDir = argv[index + 1];
+      index += 1;
+      if (!args.outDir) throw new Error('--out requires a path');
+    } else {
+      throw new Error(`unknown argument: ${arg}`);
+    }
+  }
+  return args;
+}
+
+function readPortfolio(dataPath) {
+  let raw;
+  try {
+    raw = readFileSync(dataPath, 'utf8');
+  } catch {
+    throw new Error('portfolio data could not be read');
+  }
+  try {
+    return JSON.parse(raw);
+  } catch {
+    throw new Error('portfolio data is not valid JSON');
+  }
+}
+
+function generateFromFile(dataPath, outDir) {
+  assertSafeOutDir(outDir);
+  const data = readPortfolio(dataPath);
+  const result = validatePortfolioData(data);
+  if (!result.ok) {
+    console.error('Refusing to generate because the portfolio data did not validate.');
+    for (const error of result.errors) console.error(`- ${error}`);
+    return 1;
+  }
+  const files = renderWorkSite(data);
+  writeWorkSite(outDir, files);
+  console.log(`Generated ${files.length} file(s).`);
+  for (const file of files) console.log(file.relativePath);
+  return 0;
+}
+
+if (isDirectRun()) {
+  try {
+    const args = parseArgs(process.argv.slice(2));
+    process.exit(generateFromFile(args.dataPath, args.outDir));
+  } catch (error) {
+    console.error(error.message || 'generation failed');
+    process.exit(1);
+  }
+}

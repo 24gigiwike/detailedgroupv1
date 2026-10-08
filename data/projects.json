@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "taxonomy": {
+    "competencies": [
+      {
+        "value": "executive-communications",
+        "label": "Executive Communications"
+      },
+      {
+        "value": "internal-communications",
+        "label": "Internal Communications"
+      },
+      {
+        "value": "presentation-systems",
+        "label": "Presentation Systems"
+      },
+      {
+        "value": "organizational-storytelling",
+        "label": "Organizational Storytelling"
+      }
+    ]
+  },
+  "projects": []
+}
