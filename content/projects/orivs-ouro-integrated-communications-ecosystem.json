@@ -1,0 +1,54 @@
+{
+  "id": "orivs-ouro-integrated-communications-ecosystem",
+  "slug": "orivs-ouro-integrated-communications-ecosystem",
+  "title": "ORIVS / OURO — Integrated Communications Ecosystem",
+  "summary": "An ongoing case study of one communications system with three connected workstreams. The public narrative, approvals, and media are still pending.",
+  "category": "organizational-storytelling",
+  "services": [
+    "organizational-storytelling",
+    "executive-communications",
+    "presentation-systems"
+  ],
+  "clientVisibility": "public",
+  "clientName": null,
+  "featured": false,
+  "sortOrder": 1,
+  "status": "draft",
+  "blocks": [
+    {
+      "type": "narrative",
+      "text": "This case study is unpublished. It will describe the ORIVS / OURO communications ecosystem only after the narrative and supporting material are approved.\n\nThe working brief treats three efforts as one system: OURO launch communications, NEXT '26 event branding, and investor communications. No results are included."
+    },
+    {
+      "type": "heading",
+      "text": "Unified communications challenge"
+    },
+    {
+      "type": "narrative",
+      "text": "Pending. The approved brief is to show how launch communications, event branding, and investor communications operate as one system. The detailed challenge is not confirmed for publication."
+    },
+    {
+      "type": "workstream",
+      "title": "OURO launch communications",
+      "summary": "Pending. This workstream is part of the ecosystem. Its scope, materials, and outcome are not confirmed for publication."
+    },
+    {
+      "type": "workstream",
+      "title": "NEXT '26 event branding",
+      "summary": "Pending. This workstream is part of the ecosystem. Its scope, materials, and outcome are not confirmed for publication."
+    },
+    {
+      "type": "workstream",
+      "title": "Investor communications",
+      "summary": "Pending. This workstream is part of the ecosystem. Its scope, materials, and outcome are not confirmed for publication."
+    },
+    {
+      "type": "heading",
+      "text": "Connecting the system"
+    },
+    {
+      "type": "narrative",
+      "text": "Pending. How these workstreams connect will be written after the narrative is approved. No results are included."
+    }
+  ]
+}

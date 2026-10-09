@@ -2,7 +2,7 @@
 
 Step 1 defines the portfolio contract for the static Detailed Group site. It does not generate pages, change the homepage, or connect Sanity.
 
-The machine-readable source is [`data/projects.json`](../data/projects.json). [`scripts/validate-projects.mjs`](../scripts/validate-projects.mjs) checks that file with Node.js only. This document is the design and generation plan.
+The catalog is [`data/projects.json`](../data/projects.json). When [`content/projects/`](../content/projects/) contains project files, those files are the project records and the catalog `projects` array stays empty. [`scripts/validate-projects.mjs`](../scripts/validate-projects.mjs) checks the combined result with Node.js only. This document is the design and generation plan.
 
 ## Repository check
 
@@ -42,7 +42,7 @@ Reserved slugs that cannot be project slugs: `index`, `work`, `api`, `data`, `as
 
 ## Content data contract
 
-[`data/projects.json`](../data/projects.json) is the only portfolio content file.
+[`data/projects.json`](../data/projects.json) holds `schemaVersion`, `contentRoot`, `taxonomy`, and `projects`. `contentRoot` is `content/projects`. If that folder contains one or more project files, those files replace `projects` and the catalog array must stay empty. Using both is invalid. A repository with no project files still validates the catalog array, which keeps fixture snapshots on `--data` working.
 
 ```json
 {
@@ -77,7 +77,7 @@ Optional project fields may be omitted or set to `null`. They must not be empty 
 | Field | Type | Rule |
 | --- | --- | --- |
 | `summary` | string | Card and meta fallback, 400 characters or fewer. |
-| `description` | string | Full overview, 8000 characters or fewer. Plain text in this contract. |
+| `description` | string | Full overview, 8000 characters or fewer. Required for a published project only when `blocks` is missing or empty. |
 | `category` | string | Exactly one competency `value`. |
 | `services` | string array | One or more competency values. Must include `category`. No duplicates. |
 | `coverImage` | image object | Overview card and default social image. |
@@ -104,6 +104,24 @@ A published project does not need results, a video, a gallery, a client name, or
 | `seoTitle` | string | 70 characters or fewer. Falls back to `title`. |
 | `seoDescription` | string | 200 characters or fewer. Falls back to `summary`. |
 | `ogImage` | image object | Falls back to `coverImage`, then `heroImage`. |
+| `blocks` | block array | Up to 40 ordered content blocks. When this array is non-empty, it replaces challenge, approach, solution, outcomes, gallery, and `videoUrl` in the detail page. |
+
+### Content blocks
+
+Each block is an object with a `type`. The array order is the page order.
+
+| `type` | Fields | Rendering |
+| --- | --- | --- |
+| `narrative` | `text` | Narrow Markdown: paragraphs, `- ` lists, `**bold**`, `*emphasis*`, and links. |
+| `heading` | `text` | Escaped section heading. |
+| `image` | `src`, `alt`, optional `caption` | Full-width figure. |
+| `gallery` | `images` | One to 24 image objects. |
+| `image-pair` | `primary`, `secondary` | Two figures. One column on small screens, two from the `md` breakpoint. |
+| `video` | `url`, optional `caption` | Same film rules as `videoUrl`. No autoplay. |
+| `quote` | `text`, optional `attribution`, optional `role` | Blockquote. Use only an approved quotation. |
+| `workstream` | `title`, `summary`, optional `text` | One labeled workstream. `text` uses the same narrow Markdown as narrative. |
+
+Narrative Markdown is escaped before tags are added. Raw HTML and Markdown images are invalid. Links must be site-root paths or `https` URLs. Heading text is not parsed as Markdown.
 
 ### Image object
 
@@ -184,7 +202,7 @@ Supported shapes:
 
 Do not build this in Step 1. Proposed next script: `scripts/generate-work.mjs`.
 
-1. Read `data/projects.json`.
+1. Read `data/projects.json`, then replace `projects` with `content/projects/*.json` when those files exist. Step 3A is the current rule. `--data` still reads one snapshot and does not merge the folder.
 2. Call `validatePortfolioData`. Stop without writing HTML if it returns errors.
 3. Keep projects whose `status` is `published`.
 4. For confidential projects, drop `clientName` and `clientLogo` before rendering.
@@ -325,7 +343,7 @@ Generated files start with `<!-- detailed-group:generated-work -->`. The script 
 
 ### Empty production output
 
-The current dataset has no projects, so the generator writes only `work/index.html`. That page is an editorial empty state: no cards, no sample clients, and `noindex, follow` so the placeholder is not indexed. Canonical URL: `https://www.detailedgroup.co/work/`. The homepage navigation is unchanged, so the empty page is not linked from `index.html`. The work page’s own header does include Work, because that is the page being viewed.
+The public dataset has one unpublished draft and no published projects, so the generator writes only `work/index.html`. That page is an editorial empty state: no cards, no sample clients, and `noindex, follow` so the placeholder is not indexed. Canonical URL: `https://www.detailedgroup.co/work/`. The homepage navigation is unchanged, so the empty page is not linked from `index.html`. The work page’s own header does include Work, because that is the page being viewed. The draft is not named on that page.
 
 ### Case-study template
 
@@ -346,3 +364,36 @@ The work header keeps the mobile menu through the `lg` breakpoint (1024px). Six 
 - When the empty page should be added to the homepage navigation.
 - Sanity project, dataset, studio, and the build webhook.
 - Who approves a public client name or logo.
+
+## Step 3A — Pages CMS projects
+
+Checked against the Pages CMS documentation at pagescms.org in October 2026:
+
+- Content entries can be `collection`, `file`, or `group`.
+- A collection can use `format: json`, one file per record, `filename: "{fields.slug}.json"`, `subfolders: false`, and `exclude`.
+- Field types used here are documented: `string`, `text`, `select`, `boolean`, `number`, `date`, `image`, `object`, `rich-text`, and `block`.
+- `type: block` with `blockKey: type` stores an ordered array of objects. `list.collapsible` is documented for block lists.
+- Reusable `components` can replace a field. An image component stores `src` as the image path string, with `alt` and `caption` beside it.
+- Media uploads can use a named source. Project images use `media/projects` and are written back as `/media/projects/...` with safe renamed filenames.
+- Select options may use `{ name, label }`. This pipeline expects the stored value to be `name`. The loader also accepts the visible labels defined in `.pages.yml` for category, services, visibility, and status.
+- Rich text can be Markdown with `media: false`, which keeps images in image blocks.
+- Date fields accept a `yyyy-MM-dd` format. The loader also accepts a leading date on an ISO datetime and drops an empty date.
+
+These are not available, so the config does not pretend they are:
+
+- Conditional fields. Client name and client descriptor both stay visible, with helper text. The validator still rejects a client name or logo on a confidential project.
+- A native draft or publish workflow. `status` is an ordinary select. Draft files remain in the public repository, so they must not contain secrets.
+- A documented drag handle. Editors reorder the block list; the saved array order is what the generator renders.
+- Version history beyond Git.
+
+The marquee stays a `type: file` entry at `data/marquee.json`.
+
+### Source of truth
+
+`node scripts/validate-projects.mjs` and `node scripts/generate-work.mjs` load `data/projects.json`, then read every non-hidden `kebab-case.json` file in `contentRoot`. The filename must match `slug`. A missing `id` becomes the slug. `.gitkeep` is ignored. Any other filename is an error. Symlinked content directories and files are rejected.
+
+`node scripts/generate-work.mjs --data snapshot.json` validates that file alone. It does not merge `content/projects`, so fixture runs cannot leak the real draft into a preview.
+
+### Unpublished ORIVS / OURO draft
+
+`content/projects/orivs-ouro-integrated-communications-ecosystem.json` is `status: draft`. It is not written to `work/`. The file contains only the approved working title, the three named workstreams, and explicit pending copy. It has no client legal name, results, testimonial, approval, or image. `clientVisibility` is `public` with `clientName: null` because no public client name has been approved. The category `organizational-storytelling` is a working classification for the draft, not a published claim. Because the file is in a public repository, it is treated as non-secret.

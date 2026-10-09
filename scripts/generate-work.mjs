@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 /**
- * Generate static /work/ pages from data/projects.json.
- * Uses the Step 1 validator. No dependencies.
+ * Generate static /work/ pages from the portfolio catalog.
+ * The default read loads content/projects when those files exist.
+ * --data reads one isolated JSON snapshot and does not merge content/projects.
+ * Uses the portfolio validator. No dependencies.
  *
  *   node scripts/generate-work.mjs
  *   node scripts/generate-work.mjs --data path.json --out /tmp/work-preview
@@ -13,10 +15,10 @@ import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, rmSync, wr
 import { tmpdir } from 'node:os';
 import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { loadPortfolio } from './load-projects.mjs';
 import { validatePortfolioData } from './validate-projects.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const DEFAULT_DATA = join(ROOT, 'data', 'projects.json');
 const DEFAULT_OUT = join(ROOT, 'work');
 const SITE = 'https://www.detailedgroup.co';
 const MARKER = 'detailed-group:generated-work';
@@ -96,6 +98,75 @@ function paragraphs(text) {
     .map((block) => block.trim())
     .filter(Boolean)
     .map((block) => `<p class="font-body-md text-silver/70 leading-relaxed">${escapeHtml(block).replace(/\n/g, '<br>')}</p>`)
+    .join('\n');
+}
+
+function renderInline(source) {
+  let out = '';
+  let index = 0;
+  while (index < source.length) {
+    if (source.startsWith('**', index)) {
+      const end = source.indexOf('**', index + 2);
+      if (end > index + 2) {
+        out += `<strong class="text-white font-medium">${renderInline(source.slice(index + 2, end))}</strong>`;
+        index = end + 2;
+        continue;
+      }
+    }
+    if (source[index] === '*' && source[index + 1] !== '*') {
+      const end = source.indexOf('*', index + 1);
+      if (end > index + 1 && !source.slice(index + 1, end).includes('\n')) {
+        out += `<em>${renderInline(source.slice(index + 1, end))}</em>`;
+        index = end + 1;
+        continue;
+      }
+    }
+    if (source[index] === '[') {
+      const labelEnd = source.indexOf(']', index + 1);
+      if (labelEnd > index && source[labelEnd + 1] === '(') {
+        const hrefEnd = source.indexOf(')', labelEnd + 2);
+        if (hrefEnd !== -1) {
+          const label = source.slice(index + 1, labelEnd);
+          const href = source.slice(labelEnd + 2, hrefEnd);
+          if (label && !label.includes('[') && urlProblem(href) === null) {
+            const external = href.startsWith('https://');
+            const rel = external ? ' rel="noopener noreferrer" target="_blank"' : '';
+            out += `<a class="underline decoration-white/30 underline-offset-4 hover:text-white" href="${escapeHtml(href)}"${rel}>${renderInline(label)}</a>`;
+            index = hrefEnd + 1;
+            continue;
+          }
+        }
+      }
+    }
+    const next = source.slice(index).search(/[*[]/);
+    if (next === -1) {
+      out += escapeHtml(source.slice(index));
+      break;
+    }
+    if (next === 0) {
+      out += escapeHtml(source[index]);
+      index += 1;
+      continue;
+    }
+    out += escapeHtml(source.slice(index, index + next));
+    index += next;
+  }
+  return out;
+}
+
+function markdownHtml(text) {
+  return String(text)
+    .split(/\n{2,}/)
+    .map((block) => block.trim())
+    .filter(Boolean)
+    .map((block) => {
+      const lines = block.split('\n');
+      const items = lines.filter((line) => line.startsWith('- '));
+      if (items.length > 0 && items.length === lines.filter((line) => line.trim() !== '').length) {
+        return `<ul class="list-disc pl-6 space-y-2 font-body-md text-silver/70 leading-relaxed">${items.map((line) => `<li>${renderInline(line.slice(2))}</li>`).join('')}</ul>`;
+      }
+      return `<p class="font-body-md text-silver/70 leading-relaxed">${lines.map((line) => renderInline(line)).join('<br>')}</p>`;
+    })
     .join('\n');
 }
 
@@ -303,26 +374,91 @@ ${caption}
 </section>`;
 }
 
-function videoHtml(project) {
-  if (!present(project.videoUrl)) return '';
-  const video = videoPresentation(project.videoUrl);
-  let body;
+function videoBody(url, title) {
+  const video = videoPresentation(url);
   if (video.kind === 'iframe') {
-    body = `<div class="aspect-[16/9] border border-white/10 bg-black">
-<iframe class="w-full h-full" src="${escapeHtml(video.src)}" title="${escapeHtml(project.title)} film" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    return `<div class="aspect-[16/9] border border-white/10 bg-black">
+<iframe class="w-full h-full" src="${escapeHtml(video.src)}" title="${escapeHtml(title)}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 </div>`;
-  } else if (video.kind === 'file') {
-    body = `<video class="w-full border border-white/10 bg-black" controls playsinline preload="metadata">
+  }
+  if (video.kind === 'file') {
+    return `<video class="w-full border border-white/10 bg-black" controls playsinline preload="metadata">
 <source src="${escapeHtml(video.src)}">
 </video>`;
-  } else {
-    body = `<a class="inline-flex border border-white/30 px-8 py-4 font-label-md text-label-md uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-500" href="${escapeHtml(video.href)}">Watch film</a>
-<p class="font-label-sm text-label-sm uppercase tracking-widest text-silver/40 mt-4">${escapeHtml(video.host)}</p>`;
   }
+  return `<a class="inline-flex border border-white/30 px-8 py-4 font-label-md text-label-md uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-500" href="${escapeHtml(video.href)}">Watch film</a>
+<p class="font-label-sm text-label-sm uppercase tracking-widest text-silver/40 mt-4">${escapeHtml(video.host)}</p>`;
+}
+
+function videoHtml(project) {
+  if (!present(project.videoUrl)) return '';
   return `<section class="mt-16 md:mt-24" aria-labelledby="film-heading">
 <h2 id="film-heading" class="font-headline-lg text-[32px] md:text-headline-lg text-white mb-10">Film</h2>
-${body}
+${videoBody(project.videoUrl, `${project.title} film`)}
 </section>`;
+}
+
+function figureHtml(image) {
+  assertSafeUrl(image.src, 'image');
+  const caption = present(image.caption) ? `<figcaption class="font-body-md text-silver/50 px-4 py-4">${escapeHtml(image.caption)}</figcaption>` : '';
+  return `<figure class="border border-white/10 bg-surface-container">
+<div class="aspect-[16/9] overflow-hidden">${imageTag(image)}</div>
+${caption}
+</figure>`;
+}
+
+function blocksHtml(project) {
+  return project.blocks.map((block, index) => renderBlock(project, block, index)).join('\n');
+}
+
+function renderBlock(project, block, index) {
+  const id = `block-${index}`;
+  if (block.type === 'narrative') {
+    return `<div class="mt-16 md:mt-24 max-w-3xl space-y-6">${markdownHtml(block.text)}</div>`;
+  }
+  if (block.type === 'heading') {
+    return `<h2 id="${id}" class="font-headline-lg text-[32px] md:text-headline-lg text-white mt-16 md:mt-24">${escapeHtml(block.text)}</h2>`;
+  }
+  if (block.type === 'workstream') {
+    const detail = present(block.text) ? `<div class="space-y-6 mt-8">${markdownHtml(block.text)}</div>` : '';
+    return `<section class="mt-16 md:mt-24 border border-white/10 p-8 md:p-12" aria-labelledby="${id}">
+<p class="font-label-sm text-label-sm uppercase tracking-widest text-silver/40 mb-6">Workstream</p>
+<h2 id="${id}" class="font-headline-md text-headline-md text-white">${escapeHtml(block.title)}</h2>
+<p class="font-body-md text-silver/70 leading-relaxed mt-6">${escapeHtml(block.summary)}</p>
+${detail}
+</section>`;
+  }
+  if (block.type === 'image') {
+    return `<div class="mt-16 md:mt-24">${figureHtml(block)}</div>`;
+  }
+  if (block.type === 'image-pair') {
+    return `<div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-16 md:mt-24">
+${figureHtml(block.primary)}
+${figureHtml(block.secondary)}
+</div>`;
+  }
+  if (block.type === 'gallery') {
+    return `<ul class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-16 md:mt-24" aria-label="Gallery">
+${block.images.map((image) => `<li>${figureHtml(image)}</li>`).join('\n')}
+</ul>`;
+  }
+  if (block.type === 'video') {
+    const caption = present(block.caption) ? `<figcaption class="font-body-md text-silver/50 mt-4">${escapeHtml(block.caption)}</figcaption>` : '';
+    const title = present(block.caption) ? block.caption : `${project.title} film`;
+    return `<figure class="mt-16 md:mt-24">
+${videoBody(block.url, title)}
+${caption}
+</figure>`;
+  }
+  if (block.type === 'quote') {
+    const bits = [block.attribution, block.role].filter((value) => present(value));
+    const footer = bits.length > 0 ? `<footer class="font-label-sm text-label-sm uppercase tracking-widest text-silver/40 mt-6">${escapeHtml(bits.join(' / '))}</footer>` : '';
+    return `<blockquote class="mt-16 md:mt-24 border-l border-white/20 pl-8 max-w-3xl">
+<div class="space-y-6">${markdownHtml(block.text)}</div>
+${footer}
+</blockquote>`;
+  }
+  throw new Error('refusing to render an unsupported content block');
 }
 
 function relatedHtml(project, published, labels) {
@@ -345,20 +481,28 @@ ${caption}
 </figure>`;
 }
 
+function overviewSection(project) {
+  if (!present(project.description)) return '';
+  return `<section class="mt-16 md:mt-24 max-w-3xl" aria-labelledby="overview-heading">
+<h2 id="overview-heading" class="font-headline-lg text-[32px] md:text-headline-lg text-white mb-8">Overview</h2>
+<div class="space-y-6">${paragraphs(project.description)}</div>
+</section>`;
+}
+
 function detailMain(project, published, labels) {
+  const hasBlocks = Array.isArray(project.blocks) && project.blocks.length > 0;
+  const hero = project.heroImage || project.coverImage ? heroHtml(project) : '';
+  const body = hasBlocks
+    ? blocksHtml(project)
+    : `${storyHtml(project)}\n${galleryHtml(project)}\n${videoHtml(project)}`;
   return `<p class="mb-10"><a class="font-label-md text-label-md uppercase tracking-widest text-silver/60 hover:text-white transition-colors" href="/work/">All work</a></p>
 <p class="font-label-sm text-label-sm uppercase tracking-[0.2em] text-silver/40 mb-6">${escapeHtml(labelFor(labels, project.category))}</p>
 <h1 class="font-display-xl text-[40px] md:text-[64px] leading-[1.05] text-white max-w-5xl break-words">${escapeHtml(project.title)}</h1>
 <p class="font-body-lg text-body-md md:text-body-lg text-silver/70 max-w-3xl mt-8">${escapeHtml(project.summary)}</p>
 ${metaRows(project, labels)}
-${heroHtml(project)}
-<section class="mt-16 md:mt-24 max-w-3xl" aria-labelledby="overview-heading">
-<h2 id="overview-heading" class="font-headline-lg text-[32px] md:text-headline-lg text-white mb-8">Overview</h2>
-<div class="space-y-6">${paragraphs(project.description)}</div>
-</section>
-${storyHtml(project)}
-${galleryHtml(project)}
-${videoHtml(project)}
+${hero}
+${overviewSection(project)}
+${body}
 ${relatedHtml(project, published, labels)}`;
 }
 
@@ -737,6 +881,7 @@ export function renderWorkSite(data) {
     if (project.clientVisibility !== 'confidential' && project.clientLogo) assertSafeUrl(project.clientLogo.src, 'logo');
     for (const image of project.gallery) assertSafeUrl(image.src, 'gallery image');
     if (present(project.videoUrl)) videoPresentation(project.videoUrl);
+    assertBlocks(project);
   }
   const overview = overviewMeta(published);
   const files = [{
@@ -838,8 +983,25 @@ export function writeWorkSite(outDir, files) {
   removeStaleProjects(root, liveSlugs);
 }
 
+function assertBlocks(project) {
+  if (!Array.isArray(project.blocks)) return;
+  for (const block of project.blocks) {
+    if (!block || typeof block !== 'object') throw new Error('refusing to render an unsupported content block');
+    if (block.type === 'image') assertSafeUrl(block.src, 'image');
+    if (block.type === 'image-pair') {
+      assertSafeUrl(block.primary && block.primary.src, 'image');
+      assertSafeUrl(block.secondary && block.secondary.src, 'image');
+    }
+    if (block.type === 'gallery') {
+      if (!Array.isArray(block.images)) throw new Error('gallery image is not a usable URL');
+      for (const image of block.images) assertSafeUrl(image && image.src, 'gallery image');
+    }
+    if (block.type === 'video') videoPresentation(block.url);
+  }
+}
+
 function parseArgs(argv) {
-  const args = { dataPath: DEFAULT_DATA, outDir: DEFAULT_OUT };
+  const args = { dataPath: null, outDir: DEFAULT_OUT };
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
     if (arg === '--data') {
@@ -871,9 +1033,13 @@ function readPortfolio(dataPath) {
   }
 }
 
-function generateFromFile(dataPath, outDir) {
+function generateValidated(data, outDir, loadErrors = []) {
   assertSafeOutDir(outDir);
-  const data = readPortfolio(dataPath);
+  if (loadErrors.length > 0) {
+    console.error('Refusing to generate because the portfolio content could not be loaded.');
+    for (const error of loadErrors) console.error(`- ${error}`);
+    return 1;
+  }
   const result = validatePortfolioData(data);
   if (!result.ok) {
     console.error('Refusing to generate because the portfolio data did not validate.');
@@ -887,10 +1053,23 @@ function generateFromFile(dataPath, outDir) {
   return 0;
 }
 
+function generateFromFile(dataPath, outDir) {
+  return generateValidated(readPortfolio(dataPath), outDir);
+}
+
+function generateFromRepository(outDir) {
+  const loaded = loadPortfolio(ROOT);
+  if (!loaded.ok || !loaded.data) return generateValidated(loaded.data, outDir, loaded.errors);
+  return generateValidated(loaded.data, outDir);
+}
+
 if (isDirectRun()) {
   try {
     const args = parseArgs(process.argv.slice(2));
-    process.exit(generateFromFile(args.dataPath, args.outDir));
+    const code = args.dataPath
+      ? generateFromFile(args.dataPath, args.outDir)
+      : generateFromRepository(args.outDir);
+    process.exit(code);
   } catch (error) {
     console.error(error.message || 'generation failed');
     process.exit(1);
