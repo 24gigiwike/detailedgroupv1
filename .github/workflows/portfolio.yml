@@ -1,0 +1,37 @@
+name: Portfolio
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  portfolio:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate portfolio content
+        run: node scripts/validate-projects.mjs
+
+      - name: Generate portfolio pages
+        run: node scripts/generate-work.mjs
+
+      - name: Require committed pages to match the generator
+        run: git diff --exit-code
+
+      - name: Check published output
+        run: node scripts/check-published-output.mjs
+
+      - name: Check homepage and publishing fixtures
+        run: node scripts/check-homepage-fixtures.mjs
