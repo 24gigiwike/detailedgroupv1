@@ -397,3 +397,21 @@ The marquee stays a `type: file` entry at `data/marquee.json`.
 ### Unpublished ORIVS / OURO draft
 
 `content/projects/orivs-ouro-integrated-communications-ecosystem.json` is `status: draft`. It is not written to `work/`. The file contains only the approved working title, the three named workstreams, and explicit pending copy. It has no client legal name, results, testimonial, approval, or image. `clientVisibility` is `public` with `clientName: null` because no public client name has been approved. The category `organizational-storytelling` is a working classification for the draft, not a published claim. Because the file is in a public repository, it is treated as non-secret.
+
+## Step 3B.1 — Case-study presentation
+
+The generator renders the same block types. This step changes the presentation, not the content model or the publishing rules.
+
+`assets/portfolio.css` is the portfolio stylesheet. `node scripts/generate-work.mjs` copies it to `portfolio.css` in the output directory, and each page links that file with a relative path. Chrome, focus, the mobile menu, and case-study layout live there once instead of being repeated in every HTML file.
+
+A published detail page is one article:
+
+- Eyebrow for the primary category, one `h1`, and the summary.
+- A metadata grid for the public client line or confidential descriptor, services, industry, and completion date. Missing items are omitted.
+- Hero media only when `heroImage` is present. `coverImage` stays on the overview card and is not repeated as an empty or fallback hero.
+- Ordered blocks. Narrative stays in a reading measure. Headings, workstreams, and quotes open a new section. Images, pairs, galleries, and video use the full content width. Images keep their own aspect ratio.
+- A link back to `/work/` and, when other published projects exist, up to three related cards. Drafts are still excluded.
+
+Overview cards use the homepage grayscale 16:9 cover, an index, the category, the title, and the summary. The first card in a group spans the row from the laptop breakpoint. The empty overview copy is unchanged.
+
+Image width and height are not in the schema, so content images cannot reserve an exact box before they load. Cards and embedded video use a 16:9 frame.
