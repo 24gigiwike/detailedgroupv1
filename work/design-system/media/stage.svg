@@ -1,7 +1,0 @@
-<svg width="1600" height="900" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img">
-  <rect width="1600" height="900" fill="#070605"/>
-  <polygon points="280,760 1320,760 1180,420 420,420" fill="#14110e" stroke="#c9864a"/>
-  <polygon points="700,420 900,420 860,120 740,120" fill="#c9864a" opacity="0.85"/>
-  <rect x="180" y="120" width="1" height="640" fill="#c0c0c0" opacity="0.35"/>
-  <text x="220" y="180" fill="#fff" font-family="Helvetica, Arial, sans-serif" font-size="28" letter-spacing="6">EVENT CONCEPT</text>
-</svg>

@@ -1,6 +1,0 @@
-<svg width="900" height="700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 700" role="img">
-  <rect width="900" height="700" fill="#0b0b0b"/>
-  <path d="M40 360 C120 360 140 220 220 220 C300 220 320 500 400 500 C480 500 500 180 580 180 C660 180 680 420 760 420 C820 420 840 360 880 360" fill="none" stroke="#c9864a" stroke-width="2"/>
-  <path d="M40 400 C140 400 160 300 250 300 C340 300 360 470 450 470 C540 470 560 250 650 250 C740 250 760 390 880 390" fill="none" stroke="#c0c0c0" stroke-opacity="0.55"/>
-  <text x="48" y="88" fill="#c0c0c0" font-family="Helvetica, Arial, sans-serif" font-size="18" letter-spacing="4">SIGNAL STUDY</text>
-</svg>

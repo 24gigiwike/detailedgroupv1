@@ -71,7 +71,7 @@ if (!loaded.ok || !loaded.data) {
   else {
     const demoHtml = readFileSync(demoPath, 'utf8');
     if (!demoHtml.includes('content="noindex, nofollow"')) fail('design exploration is missing noindex');
-    if (!demoHtml.includes('DESIGN EXPLORATION / CONCEPT ONLY')) fail('design exploration is missing its concept label');
+    if (!demoHtml.includes('Illustrative portfolio concepts')) fail('design exploration is missing its concept label');
     if (demoHtml.includes('detailed-group:generated-work')) fail('design exploration must stay outside the generator');
     if (/\bORIVS\b|\bOURO\b|NEXT\s*['’]?\s*26/i.test(demoHtml)) fail('design exploration contains a real project name');
   }
