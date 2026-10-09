@@ -20,6 +20,7 @@ import { validatePortfolioData } from './validate-projects.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const DEFAULT_OUT = join(ROOT, 'work');
+const PORTFOLIO_CSS = join(ROOT, 'assets', 'portfolio.css');
 const SITE = 'https://www.detailedgroup.co';
 const MARKER = 'detailed-group:generated-work';
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -97,7 +98,7 @@ function paragraphs(text) {
     .split(/\n{2,}/)
     .map((block) => block.trim())
     .filter(Boolean)
-    .map((block) => `<p class="font-body-md text-silver/70 leading-relaxed">${escapeHtml(block).replace(/\n/g, '<br>')}</p>`)
+    .map((block) => `<p>${escapeHtml(block).replace(/\n/g, '<br>')}</p>`)
     .join('\n');
 }
 
@@ -108,7 +109,7 @@ function renderInline(source) {
     if (source.startsWith('**', index)) {
       const end = source.indexOf('**', index + 2);
       if (end > index + 2) {
-        out += `<strong class="text-white font-medium">${renderInline(source.slice(index + 2, end))}</strong>`;
+        out += `<strong>${renderInline(source.slice(index + 2, end))}</strong>`;
         index = end + 2;
         continue;
       }
@@ -131,7 +132,7 @@ function renderInline(source) {
           if (label && !label.includes('[') && urlProblem(href) === null) {
             const external = href.startsWith('https://');
             const rel = external ? ' rel="noopener noreferrer" target="_blank"' : '';
-            out += `<a class="underline decoration-white/30 underline-offset-4 hover:text-white" href="${escapeHtml(href)}"${rel}>${renderInline(label)}</a>`;
+            out += `<a href="${escapeHtml(href)}"${rel}>${renderInline(label)}</a>`;
             index = hrefEnd + 1;
             continue;
           }
@@ -163,9 +164,9 @@ function markdownHtml(text) {
       const lines = block.split('\n');
       const items = lines.filter((line) => line.startsWith('- '));
       if (items.length > 0 && items.length === lines.filter((line) => line.trim() !== '').length) {
-        return `<ul class="list-disc pl-6 space-y-2 font-body-md text-silver/70 leading-relaxed">${items.map((line) => `<li>${renderInline(line.slice(2))}</li>`).join('')}</ul>`;
+        return `<ul>${items.map((line) => `<li>${renderInline(line.slice(2))}</li>`).join('')}</ul>`;
       }
-      return `<p class="font-body-md text-silver/70 leading-relaxed">${lines.map((line) => renderInline(line)).join('<br>')}</p>`;
+      return `<p>${lines.map((line) => renderInline(line)).join('<br>')}</p>`;
     })
     .join('\n');
 }
@@ -232,36 +233,38 @@ function videoPresentation(url) {
   return { kind: 'link', href: url, host: parsed.hostname };
 }
 
-function imageTag(image, { eager = false, frame = 'color' } = {}) {
+function imageTag(image, { eager = false, frame = 'content' } = {}) {
   assertSafeUrl(image.src, 'image');
-  const tone = frame === 'card'
-    ? 'w-full h-full object-cover grayscale opacity-50 transition-all duration-[1.5s] group-hover:scale-105 group-hover:opacity-80'
-    : 'w-full h-full object-cover';
+  const tone = frame === 'card' ? 'cs-card-img' : 'cs-media-img';
   const loading = eager ? 'eager' : 'lazy';
-  return `<img class="${tone}" src="${escapeHtml(image.src)}" alt="${escapeHtml(image.alt)}" loading="${loading}" decoding="async">`;
+  const priority = eager ? ' fetchpriority="high"' : '';
+  return `<img class="${tone}" src="${escapeHtml(image.src)}" alt="${escapeHtml(image.alt)}" loading="${loading}" decoding="async"${priority}>`;
 }
 
-function cardHtml(project, index, labels) {
+function cardHtml(project, index, labels, { lead = false } = {}) {
   const number = String(index + 1).padStart(2, '0');
   const category = labelFor(labels, project.category);
   const line = clientLine(project);
-  const client = line ? `<p class="font-label-sm text-label-sm uppercase tracking-widest text-silver/40 mt-6">${escapeHtml(line)}</p>` : '';
-  return `<article class="reveal">
-<a class="group block focus-visible:outline focus-visible:outline-1 focus-visible:outline-white focus-visible:outline-offset-4" href="/work/${escapeHtml(project.slug)}/">
-<div class="aspect-[16/9] overflow-hidden mb-8 border border-white/10 bg-surface-container">
+  const client = line ? `<p class="cs-card-client">${escapeHtml(line)}</p>` : '';
+  const leadClass = lead ? ' cs-card-lead' : '';
+  return `<article class="cs-card reveal${leadClass}">
+<a href="/work/${escapeHtml(project.slug)}/">
+<div class="cs-card-media">
 ${imageTag(project.coverImage, { frame: 'card' })}
 </div>
-<p class="font-label-sm text-label-sm uppercase tracking-widest text-silver/40 mb-4">${number} / ${escapeHtml(category)}</p>
-<h3 class="font-headline-md text-[24px] md:text-[32px] text-white group-hover:text-silver transition-colors duration-500">${escapeHtml(project.title)}</h3>
-<p class="font-body-md text-silver/60 mt-4 max-w-lg leading-relaxed">${escapeHtml(project.summary)}</p>
+<div class="cs-card-body">
+<p class="cs-kicker"><span>${number}</span><span class="cs-kicker-rule" aria-hidden="true"></span><span>${escapeHtml(category)}</span></p>
+<h3>${escapeHtml(project.title)}</h3>
+<p class="cs-card-summary">${escapeHtml(project.summary)}</p>
 ${client}
+</div>
 </a>
 </article>`;
 }
 
 function cardGrid(projects, labels, indexBySlug) {
-  return `<div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16">
-${projects.map((project) => cardHtml(project, indexBySlug.get(project.slug), labels)).join('\n')}
+  return `<div class="cs-grid">
+${projects.map((project, index) => cardHtml(project, indexBySlug.get(project.slug), labels, { lead: index === 0 })).join('\n')}
 </div>`;
 }
 
@@ -272,22 +275,22 @@ function listingSections(published, labels) {
   const rest = published.filter((project) => !project.featured);
   const sections = [];
   if (featured.length > 0 && rest.length > 0) {
-    sections.push(`<section class="mt-20 md:mt-28" aria-labelledby="featured-heading">
-<h2 id="featured-heading" class="font-headline-lg text-[32px] md:text-headline-lg text-white mb-12">Selected</h2>
+    sections.push(`<section class="cs-section" aria-labelledby="featured-heading">
+<h2 id="featured-heading" class="cs-section-title">Selected</h2>
 ${cardGrid(featured, labels, indexBySlug)}
 </section>`);
-    sections.push(`<section class="mt-20 md:mt-28" aria-labelledby="listing-heading">
-<h2 id="listing-heading" class="font-headline-lg text-[32px] md:text-headline-lg text-white mb-12">Further work</h2>
+    sections.push(`<section class="cs-section" aria-labelledby="listing-heading">
+<h2 id="listing-heading" class="cs-section-title">Further work</h2>
 ${cardGrid(rest, labels, indexBySlug)}
 </section>`);
   } else if (featured.length > 0) {
-    sections.push(`<section class="mt-20 md:mt-28" aria-labelledby="featured-heading">
-<h2 id="featured-heading" class="font-headline-lg text-[32px] md:text-headline-lg text-white mb-12">Selected</h2>
+    sections.push(`<section class="cs-section" aria-labelledby="featured-heading">
+<h2 id="featured-heading" class="cs-section-title">Selected</h2>
 ${cardGrid(featured, labels, indexBySlug)}
 </section>`);
   } else {
-    sections.push(`<section class="mt-20 md:mt-28" aria-labelledby="listing-heading">
-<h2 id="listing-heading" class="font-headline-lg text-[32px] md:text-headline-lg text-white mb-12">Case studies</h2>
+    sections.push(`<section class="cs-section" aria-labelledby="listing-heading">
+<h2 id="listing-heading" class="cs-section-title">Case studies</h2>
 ${cardGrid(published, labels, indexBySlug)}
 </section>`);
   }
@@ -303,23 +306,23 @@ function relatedProjects(project, published) {
 
 function metaRows(project, labels) {
   const rows = [];
-  rows.push(['Category', labelFor(labels, project.category)]);
-  const services = (project.services || []).map((value) => labelFor(labels, value));
-  if (services.length > 0) rows.push(['Services', services.join(', ')]);
   if (project.clientVisibility !== 'confidential' && project.clientLogo) {
     assertSafeUrl(project.clientLogo.src, 'logo');
   }
   const line = clientLine(project);
   if (line || (project.clientVisibility !== 'confidential' && project.clientLogo)) {
     const logo = project.clientVisibility !== 'confidential' && project.clientLogo
-      ? `<img class="h-8 w-auto max-w-[160px] object-contain" src="${escapeHtml(project.clientLogo.src)}" alt="${escapeHtml(project.clientLogo.alt)}" loading="lazy" decoding="async">`
+      ? `<img src="${escapeHtml(project.clientLogo.src)}" alt="${escapeHtml(project.clientLogo.alt)}" loading="lazy" decoding="async">`
       : '';
     const text = line ? `<span>${escapeHtml(line)}</span>` : '';
-    rows.push(['Client', `<span class="flex flex-wrap items-center gap-4">${logo}${text}</span>`, true]);
+    rows.push(['Client', `<span class="cs-client">${logo}${text}</span>`, true]);
   }
+  const services = (project.services || []).map((value) => labelFor(labels, value));
+  if (services.length > 0) rows.push(['Services', services.join(', ')]);
   if (present(project.industry)) rows.push(['Industry', project.industry]);
   if (present(project.completionDate)) rows.push(['Completed', formatDate(project.completionDate), false, project.completionDate]);
-  return `<dl class="mt-12 border-t border-white/10">
+  if (rows.length === 0) return '';
+  return `<dl class="cs-meta">
 ${rows.map((row) => {
     const [term, value, raw, date] = row;
     const body = raw
@@ -327,9 +330,9 @@ ${rows.map((row) => {
       : (date
         ? `<time datetime="${escapeHtml(date)}">${escapeHtml(value)}</time>`
         : escapeHtml(value));
-    return `<div class="grid grid-cols-1 sm:grid-cols-[160px_1fr] gap-2 py-5 border-b border-white/10">
-<dt class="font-label-sm text-label-sm uppercase tracking-widest text-silver/40">${escapeHtml(term)}</dt>
-<dd class="font-body-md text-white">${body}</dd>
+    return `<div>
+<dt>${escapeHtml(term)}</dt>
+<dd>${body}</dd>
 </div>`;
   }).join('\n')}
 </dl>`;
@@ -344,14 +347,14 @@ function storyHtml(project) {
   ].filter(([key]) => present(project[key]));
   if (blocks.length === 0) return '';
   const lastRowStart = blocks.length % 2 === 0 ? blocks.length - 2 : blocks.length - 1;
-  return `<div class="grid grid-cols-1 md:grid-cols-2 gap-0 border border-white/10 mt-16 md:mt-24">
+  return `<div class="cs-legacy">
 ${blocks.map(([key, title], index) => {
     const borderB = index < lastRowStart ? 'border-b' : 'border-b md:border-b-0';
     const borderR = index % 2 === 0 && index + 1 < blocks.length ? 'md:border-r' : '';
-    return `<section id="${key}" class="p-8 md:p-12 border-white/10 ${borderB} ${borderR}">
-<p class="font-display-xl text-[32px] text-white/10 mb-8">${String(index + 1).padStart(2, '0')}</p>
-<h2 class="font-headline-md text-headline-md text-white mb-6">${title}</h2>
-${paragraphs(project[key])}
+    return `<section id="${key}" class="border-white/10 ${borderB} ${borderR}">
+<p class="cs-legacy-index">${String(index + 1).padStart(2, '0')}</p>
+<h2>${title}</h2>
+<div class="cs-prose">${paragraphs(project[key])}</div>
 </section>`;
   }).join('\n')}
 </div>`;
@@ -359,17 +362,10 @@ ${paragraphs(project[key])}
 
 function galleryHtml(project) {
   if (!project.gallery || project.gallery.length === 0) return '';
-  return `<section class="mt-16 md:mt-24" aria-labelledby="gallery-heading">
-<h2 id="gallery-heading" class="font-headline-lg text-[32px] md:text-headline-lg text-white mb-10">Gallery</h2>
-<ul class="grid grid-cols-1 md:grid-cols-2 gap-8">
-${project.gallery.map((image) => {
-    assertSafeUrl(image.src, 'gallery image');
-    const caption = present(image.caption) ? `<figcaption class="font-body-md text-silver/50 px-4 py-4">${escapeHtml(image.caption)}</figcaption>` : '';
-    return `<li><figure class="border border-white/10 bg-surface-container">
-<div class="aspect-[16/9] overflow-hidden">${imageTag(image)}</div>
-${caption}
-</figure></li>`;
-  }).join('\n')}
+  return `<section class="cs-block" aria-labelledby="gallery-heading">
+<h2 id="gallery-heading" class="cs-heading">Gallery</h2>
+<ul class="cs-gallery is-follow">
+${project.gallery.map((image) => `<li>${shotHtml(image)}</li>`).join('\n')}
 </ul>
 </section>`;
 }
@@ -377,84 +373,92 @@ ${caption}
 function videoBody(url, title) {
   const video = videoPresentation(url);
   if (video.kind === 'iframe') {
-    return `<div class="aspect-[16/9] border border-white/10 bg-black">
-<iframe class="w-full h-full" src="${escapeHtml(video.src)}" title="${escapeHtml(title)}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    return `<div class="cs-video-frame">
+<iframe src="${escapeHtml(video.src)}" title="${escapeHtml(title)}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 </div>`;
   }
   if (video.kind === 'file') {
-    return `<video class="w-full border border-white/10 bg-black" controls playsinline preload="metadata">
+    return `<video class="cs-file-video" controls playsinline preload="metadata">
 <source src="${escapeHtml(video.src)}">
 </video>`;
   }
-  return `<a class="inline-flex border border-white/30 px-8 py-4 font-label-md text-label-md uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-500" href="${escapeHtml(video.href)}">Watch film</a>
-<p class="font-label-sm text-label-sm uppercase tracking-widest text-silver/40 mt-4">${escapeHtml(video.host)}</p>`;
+  return `<a class="cs-video-link" href="${escapeHtml(video.href)}">Watch film</a>
+<p class="cs-video-host">${escapeHtml(video.host)}</p>`;
 }
 
 function videoHtml(project) {
   if (!present(project.videoUrl)) return '';
-  return `<section class="mt-16 md:mt-24" aria-labelledby="film-heading">
-<h2 id="film-heading" class="font-headline-lg text-[32px] md:text-headline-lg text-white mb-10">Film</h2>
-${videoBody(project.videoUrl, `${project.title} film`)}
+  return `<section class="cs-block" aria-labelledby="film-heading">
+<h2 id="film-heading" class="cs-heading">Film</h2>
+<div class="cs-block is-follow">${videoBody(project.videoUrl, `${project.title} film`)}</div>
 </section>`;
 }
 
-function figureHtml(image) {
+function shotHtml(image, { eager = false } = {}) {
   assertSafeUrl(image.src, 'image');
-  const caption = present(image.caption) ? `<figcaption class="font-body-md text-silver/50 px-4 py-4">${escapeHtml(image.caption)}</figcaption>` : '';
-  return `<figure class="border border-white/10 bg-surface-container">
-<div class="aspect-[16/9] overflow-hidden">${imageTag(image)}</div>
+  const caption = present(image.caption) ? `<figcaption class="cs-caption">${escapeHtml(image.caption)}</figcaption>` : '';
+  return `<figure class="cs-shot">
+${imageTag(image, { eager })}
 ${caption}
 </figure>`;
 }
 
-function blocksHtml(project) {
-  return project.blocks.map((block, index) => renderBlock(project, block, index)).join('\n');
+function blockClass(block, previous) {
+  const follow = previous && (previous.type === 'heading' || previous.type === 'workstream') && (block.type === 'narrative' || block.type === 'quote');
+  return follow ? 'cs-block is-follow' : 'cs-block';
 }
 
-function renderBlock(project, block, index) {
+function blocksHtml(project) {
+  return `<div class="cs-story">
+${project.blocks.map((block, index) => renderBlock(project, block, index, project.blocks[index - 1])).join('\n')}
+</div>`;
+}
+
+function renderBlock(project, block, index, previous) {
   const id = `block-${index}`;
+  const rhythm = blockClass(block, previous);
   if (block.type === 'narrative') {
-    return `<div class="mt-16 md:mt-24 max-w-3xl space-y-6">${markdownHtml(block.text)}</div>`;
+    return `<div class="${rhythm} cs-prose">${markdownHtml(block.text)}</div>`;
   }
   if (block.type === 'heading') {
-    return `<h2 id="${id}" class="font-headline-lg text-[32px] md:text-headline-lg text-white mt-16 md:mt-24">${escapeHtml(block.text)}</h2>`;
+    return `<h2 id="${id}" class="${rhythm} cs-heading">${escapeHtml(block.text)}</h2>`;
   }
   if (block.type === 'workstream') {
-    const detail = present(block.text) ? `<div class="space-y-6 mt-8">${markdownHtml(block.text)}</div>` : '';
-    return `<section class="mt-16 md:mt-24 border border-white/10 p-8 md:p-12" aria-labelledby="${id}">
-<p class="font-label-sm text-label-sm uppercase tracking-widest text-silver/40 mb-6">Workstream</p>
-<h2 id="${id}" class="font-headline-md text-headline-md text-white">${escapeHtml(block.title)}</h2>
-<p class="font-body-md text-silver/70 leading-relaxed mt-6">${escapeHtml(block.summary)}</p>
+    const detail = present(block.text) ? `<div class="cs-prose">${markdownHtml(block.text)}</div>` : '';
+    return `<section class="${rhythm} cs-workstream" aria-labelledby="${id}">
+<p class="cs-kicker">Workstream</p>
+<h2 id="${id}">${escapeHtml(block.title)}</h2>
+<p class="cs-workstream-summary">${escapeHtml(block.summary)}</p>
 ${detail}
 </section>`;
   }
   if (block.type === 'image') {
-    return `<div class="mt-16 md:mt-24">${figureHtml(block)}</div>`;
+    return `<div class="${rhythm}">${shotHtml(block)}</div>`;
   }
   if (block.type === 'image-pair') {
-    return `<div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-16 md:mt-24">
-${figureHtml(block.primary)}
-${figureHtml(block.secondary)}
+    return `<div class="${rhythm} cs-pair">
+${shotHtml(block.primary)}
+${shotHtml(block.secondary)}
 </div>`;
   }
   if (block.type === 'gallery') {
-    return `<ul class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-16 md:mt-24" aria-label="Gallery">
-${block.images.map((image) => `<li>${figureHtml(image)}</li>`).join('\n')}
+    return `<ul class="${rhythm} cs-gallery" aria-label="Gallery">
+${block.images.map((image) => `<li>${shotHtml(image)}</li>`).join('\n')}
 </ul>`;
   }
   if (block.type === 'video') {
-    const caption = present(block.caption) ? `<figcaption class="font-body-md text-silver/50 mt-4">${escapeHtml(block.caption)}</figcaption>` : '';
+    const caption = present(block.caption) ? `<figcaption class="cs-caption">${escapeHtml(block.caption)}</figcaption>` : '';
     const title = present(block.caption) ? block.caption : `${project.title} film`;
-    return `<figure class="mt-16 md:mt-24">
+    return `<figure class="${rhythm}">
 ${videoBody(block.url, title)}
 ${caption}
 </figure>`;
   }
   if (block.type === 'quote') {
     const bits = [block.attribution, block.role].filter((value) => present(value));
-    const footer = bits.length > 0 ? `<footer class="font-label-sm text-label-sm uppercase tracking-widest text-silver/40 mt-6">${escapeHtml(bits.join(' / '))}</footer>` : '';
-    return `<blockquote class="mt-16 md:mt-24 border-l border-white/20 pl-8 max-w-3xl">
-<div class="space-y-6">${markdownHtml(block.text)}</div>
+    const footer = bits.length > 0 ? `<footer>${escapeHtml(bits.join(' / '))}</footer>` : '';
+    return `<blockquote class="${rhythm} cs-quote">
+${markdownHtml(block.text)}
 ${footer}
 </blockquote>`;
   }
@@ -465,45 +469,43 @@ function relatedHtml(project, published, labels) {
   const related = relatedProjects(project, published);
   if (related.length === 0) return '';
   const indexBySlug = new Map(published.map((item, index) => [item.slug, index]));
-  return `<section class="mt-20 md:mt-28" aria-labelledby="related-heading">
-<h2 id="related-heading" class="font-headline-lg text-[32px] md:text-headline-lg text-white mb-12">Related work</h2>
+  return `<section class="cs-related" aria-labelledby="related-heading">
+<h2 id="related-heading" class="cs-section-title">Related work</h2>
 ${cardGrid(related, labels, indexBySlug)}
 </section>`;
 }
 
 function heroHtml(project) {
-  const image = project.heroImage || project.coverImage;
-  assertSafeUrl(image.src, 'hero image');
-  const caption = present(image.caption) ? `<figcaption class="font-body-md text-silver/50 mt-4">${escapeHtml(image.caption)}</figcaption>` : '';
-  return `<figure class="mt-12 md:mt-16">
-<div class="aspect-[16/9] overflow-hidden border border-white/10 bg-surface-container">${imageTag(image, { eager: true })}</div>
-${caption}
-</figure>`;
+  if (!project.heroImage) return '';
+  return `<div class="cs-hero-media">${shotHtml(project.heroImage, { eager: true })}</div>`;
 }
 
 function overviewSection(project) {
   if (!present(project.description)) return '';
-  return `<section class="mt-16 md:mt-24 max-w-3xl" aria-labelledby="overview-heading">
-<h2 id="overview-heading" class="font-headline-lg text-[32px] md:text-headline-lg text-white mb-8">Overview</h2>
-<div class="space-y-6">${paragraphs(project.description)}</div>
+  return `<section class="cs-overview" aria-labelledby="overview-heading">
+<h2 id="overview-heading" class="cs-heading">Overview</h2>
+<div class="cs-prose is-follow">${paragraphs(project.description)}</div>
 </section>`;
 }
 
 function detailMain(project, published, labels) {
   const hasBlocks = Array.isArray(project.blocks) && project.blocks.length > 0;
-  const hero = project.heroImage || project.coverImage ? heroHtml(project) : '';
   const body = hasBlocks
     ? blocksHtml(project)
     : `${storyHtml(project)}\n${galleryHtml(project)}\n${videoHtml(project)}`;
-  return `<p class="mb-10"><a class="font-label-md text-label-md uppercase tracking-widest text-silver/60 hover:text-white transition-colors" href="/work/">All work</a></p>
-<p class="font-label-sm text-label-sm uppercase tracking-[0.2em] text-silver/40 mb-6">${escapeHtml(labelFor(labels, project.category))}</p>
-<h1 class="font-display-xl text-[40px] md:text-[64px] leading-[1.05] text-white max-w-5xl break-words">${escapeHtml(project.title)}</h1>
-<p class="font-body-lg text-body-md md:text-body-lg text-silver/70 max-w-3xl mt-8">${escapeHtml(project.summary)}</p>
+  return `<article class="cs-study">
+<header class="cs-hero">
+<p class="cs-back"><a href="/work/"><span aria-hidden="true">← </span>All work</a></p>
+<p class="cs-kicker">${escapeHtml(labelFor(labels, project.category))}</p>
+<h1 class="cs-title">${escapeHtml(project.title)}</h1>
+<p class="cs-lede">${escapeHtml(project.summary)}</p>
 ${metaRows(project, labels)}
-${hero}
+${heroHtml(project)}
+</header>
 ${overviewSection(project)}
 ${body}
-${relatedHtml(project, published, labels)}`;
+${relatedHtml(project, published, labels)}
+</article>`;
 }
 
 function overviewMain(published, labels) {
@@ -512,11 +514,13 @@ function overviewMain(published, labels) {
   const body = hasProjects
     ? 'Approved accounts of Detailed Group’s communication work. A project appears here only after it is cleared for publication.'
     : 'Detailed Group will publish approved case studies here. Each study will describe the communication problem, the approach, and the work that was delivered. Nothing is listed until that account is approved.';
-  const introLink = hasProjects ? '' : `<a class="inline-flex bg-white text-black font-label-md text-label-md uppercase tracking-widest px-8 md:px-12 py-4 md:py-5 mt-12 hover:opacity-90 transition-opacity" href="/#contact">Book a Consultation</a>`;
-  return `<p class="font-label-sm text-label-sm uppercase tracking-[0.2em] text-silver/40 mb-6">Work</p>
-<h1 id="work-heading" class="font-display-xl text-[40px] md:text-[64px] leading-[1.05] text-white max-w-5xl break-words">${title}</h1>
-<p class="font-body-lg text-body-md md:text-body-lg text-silver/70 max-w-3xl mt-8">${body}</p>
+  const introLink = hasProjects ? '' : `<a class="cs-empty-cta" href="/#contact">Book a Consultation</a>`;
+  return `<header class="cs-hero">
+<p class="cs-kicker">Work</p>
+<h1 id="work-heading" class="cs-title">${title}</h1>
+<p class="cs-lede">${body}</p>
 ${introLink}
+</header>
 ${listingSections(published, labels)}`;
 }
 
@@ -627,7 +631,7 @@ function footerHtml() {
 </footer>`;
 }
 
-function pageDocument({ title, description, canonical, image, robots, current, main }) {
+function pageDocument({ title, description, canonical, image, robots, current, main, cssHref }) {
   const jsonLd = JSON.stringify({
     '@context': 'https://schema.org',
     '@type': 'WebPage',
@@ -641,6 +645,7 @@ function pageDocument({ title, description, canonical, image, robots, current, m
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>document.documentElement.classList.add('js');</script>
 <title>${escapeHtml(title)}</title>
 <meta name="description" content="${escapeHtml(description)}">
 <meta name="robots" content="${robots}">
@@ -709,50 +714,7 @@ tailwind.config = {
   }
 };
 </script>
-<style>
-html { scroll-behavior: smooth; scroll-padding-top: 116px; }
-html, body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif; }
-body { background: #000; color: #fff; -webkit-font-smoothing: antialiased; }
-.logo-mark { display: block; flex-shrink: 0; background: #fff; }
-.skip-link { position: absolute; left: 24px; top: -48px; z-index: 80; background: #fff; color: #000; padding: 0.75rem 1rem; }
-.skip-link:focus { top: 12px; }
-a:focus-visible, button:focus-visible { outline: 1px solid #fff; outline-offset: 3px; }
-.bg-white a:focus-visible, .bg-white button:focus-visible { outline-color: #000; }
-.reveal { opacity: 0; transform: translateY(12px); transition: opacity 0.45s cubic-bezier(0.2,0.8,0.2,1), transform 0.45s cubic-bezier(0.2,0.8,0.2,1); }
-.reveal.active { opacity: 1; transform: none; }
-@keyframes announcement-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-.animate-announcement-scroll { animation: announcement-scroll 32s linear infinite; }
-#mobile-menu { position: fixed; inset: 0; z-index: 60; visibility: hidden; pointer-events: none; }
-#mobile-menu.open { visibility: visible; pointer-events: auto; }
-#mobile-menu .mobile-menu-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.72); backdrop-filter: blur(20px); opacity: 0; transition: opacity 0.45s cubic-bezier(0.22,1,0.36,1); }
-#mobile-menu.open .mobile-menu-backdrop { opacity: 1; }
-#mobile-menu .mobile-menu-panel { position: absolute; top: 0; left: 0; right: 0; display: flex; flex-direction: column; max-height: 100dvh; overflow: hidden; background: rgba(0,0,0,0.98); border-bottom: 1px solid rgba(255,255,255,0.08); transform: translateY(-100%); opacity: 0; transition: transform 0.5s cubic-bezier(0.22,1,0.36,1), opacity 0.4s cubic-bezier(0.22,1,0.36,1); }
-#mobile-menu.open .mobile-menu-panel { transform: none; opacity: 1; }
-#mobile-menu .mobile-menu-header { display: flex; align-items: center; justify-content: space-between; height: 80px; padding: 0 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
-#mobile-menu .mobile-menu-brand { display: flex; align-items: center; gap: 0.75rem; }
-#mobile-menu-close { display: flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; color: #fff; }
-#mobile-menu .mobile-menu-inner { display: flex; flex-direction: column; flex: 1; overflow-y: auto; padding: 2.5rem 24px 2rem; }
-#mobile-menu .mobile-nav-link { display: block; opacity: 0; transform: translateY(12px); padding: 1.125rem 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
-#mobile-menu .mobile-nav-link:first-child { border-top: 1px solid rgba(255,255,255,0.06); }
-#mobile-menu.open .mobile-nav-link { opacity: 1; transform: none; }
-#mobile-menu.open .mobile-nav-link:nth-child(1) { transition-delay: 0.08s; }
-#mobile-menu.open .mobile-nav-link:nth-child(2) { transition-delay: 0.12s; }
-#mobile-menu.open .mobile-nav-link:nth-child(3) { transition-delay: 0.16s; }
-#mobile-menu.open .mobile-nav-link:nth-child(4) { transition-delay: 0.20s; }
-#mobile-menu.open .mobile-nav-link:nth-child(5) { transition-delay: 0.24s; }
-#mobile-menu.open .mobile-nav-link:nth-child(6) { transition-delay: 0.28s; }
-#mobile-menu .mobile-menu-cta { opacity: 0; transform: translateY(12px); margin-top: 2rem; width: 100%; text-align: center; border: 1px solid rgba(255,255,255,0.2); padding: 1rem 1.5rem; letter-spacing: 0.1em; text-transform: uppercase; color: #fff; }
-#mobile-menu.open .mobile-menu-cta { opacity: 1; transform: none; transition-delay: 0.32s; }
-body.menu-open { overflow: hidden; }
-#mobile-menu-btn { position: relative; z-index: 70; }
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  .reveal { opacity: 1; transform: none; transition: none; }
-  .animate-announcement-scroll { animation: none; }
-  .group-hover\\:scale-105, img { transition: none !important; }
-  #mobile-menu .mobile-menu-panel, #mobile-menu .mobile-menu-backdrop, #mobile-menu .mobile-nav-link, #mobile-menu .mobile-menu-cta { transition: none; }
-}
-</style>
+<link rel="stylesheet" href="${escapeHtml(cssHref)}">
 <script type="application/ld+json">${jsonLd}</script>
 </head>
 <body class="bg-background text-primary font-sans overflow-x-hidden selection:bg-silver selection:text-black">
@@ -890,6 +852,7 @@ export function renderWorkSite(data) {
       ...overview,
       canonical: `${SITE}/work/`,
       current: 'overview',
+      cssHref: 'portfolio.css',
       main: overviewMain(published, labels),
     }),
   }];
@@ -900,6 +863,7 @@ export function renderWorkSite(data) {
       html: pageDocument({
         ...meta,
         current: 'detail',
+        cssHref: '../portfolio.css',
         main: detailMain(project, published, labels),
       }),
     });
@@ -968,6 +932,8 @@ export function writeWorkSite(outDir, files) {
   assertSafeOutDir(outDir);
   const root = resolve(outDir);
   mkdirSync(root, { recursive: true });
+  const css = readFileSync(PORTFOLIO_CSS, 'utf8');
+  writeFileSync(join(root, 'portfolio.css'), css.endsWith('\n') ? css : `${css}\n`);
   const liveSlugs = new Set();
   for (const file of files) {
     const destination = assertRelativeOutput(root, file.relativePath);
