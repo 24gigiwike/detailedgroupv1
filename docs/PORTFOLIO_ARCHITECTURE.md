@@ -451,9 +451,7 @@ Put approved files in `media/projects/` so Pages CMS can store a site-root path.
 
 ### How generation is triggered
 
-Pages CMS commits the JSON file to git. Nothing in this repository runs the generator after that commit. There is no `package.json` build script and no GitHub Actions workflow. Automatic generation on a CMS commit is not configured. That is a launch blocker: saving or publishing in the CMS does not create the public HTML.
-
-Until a host build step is added and verified, a person runs `node scripts/generate-work.mjs` from the repository root and the static files in `work/` are what the host serves. A failed validation writes nothing.
+Pages CMS commits the JSON file to git. `.github/workflows/portfolio.yml` validates that content, runs `node scripts/generate-work.mjs`, and fails if the committed pages differ. It does not push commits and it does not deploy. The live site still serves the files committed in git. See Step 4 for the operating steps.
 
 ### Routing evidence
 
@@ -461,8 +459,58 @@ The generator writes directory index files and relative stylesheet links (`portf
 
 A read-only check of the live site on 9 October 2026 found `server: Vercel`. `https://detailedgroup.co/` returns a 308 redirect to `https://www.detailedgroup.co/`. `https://www.detailedgroup.co/work/`, `/work`, and `/work/index.html` each return the generated empty overview. `/work/portfolio.css` returns the shared stylesheet. The live overview contains `href="portfolio.css"` and does not name ORIVS or OURO. `/work/sample/` returns 404 because that project does not exist.
 
-The repository has no `vercel.json`, `netlify.toml`, `_redirects`, headers file, or workflow. The README still describes the site as a Netlify test. A published `/work/<slug>/` path, including refresh and a direct visit, was not requested from the live host. No case study is published, and this step did not deploy. Vercel has shown that it serves the overview directory index. The same behavior for a future case-study directory still needs a check after the first project is published.
+The repository has no `vercel.json`, `netlify.toml`, `_redirects`, or headers file. `.github/workflows/portfolio.yml` checks generation; it does not deploy. The README still describes the site as a Netlify test. A published `/work/<slug>/` path, including refresh and a direct visit, was not requested from the live host. No case study is published, and this step did not deploy. Vercel has shown that it serves the overview directory index. The same behavior for a future case-study directory still needs a check after the first project is published.
 
 ### Pages CMS configuration check
 
 `.pages.yml` defines a `projects` collection at `content/projects`. The editor configuration includes title, summary, metadata, category and service selects, an ordered block list, and a `status` select with `draft` and `published`. This was read from the file. The live Pages CMS interface was not opened, and no production record was created. Select values stored by the live editor, image-component nesting, and drag-to-reorder behavior still need a manual check. The loader accepts configured competency labels as well as stored values. A nested image component that adds unexpected keys fails validation and does not publish.
+
+## Step 4 — Homepage Work and the publishing check
+
+### Homepage activation
+
+`data/homepage.json` contains one boolean, `showWork`. It is `false`.
+
+`node scripts/generate-work.mjs` reads that file only when it writes the repository `work/` directory. It fills four markers in `index.html`:
+
+- `dg:home-work:desktop` between Services and Approach
+- `dg:home-work:mobile` in the same position
+- `dg:home-work:footer` in the Explore column
+- `dg:home-work:section` after `#insights` and before `#video-showcase`
+
+While `showWork` is false, those markers stay empty. The served homepage has no `/work/` link and no Selected Work section. A published project does not turn the section on.
+
+Set `showWork` to `true` and run the generator to add the Work link in the desktop navigation, mobile navigation, and footer. The homepage then keeps the compact menu until the `xl` breakpoint, because six links collide with the logo at the existing `md` breakpoint. Turning `showWork` back to `false` restores the `md` breakpoint. Selected Work is added only when at least one published project has `featured` set to `true`. Drafts are excluded. Cards show the cover, index, category, title, summary, and case-study link. They do not show the client name. An empty card grid is not written.
+
+`--data` fixture runs do not read or write the homepage.
+
+### Publishing operations
+
+These steps match the current scripts. The live Pages CMS screen has not been clicked through.
+
+1. Create a project in Pages CMS as a new file in `content/projects`. The filename comes from the slug. Leave `status` as `draft`.
+2. Keep it in draft until the publishing checklist is complete. Draft files stay in git and are omitted from `work/` and the homepage.
+3. Arrange content blocks in the order they should render. Save the list. That order is the render order.
+4. Add approved media under `media/projects/` and reference it with alt text. Leave image fields empty until the file is approved.
+5. Validate with `node scripts/validate-projects.mjs`. Invalid content prints the field path and does not print the field value.
+6. A published project reaches `/work/<slug>/` only after `status` is `published`, validation passes, and `node scripts/generate-work.mjs` has written `work/<slug>/index.html`. Commit that generated file. Vercel serves the committed file. The generator does not run on the Vercel build, because this repository has no Vercel build configuration.
+7. Feature a project by setting `featured` to `true`. It appears in the homepage Selected Work section only after `showWork` is also `true` and the generator is run again.
+8. Activate homepage Work by setting `data/homepage.json` `showWork` to `true`, running the generator, and committing `index.html`. This is a separate decision from publishing a project.
+9. Unpublish by setting `status` back to `draft` and running the generator. The script deletes `work/<slug>/` when that directory contains only a generated `index.html`. It leaves a directory alone when other files are present or the page lacks the generator marker.
+10. A failed build usually means validation failed or the committed HTML does not match a fresh generation. Run the validator, fix the named field, run the generator, and commit `work/` plus any homepage marker update. `.github/workflows/portfolio.yml` runs those commands on pull requests and on pushes to `main`. It has read-only repository permission. It does not push a commit and it does not deploy.
+
+### Launch readiness
+
+Public activation still requires:
+
+- Client approval for any named project, including ORIVS / OURO.
+- Approved case-study copy.
+- Approved media and alt text.
+- A confirmed confidentiality choice.
+- A manual pass through the live Pages CMS editor.
+- A green portfolio workflow after the generated files are committed.
+- A production check of `/work/<slug>/`, including refresh, after the first case study is published.
+- A responsive and accessibility review of the activated homepage.
+- An explicit decision to set `showWork` to `true`.
+
+ORIVS / OURO remains `status: draft`. `showWork` remains `false`.

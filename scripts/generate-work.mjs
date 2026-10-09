@@ -8,6 +8,10 @@
  *   node scripts/generate-work.mjs
  *   node scripts/generate-work.mjs --data path.json --out /tmp/work-preview
  *
+ * The repository command also refreshes homepage Work markers from data/homepage.json.
+ * showWork must be true before those markers contain a link or a Selected Work section.
+ * --data does not read or write the homepage.
+ *
  * Output must be the repository work directory or a directory under the OS temp path.
  * Validation failure writes nothing.
  */
@@ -999,6 +1003,140 @@ function readPortfolio(dataPath) {
   }
 }
 
+function homeMarker(name, closing = false) {
+  return closing ? `<!-- /dg:home-work:${name} -->` : `<!-- dg:home-work:${name} -->`;
+}
+
+function replaceHomeMarker(html, name, replacement) {
+  const start = homeMarker(name);
+  const end = homeMarker(name, true);
+  const startAt = html.indexOf(start);
+  const endAt = html.indexOf(end);
+  if (startAt < 0 || endAt < startAt) throw new Error(`homepage is missing the ${name} work marker`);
+  if (html.indexOf(start, startAt + start.length) !== -1) throw new Error(`homepage repeats the ${name} work marker`);
+  const inner = replacement ? `\n${replacement}\n` : '\n';
+  return `${html.slice(0, startAt + start.length)}${inner}${html.slice(endAt)}`;
+}
+
+function homepageNavLink(kind) {
+  const focus = 'focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-[3px] focus-visible:outline-white';
+  if (kind === 'desktop') {
+    return `<a class="font-label-md text-label-md uppercase tracking-widest text-silver/60 hover:text-white transition-colors duration-500 ${focus}" href="/work/">Work</a>`;
+  }
+  if (kind === 'mobile') {
+    return `<a class="mobile-nav-link font-label-md uppercase tracking-widest text-silver/60 hover:text-white transition-colors duration-500 ${focus}" href="/work/">Work</a>`;
+  }
+  return `<a class="font-body-md text-silver/40 hover:text-white transition-colors ${focus}" href="/work/">Work</a>`;
+}
+
+function homepageCard(project, index, labels) {
+  const category = labelFor(labels, project.category);
+  const number = String(index + 1).padStart(2, '0');
+  assertSafeUrl(project.coverImage && project.coverImage.src, 'cover image');
+  return `<article class="reveal min-w-0">
+<a class="group block focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-[6px] focus-visible:outline-white" href="/work/${escapeHtml(project.slug)}/">
+<div class="aspect-[16/9] overflow-hidden mb-8 md:mb-10 border border-white/10 bg-surface-container">
+<img class="w-full h-full object-cover grayscale opacity-50 transition-all duration-[1.5s] group-hover:scale-105 group-hover:opacity-80 group-focus-visible:scale-105 group-focus-visible:opacity-80" src="${escapeHtml(project.coverImage.src)}" alt="${escapeHtml(project.coverImage.alt)}" loading="lazy" decoding="async">
+</div>
+<div class="flex items-center gap-4 mb-4">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-silver/30">${number}</span>
+<div class="h-[1px] w-8 bg-white/10" aria-hidden="true"></div>
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-silver/30">${escapeHtml(category)}</span>
+</div>
+<h3 class="font-headline-xl text-[24px] md:text-[32px] mb-4 md:mb-6 text-white group-hover:text-silver transition-colors duration-500 break-words">${escapeHtml(project.title)}</h3>
+<p class="text-silver/50 font-body-md max-w-lg leading-relaxed">${escapeHtml(project.summary)}</p>
+</a>
+</article>`;
+}
+
+function homepageSection(featured, labels) {
+  const cards = featured.map((project, index) => homepageCard(project, index, labels)).join('\n');
+  return `<section id="selected-work" class="py-section-gap-mobile md:py-section-gap px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto reveal" aria-labelledby="selected-work-heading">
+<h2 id="selected-work-heading" class="font-display-xl text-[36px] md:text-[56px] mb-10 md:mb-16 reveal text-white">Selected Work</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16">
+${cards}
+</div>
+<p class="mt-12 md:mt-16"><a class="font-label-md text-label-md uppercase tracking-widest text-silver/60 hover:text-white transition-colors duration-500 focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-[3px] focus-visible:outline-white" href="/work/">All work</a></p>
+</section>`;
+}
+
+export function readHomepageConfig(root = ROOT) {
+  const configPath = join(root, 'data', 'homepage.json');
+  let raw;
+  try {
+    raw = readFileSync(configPath, 'utf8');
+  } catch {
+    throw new Error('data/homepage.json could not be read');
+  }
+  let data;
+  try {
+    data = JSON.parse(raw);
+  } catch {
+    throw new Error('data/homepage.json is not valid JSON');
+  }
+  if (data === null || typeof data !== 'object' || Array.isArray(data)) {
+    throw new Error('data/homepage.json must be an object');
+  }
+  for (const key of Object.keys(data)) {
+    if (key !== 'showWork') throw new Error('data/homepage.json contains an unknown field');
+  }
+  if (typeof data.showWork !== 'boolean') throw new Error('data/homepage.json showWork must be true or false');
+  return { showWork: data.showWork };
+}
+
+function setHomepageNavMode(html, wide) {
+  const pairs = [
+    ['class="hidden md:flex items-center gap-10"', 'class="hidden xl:flex items-center gap-10"'],
+    ['class="md:hidden flex items-center justify-center w-10 h-10 text-white" id="mobile-menu-btn"', 'class="xl:hidden flex items-center justify-center w-10 h-10 text-white" id="mobile-menu-btn"'],
+    ['class="hidden md:inline-flex items-center border border-white/20', 'class="hidden xl:inline-flex items-center border border-white/20'],
+    ['class="md:hidden fixed inset-0 z-[60]" id="mobile-menu"', 'class="xl:hidden fixed inset-0 z-[60]" id="mobile-menu"'],
+    ['if (window.innerWidth >= 768) closeMenu();', 'if (window.innerWidth >= 1280) closeMenu();'],
+  ];
+  let next = html;
+  for (const [compact, expanded] of pairs) {
+    const hasCompact = next.includes(compact);
+    const hasExpanded = next.includes(expanded);
+    if (!hasCompact && !hasExpanded) {
+      if (next.includes('id="mobile-menu-btn"')) throw new Error('homepage navigation markup no longer matches the Work activation');
+      continue;
+    }
+    const from = wide ? compact : expanded;
+    const to = wide ? expanded : compact;
+    if (!next.includes(from)) continue;
+    if (next.split(from).length !== 2) throw new Error('homepage navigation markup is ambiguous');
+    next = next.replace(from, to);
+  }
+  return next;
+}
+
+export function renderHomepage(html, config, data) {
+  if (!config || typeof config.showWork !== 'boolean') throw new Error('homepage showWork must be true or false');
+  const { labels, published } = publishedProjects(data);
+  const featured = published.filter((project) => project.featured === true);
+  const showNav = config.showWork === true;
+  const showSection = showNav && featured.length > 0;
+  let next = html;
+  next = replaceHomeMarker(next, 'desktop', showNav ? homepageNavLink('desktop') : '');
+  next = replaceHomeMarker(next, 'mobile', showNav ? homepageNavLink('mobile') : '');
+  next = replaceHomeMarker(next, 'footer', showNav ? homepageNavLink('footer') : '');
+  next = replaceHomeMarker(next, 'section', showSection ? homepageSection(featured, labels) : '');
+  next = setHomepageNavMode(next, showNav);
+  if (!showNav && (next.includes('href="/work/"') || next.includes('id="selected-work"'))) {
+    throw new Error('homepage still exposes Work while showWork is false');
+  }
+  if (!showSection && next.includes('id="selected-work"')) {
+    throw new Error('homepage still contains Selected Work without a featured published project');
+  }
+  if (Array.isArray(data.projects)) {
+    for (const project of data.projects) {
+      if (project && project.clientVisibility === 'confidential' && present(project.clientName)) {
+        throw new Error('homepage refused a confidential client name');
+      }
+    }
+  }
+  return next;
+}
+
 function generateValidated(data, outDir, loadErrors = []) {
   assertSafeOutDir(outDir);
   if (loadErrors.length > 0) {
@@ -1025,8 +1163,49 @@ function generateFromFile(dataPath, outDir) {
 
 function generateFromRepository(outDir) {
   const loaded = loadPortfolio(ROOT);
+  const updatingHome = resolve(outDir) === resolve(DEFAULT_OUT);
+  let homepageConfig = null;
+  if (updatingHome) {
+    try {
+      homepageConfig = readHomepageConfig(ROOT);
+    } catch (error) {
+      console.error(error.message || 'homepage configuration could not be read');
+      return 1;
+    }
+  }
   if (!loaded.ok || !loaded.data) return generateValidated(loaded.data, outDir, loaded.errors);
-  return generateValidated(loaded.data, outDir);
+  const result = validatePortfolioData(loaded.data);
+  if (!result.ok) {
+    console.error('Refusing to generate because the portfolio data did not validate.');
+    for (const error of result.errors) console.error(`- ${error}`);
+    return 1;
+  }
+  let nextHome = null;
+  if (updatingHome) {
+    try {
+      nextHome = renderHomepage(readFileSync(join(ROOT, 'index.html'), 'utf8'), homepageConfig, loaded.data);
+    } catch (error) {
+      console.error(error.message || 'homepage could not be prepared');
+      return 1;
+    }
+  }
+  let files;
+  try {
+    files = renderWorkSite(loaded.data);
+  } catch (error) {
+    console.error(error.message || 'generation failed');
+    return 1;
+  }
+  writeWorkSite(outDir, files);
+  if (nextHome !== null) {
+    const indexPath = join(ROOT, 'index.html');
+    const current = readFileSync(indexPath, 'utf8');
+    if (nextHome !== current) writeFileSync(indexPath, nextHome.endsWith('\n') ? nextHome : `${nextHome}\n`);
+  }
+  console.log(`Generated ${files.length} file(s).`);
+  for (const file of files) console.log(file.relativePath);
+  if (updatingHome) console.log(homepageConfig.showWork ? 'Homepage Work is active.' : 'Homepage Work is inactive.');
+  return 0;
 }
 
 if (isDirectRun()) {
