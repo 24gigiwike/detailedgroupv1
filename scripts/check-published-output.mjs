@@ -60,8 +60,20 @@ if (!loaded.ok || !loaded.data) {
   }
 
   const publishedSlugs = new Set(published.map((project) => project.slug));
+  const protectedDirs = new Set(['design-system']);
   for (const dir of workDirs) {
+    if (protectedDirs.has(dir)) continue;
     if (!publishedSlugs.has(dir)) fail(`work/${dir}/ is not a published project`);
+  }
+  if (!workIndex.includes('href="/work/design-system/"')) fail('work page is missing the design exploration link');
+  const demoPath = join(ROOT, 'work', 'design-system', 'index.html');
+  if (!existsSync(demoPath)) fail('design exploration page is missing');
+  else {
+    const demoHtml = readFileSync(demoPath, 'utf8');
+    if (!demoHtml.includes('content="noindex, nofollow"')) fail('design exploration is missing noindex');
+    if (!demoHtml.includes('DESIGN EXPLORATION / CONCEPT ONLY')) fail('design exploration is missing its concept label');
+    if (demoHtml.includes('detailed-group:generated-work')) fail('design exploration must stay outside the generator');
+    if (/\bORIVS\b|\bOURO\b|NEXT\s*['’]?\s*26/i.test(demoHtml)) fail('design exploration contains a real project name');
   }
 
   const publicHtml = [index, workIndex];

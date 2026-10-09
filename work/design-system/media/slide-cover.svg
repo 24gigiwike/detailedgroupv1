@@ -1,0 +1,8 @@
+<svg width="1200" height="750" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" role="img">
+  <rect width="1200" height="750" fill="#0c0c0c"/>
+  <rect x="48" y="48" width="1104" height="654" fill="none" stroke="#c0c0c0" stroke-opacity="0.3"/>
+  <text x="90" y="180" fill="#c0c0c0" font-family="Helvetica, Arial, sans-serif" font-size="18" letter-spacing="5">PRESENTATION COVER</text>
+  <text x="90" y="340" fill="#fff" font-family="Helvetica, Arial, sans-serif" font-size="68">The story</text>
+  <text x="90" y="420" fill="#fff" font-family="Helvetica, Arial, sans-serif" font-size="68">in sequence.</text>
+  <rect x="90" y="500" width="80" height="4" fill="#c9864a"/>
+</svg>

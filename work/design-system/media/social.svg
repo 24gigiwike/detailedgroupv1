@@ -1,0 +1,7 @@
+<svg width="800" height="800" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" role="img">
+  <rect width="800" height="800" fill="#101010"/>
+  <rect x="70" y="90" width="280" height="520" fill="none" stroke="#c0c0c0" stroke-opacity="0.45"/>
+  <rect x="390" y="180" width="320" height="220" fill="#c9864a"/>
+  <text x="410" y="300" fill="#000" font-family="Helvetica, Arial, sans-serif" font-size="42">01</text>
+  <text x="70" y="700" fill="#fff" font-family="Helvetica, Arial, sans-serif" font-size="36">A QUIET SIGNAL</text>
+</svg>

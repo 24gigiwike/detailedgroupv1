@@ -1,0 +1,9 @@
+<svg width="1200" height="750" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" role="img">
+  <rect width="1200" height="750" fill="#0c0c0c"/>
+  <rect x="60" y="70" width="500" height="280" fill="none" stroke="#c0c0c0" stroke-opacity="0.4"/>
+  <rect x="620" y="70" width="500" height="280" fill="none" stroke="#c0c0c0" stroke-opacity="0.4"/>
+  <rect x="60" y="400" width="1060" height="260" fill="none" stroke="#c9864a"/>
+  <text x="90" y="180" fill="#fff" font-family="Helvetica, Arial, sans-serif" font-size="32">Title field</text>
+  <text x="650" y="180" fill="#fff" font-family="Helvetica, Arial, sans-serif" font-size="32">Figure field</text>
+  <text x="90" y="500" fill="#c0c0c0" font-family="Helvetica, Arial, sans-serif" font-size="20" letter-spacing="3">FICTIONAL SLIDE SYSTEM</text>
+</svg>
