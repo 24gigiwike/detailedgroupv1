@@ -176,15 +176,20 @@ check('unpublishing removes the stale route', !existsSync(join(workOut, 'stale-p
 
 const realIndex = readFileSync(join(ROOT, 'index.html'), 'utf8');
 const realData = JSON.parse(readFileSync(join(ROOT, 'data/projects.json'), 'utf8'));
+const homepageConfig = JSON.parse(readFileSync(join(ROOT, 'data/homepage.json'), 'utf8'));
 const content = JSON.parse(readFileSync(join(ROOT, 'content/projects/orivs-ouro-integrated-communications-ecosystem.json'), 'utf8'));
 realData.projects = [content];
-const inactive = renderHomepage(realIndex, { showWork: false }, realData);
-check('real homepage stays inactive', inactive === realIndex && !inactive.includes('ORIVS') && !inactive.includes('href="/work/"'));
 const activeReal = renderHomepage(realIndex, { showWork: true }, realData);
-check('activating the real draft adds links without the draft', activeReal.includes('href="/work/"') && !activeReal.includes('id="selected-work"') && !activeReal.includes('ORIVS') && !activeReal.includes('OURO'));
-check('activation keeps the compact menu until the wider breakpoint', activeReal.includes('class="hidden xl:flex items-center gap-10"') && activeReal.includes('if (window.innerWidth >= 1280) closeMenu();'));
-const restored = renderHomepage(activeReal, { showWork: false }, realData);
-check('deactivation restores the homepage', restored === realIndex);
+const inactive = renderHomepage(activeReal, { showWork: false }, realData);
+check('draft stays off the real homepage', !activeReal.includes('ORIVS') && !activeReal.includes('OURO') && !inactive.includes('ORIVS') && !activeReal.includes('id="selected-work"'));
+check('active homepage has Work without an empty section', activeReal.includes('href="/work/"') && activeReal.includes('class="hidden xl:flex items-center gap-10"') && activeReal.includes('if (window.innerWidth >= 1280) closeMenu();'));
+check('withdrawing Work removes the public links', !inactive.includes('href="/work/"') && inactive.includes('class="hidden md:flex items-center gap-10"') && inactive.includes('if (window.innerWidth >= 768) closeMenu();'));
+check('committed homepage matches showWork', homepageConfig.showWork ? activeReal === realIndex : inactive === renderHomepage(realIndex, { showWork: false }, realData) && realIndex === inactive);
+const emptyOverview = renderWorkSite(portfolio([])).find((file) => file.relativePath === 'index.html').html;
+const detailHtml = rendered.find((file) => file.relativePath === 'alpha-project/index.html').html;
+check('empty overview stays noindex', emptyOverview.includes('content="noindex, follow"') && emptyOverview.includes('Case studies will be published here.') && !emptyOverview.includes('HIDDEN-DRAFT-TITLE'));
+check('published overview is indexable', overview.includes('content="index, follow"') && overview.includes('rel="canonical" href="https://www.detailedgroup.co/work/"') && !overview.includes('noindex'));
+check('detail page has a canonical url', detailHtml.includes('rel="canonical" href="https://www.detailedgroup.co/work/alpha-project/"') && detailHtml.includes('content="index, follow"') && !detailHtml.includes('HIDDEN-DRAFT-TITLE'));
 
 writeFileSync(join(site, 'index.html'), one);
 const server = spawn('python3', ['-m', 'http.server', '8944', '--bind', '127.0.0.1'], { cwd: site, stdio: 'ignore' });

@@ -75,10 +75,23 @@ if (!loaded.ok || !loaded.data) {
     if (project.title && combined.includes(project.title)) fail('a draft title appears in public HTML');
   }
 
+  const featuredPublished = published.filter((project) => project.featured === true);
   if (homepage.showWork === false) {
     if (index.includes('href="/work/"')) fail('homepage links to /work/ while showWork is false');
     if (index.includes('id="selected-work"')) fail('homepage contains Selected Work while showWork is false');
+  } else {
+    if (!index.includes('href="/work/"')) fail('homepage Work link is missing while showWork is true');
+    if (featuredPublished.length === 0 && index.includes('id="selected-work"')) {
+      fail('Selected Work is present without a featured published project');
+    }
+    for (const project of featuredPublished) {
+      if (!index.includes(`/work/${project.slug}/`)) fail(`homepage is missing featured project ${project.slug}`);
+    }
   }
+  if (published.length === 0 && !workIndex.includes('content="noindex, follow"')) {
+    fail('empty work overview is missing noindex');
+  }
+  if (published.length > 0 && workIndex.includes('noindex')) fail('published work overview is still noindex');
 }
 
 if (failures.length > 0) {
