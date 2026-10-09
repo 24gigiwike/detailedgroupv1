@@ -4,7 +4,7 @@
  * Projects are built in memory or under the OS temp directory.
  */
 import { execFileSync, spawn } from 'node:child_process';
-import { mkdtempSync, readFileSync, writeFileSync, rmSync, existsSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, rmSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -173,6 +173,10 @@ writeWorkSite(workOut, renderWorkSite(first));
 check('stale page exists before unpublishing', existsSync(join(workOut, 'stale-project/index.html')));
 writeWorkSite(workOut, renderWorkSite(portfolio([featured])));
 check('unpublishing removes the stale route', !existsSync(join(workOut, 'stale-project/index.html')) && existsSync(join(workOut, 'alpha-project/index.html')));
+mkdirSync(join(workOut, 'design-system'));
+writeFileSync(join(workOut, 'design-system', 'index.html'), '<!-- detailed-group:generated-work -->\nkeep-demo');
+writeWorkSite(workOut, renderWorkSite(portfolio([featured])));
+check('design exploration survives regeneration', readFileSync(join(workOut, 'design-system', 'index.html'), 'utf8').includes('keep-demo'));
 
 const realIndex = readFileSync(join(ROOT, 'index.html'), 'utf8');
 const realData = JSON.parse(readFileSync(join(ROOT, 'data/projects.json'), 'utf8'));
@@ -188,6 +192,9 @@ check('committed homepage matches showWork', homepageConfig.showWork ? activeRea
 const emptyOverview = renderWorkSite(portfolio([])).find((file) => file.relativePath === 'index.html').html;
 const detailHtml = rendered.find((file) => file.relativePath === 'alpha-project/index.html').html;
 check('empty overview stays noindex', emptyOverview.includes('content="noindex, follow"') && emptyOverview.includes('Case studies will be published here.') && !emptyOverview.includes('HIDDEN-DRAFT-TITLE'));
+check('work overview links to the design prototype', emptyOverview.includes('href="/work/design-system/"') && emptyOverview.includes('Design System') && overview.includes('href="/work/design-system/"'));
+const reservedDemo = validatePortfolioData(portfolio([project({ id: 'design-system', slug: 'design-system', title: 'Reserved path' })]));
+check('design-system slug is reserved', !reservedDemo.ok && reservedDemo.errors.some((error) => error.includes('reserved')) && !reservedDemo.errors.join('\n').includes('Reserved path'));
 check('published overview is indexable', overview.includes('content="index, follow"') && overview.includes('rel="canonical" href="https://www.detailedgroup.co/work/"') && !overview.includes('noindex'));
 check('detail page has a canonical url', detailHtml.includes('rel="canonical" href="https://www.detailedgroup.co/work/alpha-project/"') && detailHtml.includes('content="index, follow"') && !detailHtml.includes('HIDDEN-DRAFT-TITLE'));
 

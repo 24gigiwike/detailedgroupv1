@@ -1,0 +1,10 @@
+<svg width="800" height="1100" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1100" role="img">
+  <rect width="800" height="1100" fill="#050505"/>
+  <rect x="48" y="48" width="704" height="1004" fill="none" stroke="#c0c0c0" stroke-opacity="0.4"/>
+  <text x="80" y="160" fill="#c9864a" font-family="Helvetica, Arial, sans-serif" font-size="18" letter-spacing="6">FICTIONAL</text>
+  <text x="80" y="360" fill="#fff" font-family="Helvetica, Arial, sans-serif" font-size="92">LISTEN</text>
+  <text x="80" y="460" fill="#fff" font-family="Helvetica, Arial, sans-serif" font-size="92">CLOSER</text>
+  <circle cx="620" cy="780" r="90" fill="none" stroke="#c9864a"/>
+  <circle cx="620" cy="780" r="18" fill="#c9864a"/>
+  <text x="80" y="960" fill="#c0c0c0" font-family="Helvetica, Arial, sans-serif" font-size="20" letter-spacing="3">FORM / 01 — CONCEPT POSTER</text>
+</svg>

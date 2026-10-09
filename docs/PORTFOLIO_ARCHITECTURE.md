@@ -38,7 +38,7 @@ Conventions:
 
 The repository has no rewrite config. Whether the production host already serves `work/index.html` as `/work/` is unverified. Confirm that before treating the routes as live.
 
-Reserved slugs that cannot be project slugs: `index`, `work`, `api`, `data`, `assets`, `images`, `favicon_io`, `privacy`, `terms`, `insights`, `scripts`, `docs`.
+Reserved slugs that cannot be project slugs: `index`, `work`, `api`, `data`, `assets`, `images`, `favicon_io`, `privacy`, `terms`, `insights`, `scripts`, `docs`, `design-system`. The `design-system` path is a temporary concept prototype, not a case study. Removal is documented in [`DESIGN_SYSTEM_DEMO.md`](DESIGN_SYSTEM_DEMO.md).
 
 ## Content data contract
 
@@ -496,7 +496,7 @@ These steps match the current scripts. The live Pages CMS screen has not been cl
 6. A published project reaches `/work/<slug>/` only after `status` is `published`, validation passes, and `node scripts/generate-work.mjs` has written `work/<slug>/index.html`. Commit that generated file. Vercel serves the committed file. The generator does not run on the Vercel build, because this repository has no Vercel build configuration.
 7. Feature a project by setting `featured` to `true`. It appears in the homepage Selected Work section only after `showWork` is also `true` and the generator is run again.
 8. Homepage Work is active. To hide it again, set `showWork` to `false`, run the generator, and commit `index.html`. Publishing a project does not, by itself, add a homepage card.
-9. Unpublish by setting `status` back to `draft` and running the generator. The script deletes `work/<slug>/` when that directory contains only a generated `index.html`. It leaves a directory alone when other files are present or the page lacks the generator marker.
+9. Unpublish by setting `status` back to `draft` and running the generator. The script deletes `work/<slug>/` when that directory contains only a generated `index.html`. It leaves a directory alone when other files are present or the page lacks the generator marker. It also skips `work/design-system/` by name, so regeneration cannot delete that prototype.
 10. A failed build usually means validation failed or the committed HTML does not match a fresh generation. Run the validator, fix the named field, run the generator, and commit `work/` plus any homepage marker update. `.github/workflows/portfolio.yml` runs those commands on pull requests and on pushes to `main`. It has read-only repository permission. It does not push a commit and it does not deploy.
 
 ### Launch readiness

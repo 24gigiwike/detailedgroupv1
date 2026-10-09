@@ -1,0 +1,11 @@
+<svg width="1200" height="750" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" role="img">
+  <rect width="1200" height="750" fill="#0c0c0c"/>
+  <text x="70" y="90" fill="#c9864a" font-family="Helvetica, Arial, sans-serif" font-size="16" letter-spacing="4">ILLUSTRATIVE — NOT A RESULT</text>
+  <rect x="120" y="430" width="90" height="180" fill="#2a2a2a"/>
+  <rect x="280" y="340" width="90" height="270" fill="#4a4a4a"/>
+  <rect x="440" y="250" width="90" height="360" fill="#c0c0c0"/>
+  <rect x="600" y="180" width="90" height="430" fill="#c9864a"/>
+  <path d="M80 620 H1080" stroke="#fff" stroke-opacity="0.25"/>
+  <text x="760" y="300" fill="#fff" font-family="Helvetica, Arial, sans-serif" font-size="28">Sample sequence</text>
+  <text x="760" y="350" fill="#c0c0c0" font-family="Helvetica, Arial, sans-serif" font-size="18">Placeholder bars for layout only.</text>
+</svg>

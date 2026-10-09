@@ -28,6 +28,7 @@ const PORTFOLIO_CSS = join(ROOT, 'assets', 'portfolio.css');
 const SITE = 'https://www.detailedgroup.co';
 const MARKER = 'detailed-group:generated-work';
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const PROTECTED_WORK_DIRS = new Set(['design-system']);
 const YT_ID = /^[A-Za-z0-9_-]{11}$/;
 const MONTHS = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -523,7 +524,10 @@ function overviewMain(published, labels) {
 <p class="cs-kicker">Work</p>
 <h1 id="work-heading" class="cs-title">${title}</h1>
 <p class="cs-lede">${body}</p>
+<div class="cs-hero-actions">
 ${introLink}
+<a class="ds-launch" href="/work/design-system/">Design System <span aria-hidden="true">↗</span></a>
+</div>
 </header>
 ${listingSections(published, labels)}`;
 }
@@ -841,6 +845,7 @@ function detailMeta(project) {
 export function renderWorkSite(data) {
   const { labels, published } = publishedProjects(data);
   for (const project of published) {
+    if (PROTECTED_WORK_DIRS.has(project.slug)) throw new Error('refusing to overwrite a protected work directory');
     assertSafeUrl(project.coverImage.src, 'cover image');
     if (project.heroImage) assertSafeUrl(project.heroImage.src, 'hero image');
     if (project.ogImage) assertSafeUrl(project.ogImage.src, 'social image');
@@ -902,6 +907,7 @@ function removeStaleProjects(root, liveSlugs) {
   if (!existsSync(root)) return;
   for (const entry of readdirSync(root, { withFileTypes: true })) {
     if (entry.isSymbolicLink() || !entry.isDirectory()) continue;
+    if (PROTECTED_WORK_DIRS.has(entry.name)) continue;
     if (!SLUG_RE.test(entry.name) || liveSlugs.has(entry.name)) continue;
     const dir = resolve(root, entry.name);
     const rel = relative(root, dir);
