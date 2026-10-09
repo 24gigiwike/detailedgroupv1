@@ -396,7 +396,7 @@ The marquee stays a `type: file` entry at `data/marquee.json`.
 
 ### Unpublished ORIVS / OURO draft
 
-`content/projects/orivs-ouro-integrated-communications-ecosystem.json` is `status: draft`. It is not written to `work/`. The file contains only the approved working title, the three named workstreams, and explicit pending copy. It has no client legal name, results, testimonial, approval, or image. `clientVisibility` is `public` with `clientName: null` because no public client name has been approved. The category `organizational-storytelling` is a working classification for the draft, not a published claim. Because the file is in a public repository, it is treated as non-secret.
+`content/projects/orivs-ouro-integrated-communications-ecosystem.json` is `status: draft`. It is not written to `work/`. The file names ORIVS, the OURO personal-audio product, and three workstreams: OURO launch communications, NEXT '26 event branding, and investor communications. It has no client legal name, results, testimonial, approval, or image. `clientVisibility` is `public` with `clientName: null` because no public client name has been approved. The category `organizational-storytelling` and the services list are a working classification, not a published claim. Because the file is in a public repository, it is treated as non-secret.
 
 ## Step 3B.1 — Case-study presentation
 
@@ -415,3 +415,54 @@ A published detail page is one article:
 Overview cards use the homepage grayscale 16:9 cover, an index, the category, the title, and the summary. The first card in a group spans the row from the laptop breakpoint. The empty overview copy is unchanged.
 
 Image width and height are not in the schema, so content images cannot reserve an exact box before they load. Cards and embedded video use a 16:9 frame.
+
+## Step 3B.2 + 3C — ORIVS / OURO draft and publishing readiness
+
+The ORIVS / OURO file remains `status: draft`. The narrative now follows the confirmed brief: one product story across launch communications, NEXT '26 event branding, and investor communications. No image, gallery, video, or quote block is included. No public preview route was added.
+
+`node scripts/generate-work.mjs --data snapshot.json --out <temporary-directory>` can render a local copy of a snapshot. That command does not read `content/projects` and does not change the draft's status. The production command still writes only published projects into `work/`.
+
+### Future media placements
+
+These are placement recommendations. They are not evidence that files exist, and they are not stored in the CMS.
+
+| Placement | Suggested block | When it can be added |
+| --- | --- | --- |
+| Hero | `heroImage` | After a reviewed still is approved. The overview still needs a separate `coverImage` before publishing. |
+| Launch communications | `gallery` or `image` after the OURO launch workstream | After launch artwork is approved, with alt text written from the picture. |
+| NEXT '26 event branding | `gallery` or `image` after the event workstream | After event artwork is approved. Do not invent attendance, location, or production scope in captions. |
+| Investor communications | `gallery` or `image` after the investor workstream | After investor artwork is approved. Do not put figures or presentation contents in captions unless they are confirmed. |
+| Cross-workstream comparison | Optional `image-pair` or `gallery` before "Connecting the system" | Only if a comparison is actually supplied and approved. |
+
+Put approved files in `media/projects/` so Pages CMS can store a site-root path. Do not add a URL until the file is in the repository or an approved `https` host.
+
+### Publishing checklist
+
+1. Client approval and confidentiality review. Confirm the legal name may be public, or switch `clientVisibility` to `confidential` and supply `clientDescriptor` with no `clientName` or `clientLogo`.
+2. Required project metadata. Published projects need `summary`, `category`, `services` (including the category), `coverImage` with alt text, a unique `sortOrder`, and either content blocks or `description`.
+3. Approved media preparation. Export only reviewed files into `media/projects/`. Omit every image block until then.
+4. Image alt text. Describe the picture. Do not repeat the filename or place a confidential name in alt text.
+5. Content-block arrangement. Order the block list in the editor. Saved array order is the render order.
+6. Draft validation. Run `node scripts/validate-projects.mjs` while `status` is still `draft`. Fix every reported field before publishing.
+7. Published-status change. Set `status` to `published` only after the checks above. Pages CMS has no separate publish action.
+8. Static page generation. Run `node scripts/generate-work.mjs`. It writes `work/index.html`, `work/<slug>/index.html` for published projects, and copies `assets/portfolio.css` to `work/portfolio.css`.
+9. Route verification. Open `/work/` and `/work/<slug>/`, refresh each URL, and confirm the stylesheet and images load. The live overview already resolves on Vercel. A case-study URL still has to be checked after the first project is published.
+10. Final visual and accessibility review. Check the page at phone and desktop widths, with keyboard focus and image alt text.
+
+### How generation is triggered
+
+Pages CMS commits the JSON file to git. Nothing in this repository runs the generator after that commit. There is no `package.json` build script and no GitHub Actions workflow. Automatic generation on a CMS commit is not configured. That is a launch blocker: saving or publishing in the CMS does not create the public HTML.
+
+Until a host build step is added and verified, a person runs `node scripts/generate-work.mjs` from the repository root and the static files in `work/` are what the host serves. A failed validation writes nothing.
+
+### Routing evidence
+
+The generator writes directory index files and relative stylesheet links (`portfolio.css` on the overview, `../portfolio.css` on a case study). Image paths are site-root paths or `https` URLs.
+
+A read-only check of the live site on 9 October 2026 found `server: Vercel`. `https://detailedgroup.co/` returns a 308 redirect to `https://www.detailedgroup.co/`. `https://www.detailedgroup.co/work/`, `/work`, and `/work/index.html` each return the generated empty overview. `/work/portfolio.css` returns the shared stylesheet. The live overview contains `href="portfolio.css"` and does not name ORIVS or OURO. `/work/sample/` returns 404 because that project does not exist.
+
+The repository has no `vercel.json`, `netlify.toml`, `_redirects`, headers file, or workflow. The README still describes the site as a Netlify test. A published `/work/<slug>/` path, including refresh and a direct visit, was not requested from the live host. No case study is published, and this step did not deploy. Vercel has shown that it serves the overview directory index. The same behavior for a future case-study directory still needs a check after the first project is published.
+
+### Pages CMS configuration check
+
+`.pages.yml` defines a `projects` collection at `content/projects`. The editor configuration includes title, summary, metadata, category and service selects, an ordered block list, and a `status` select with `draft` and `published`. This was read from the file. The live Pages CMS interface was not opened, and no production record was created. Select values stored by the live editor, image-component nesting, and drag-to-reorder behavior still need a manual check. The loader accepts configured competency labels as well as stored values. A nested image component that adds unexpected keys fails validation and does not publish.
