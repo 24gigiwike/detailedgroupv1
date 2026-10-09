@@ -587,9 +587,10 @@
 <span class="logo-mark h-3 w-3" aria-hidden="true"></span>
 <span class="font-display-xl text-[20px] font-semibold tracking-[-0.05em] text-white">Detailed</span>
 </a>
-<div class="hidden md:flex items-center gap-10">
+<div class="hidden xl:flex items-center gap-10">
 <a class="font-label-md text-label-md uppercase tracking-widest text-silver/60 hover:text-white transition-colors duration-500" href="#services">Services</a>
 <!-- dg:home-work:desktop -->
+<a class="font-label-md text-label-md uppercase tracking-widest text-silver/60 hover:text-white transition-colors duration-500 focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-[3px] focus-visible:outline-white" href="/work/">Work</a>
 <!-- /dg:home-work:desktop -->
 <a class="font-label-md text-label-md uppercase tracking-widest text-silver/60 hover:text-white transition-colors duration-500" href="#approach">Approach</a>
 <a class="font-label-md text-label-md uppercase tracking-widest text-silver/60 hover:text-white transition-colors duration-500" href="#values">Values</a>
@@ -597,15 +598,15 @@
 <a class="font-label-md text-label-md uppercase tracking-widest text-silver/60 hover:text-white transition-colors duration-500" href="#contact">Contact</a>
 </div>
 <div class="flex items-center gap-3">
-<button aria-controls="mobile-menu" aria-expanded="false" aria-label="Open navigation menu" class="md:hidden flex items-center justify-center w-10 h-10 text-white" id="mobile-menu-btn" type="button">
+<button aria-controls="mobile-menu" aria-expanded="false" aria-label="Open navigation menu" class="xl:hidden flex items-center justify-center w-10 h-10 text-white" id="mobile-menu-btn" type="button">
 <span class="material-symbols-outlined text-[22px]" id="mobile-menu-icon">menu</span>
 </button>
-    <a href="#contact" class="hidden md:inline-flex items-center border border-white/20 text-white font-label-md text-label-md uppercase tracking-widest px-4 py-3 md:px-8 md:py-3.5 hover:bg-white hover:text-black transition-all duration-500 whitespace-nowrap">
+    <a href="#contact" class="hidden xl:inline-flex items-center border border-white/20 text-white font-label-md text-label-md uppercase tracking-widest px-4 py-3 md:px-8 md:py-3.5 hover:bg-white hover:text-black transition-all duration-500 whitespace-nowrap">
 <span class="hidden md:inline">Book Consultation</span>
 </a>
 </div>
 </nav>
-<div aria-hidden="true" class="md:hidden fixed inset-0 z-[60]" id="mobile-menu">
+<div aria-hidden="true" class="xl:hidden fixed inset-0 z-[60]" id="mobile-menu">
 <div class="mobile-menu-backdrop" aria-hidden="true"></div>
 <div class="mobile-menu-panel">
 <div class="mobile-menu-header">
@@ -621,6 +622,7 @@
 <nav aria-label="Mobile navigation" class="mobile-menu-nav">
 <a class="mobile-nav-link font-label-md uppercase tracking-widest text-silver/60 hover:text-white transition-colors duration-500" href="#services">Services</a>
 <!-- dg:home-work:mobile -->
+<a class="mobile-nav-link font-label-md uppercase tracking-widest text-silver/60 hover:text-white transition-colors duration-500 focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-[3px] focus-visible:outline-white" href="/work/">Work</a>
 <!-- /dg:home-work:mobile -->
 <a class="mobile-nav-link font-label-md uppercase tracking-widest text-silver/60 hover:text-white transition-colors duration-500" href="#approach">Approach</a>
 <a class="mobile-nav-link font-label-md uppercase tracking-widest text-silver/60 hover:text-white transition-colors duration-500" href="#values">Values</a>
@@ -1053,6 +1055,7 @@
 <span class="font-label-sm text-label-sm uppercase tracking-widest text-white font-bold">Explore</span>
 <a class="font-body-md text-silver/40 hover:text-white transition-colors" href="#">Services</a>
 <!-- dg:home-work:footer -->
+<a class="font-body-md text-silver/40 hover:text-white transition-colors focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-[3px] focus-visible:outline-white" href="/work/">Work</a>
 <!-- /dg:home-work:footer -->
 <a class="font-body-md text-silver/40 hover:text-white transition-colors" href="#">Approach</a>
 <a class="font-body-md text-silver/40 hover:text-white transition-colors" href="#">Values</a>
@@ -1312,7 +1315,7 @@
         }
 
         window.addEventListener('resize', () => {
-            if (window.innerWidth >= 768) closeMenu();
+            if (window.innerWidth >= 1280) closeMenu();
         });
 
         document.addEventListener('keydown', (e) => {

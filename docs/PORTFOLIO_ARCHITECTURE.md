@@ -469,7 +469,7 @@ The repository has no `vercel.json`, `netlify.toml`, `_redirects`, or headers fi
 
 ### Homepage activation
 
-`data/homepage.json` contains one boolean, `showWork`. It is `false`.
+`data/homepage.json` contains one boolean, `showWork`. It is `true`. The Work link is public. Selected Work stays omitted until a published project is also featured.
 
 `node scripts/generate-work.mjs` reads that file only when it writes the repository `work/` directory. It fills four markers in `index.html`:
 
@@ -495,7 +495,7 @@ These steps match the current scripts. The live Pages CMS screen has not been cl
 5. Validate with `node scripts/validate-projects.mjs`. Invalid content prints the field path and does not print the field value.
 6. A published project reaches `/work/<slug>/` only after `status` is `published`, validation passes, and `node scripts/generate-work.mjs` has written `work/<slug>/index.html`. Commit that generated file. Vercel serves the committed file. The generator does not run on the Vercel build, because this repository has no Vercel build configuration.
 7. Feature a project by setting `featured` to `true`. It appears in the homepage Selected Work section only after `showWork` is also `true` and the generator is run again.
-8. Activate homepage Work by setting `data/homepage.json` `showWork` to `true`, running the generator, and committing `index.html`. This is a separate decision from publishing a project.
+8. Homepage Work is active. To hide it again, set `showWork` to `false`, run the generator, and commit `index.html`. Publishing a project does not, by itself, add a homepage card.
 9. Unpublish by setting `status` back to `draft` and running the generator. The script deletes `work/<slug>/` when that directory contains only a generated `index.html`. It leaves a directory alone when other files are present or the page lacks the generator marker.
 10. A failed build usually means validation failed or the committed HTML does not match a fresh generation. Run the validator, fix the named field, run the generator, and commit `work/` plus any homepage marker update. `.github/workflows/portfolio.yml` runs those commands on pull requests and on pushes to `main`. It has read-only repository permission. It does not push a commit and it does not deploy.
 
@@ -510,7 +510,7 @@ Public activation still requires:
 - A manual pass through the live Pages CMS editor.
 - A green portfolio workflow after the generated files are committed.
 - A production check of `/work/<slug>/`, including refresh, after the first case study is published.
-- A responsive and accessibility review of the activated homepage.
-- An explicit decision to set `showWork` to `true`.
+- A responsive and accessibility review of the first real Selected Work cards after a project is featured.
+- A production check of the homepage Work link after this change is released.
 
-ORIVS / OURO remains `status: draft`. `showWork` remains `false`.
+The empty `/work/` overview stays `noindex` until at least one project is published. A published case study uses `https://www.detailedgroup.co/work/<slug>/` as its canonical URL. ORIVS / OURO remains `status: draft`. Launch approval does not approve its copy, imagery, or confidentiality status.
