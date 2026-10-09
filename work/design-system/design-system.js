@@ -1,193 +1,112 @@
 (function () {
   var root = document.documentElement;
-  var reduce = root.classList.contains('reduce') || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (reduce) root.classList.add('reduce');
+  var reduce = root.classList.contains("reduce");
+  var fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
-  var scenes = Array.prototype.slice.call(document.querySelectorAll('main section[id]'));
-  var railLinks = Array.prototype.slice.call(document.querySelectorAll('.rail a'));
-  var readoutNow = document.getElementById('rail-now');
-  var readoutName = document.getElementById('rail-name');
-  var names = {
-    'scene-intro': 'Introduction',
-    'scene-thesis': 'Thesis',
-    'scene-form': 'Form',
-    'scene-system': 'System',
-    'scene-product': 'Product',
-    'scene-launch': 'Launch',
-    'scene-event': 'Event',
-    'scene-investor': 'Investor',
-    'scene-connected': 'Connected',
-    'scene-close': 'Close'
-  };
-  var streamForScene = {
-    'scene-product': 'product',
-    'scene-launch': 'launch',
-    'scene-event': 'event',
-    'scene-investor': 'investor'
-  };
+  var rail = Array.prototype.slice.call(document.querySelectorAll(".rail a"));
+  var sections = ["open", "signal", "ground", "north", "close"].map(function (id) {
+    return document.getElementById(id);
+  }).filter(Boolean);
+  var worlds = { signal: "world-signal", ground: "world-ground", north: "world-north" };
 
   function setCurrent(id) {
-    railLinks.forEach(function (link) {
-      if (link.getAttribute('href') === '#' + id) link.setAttribute('aria-current', 'true');
-      else link.removeAttribute('aria-current');
+    rail.forEach(function (link) {
+      if (link.getAttribute("href") === "#" + id) link.setAttribute("aria-current", "true");
+      else link.removeAttribute("aria-current");
     });
-    var order = scenes.findIndex(function (section) { return section.id === id; });
-    if (readoutNow) readoutNow.textContent = String(order + 1).padStart(2, '0');
-    if (readoutName) readoutName.textContent = names[id] || '';
-    var stream = streamForScene[id];
-    var focusInside = streamList && streamList.contains(document.activeElement);
-    if (stream && !systemHot && !focusInside) showStream(stream);
+    document.body.classList.remove("world-signal", "world-ground", "world-north");
+    if (worlds[id]) document.body.classList.add(worlds[id]);
   }
 
-  var streams = Array.prototype.slice.call(document.querySelectorAll('.stream'));
-  var plates = Array.prototype.slice.call(document.querySelectorAll('.plate'));
-  var systemIndex = document.getElementById('system-index');
-  var systemHot = false;
-
-  function showStream(id) {
-    streams.forEach(function (link) {
-      link.classList.toggle('is-on', link.getAttribute('data-stream') === id);
-    });
-    plates.forEach(function (plate) {
-      plate.classList.toggle('is-on', plate.getAttribute('data-stream') === id);
-    });
-    var current = streams.filter(function (link) { return link.getAttribute('data-stream') === id; })[0];
-    if (systemIndex && current) systemIndex.textContent = current.getAttribute('data-index') || '01';
-  }
-
-  var streamList = document.querySelector('.streams');
-  streams.forEach(function (link) {
-    link.addEventListener('pointerenter', function (event) {
-      if (event.pointerType === 'touch') return;
-      systemHot = true;
-      showStream(link.getAttribute('data-stream'));
-    });
-    link.addEventListener('focus', function () {
-      systemHot = true;
-      showStream(link.getAttribute('data-stream'));
-    });
-    link.addEventListener('click', function () {
-      showStream(link.getAttribute('data-stream'));
-    });
-  });
-  if (streamList) {
-    streamList.addEventListener('focusout', function () {
-      window.requestAnimationFrame(function () {
-        if (!streamList.contains(document.activeElement)) systemHot = false;
-      });
-    });
-  }
-  if (streamList) {
-    streamList.addEventListener('pointerleave', function () {
-      systemHot = false;
-    });
-  }
-  showStream('product');
-
-  if ('IntersectionObserver' in window) {
+  if ("IntersectionObserver" in window) {
     var ratios = new Map();
-    var sceneObserver = new IntersectionObserver(function (entries) {
+    var observer = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         ratios.set(entry.target.id, entry.isIntersecting ? entry.intersectionRatio : 0);
       });
-      var best = null;
-      var bestRatio = 0;
+      var best = "open";
+      var score = 0;
       ratios.forEach(function (ratio, id) {
-        if (ratio > bestRatio) {
-          best = id;
-          bestRatio = ratio;
-        }
+        if (ratio > score) { best = id; score = ratio; }
       });
-      if (best) setCurrent(best);
-    }, { threshold: [0.25, 0.45, 0.7] });
-    scenes.forEach(function (section) { sceneObserver.observe(section); });
-
-    var revealObserver = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add('is-in');
-        var mask = entry.target.querySelector ? entry.target.querySelector('.mask') : null;
-        if (mask) mask.classList.add('is-in');
-        revealObserver.unobserve(entry.target);
-      });
-    }, { threshold: 0.08, rootMargin: '0px 0px 12% 0px' });
-    Array.prototype.forEach.call(document.querySelectorAll('.rise, .fragment, .frame, .tile, .form-plate, .mosaic figure'), function (node) {
-      revealObserver.observe(node);
-    });
-  } else {
-    root.classList.remove('js');
+      if (score > 0) setCurrent(best);
+    }, { threshold: [0.25, 0.5, 0.75] });
+    sections.forEach(function (section) { observer.observe(section); });
   }
 
-  var cue = document.querySelector('.scroll-cue');
-  var parallaxNodes = Array.prototype.slice.call(document.querySelectorAll('[data-parallax]'));
-  var eventPhoto = document.querySelector('.event-photo');
-  var ticking = false;
+  function clamp(value, min, max) { return Math.max(min, Math.min(max, value)); }
 
-  function strength() {
-    if (window.innerWidth < 768) return 0;
-    if (window.innerWidth < 1024) return 0.45;
-    return 1;
-  }
-
-  function frame() {
-    ticking = false;
-    if (cue) cue.classList.toggle('is-gone', window.scrollY > 150);
-    if (reduce) return;
-    var factor = strength();
+  function scrub() {
     var vh = window.innerHeight || 1;
-    if (factor > 0) {
-      parallaxNodes.forEach(function (node) {
-        var rate = Number(node.getAttribute('data-parallax')) || 0.04;
-        var rect = node.getBoundingClientRect();
-        var center = rect.top + rect.height / 2 - vh / 2;
-        var shift = Math.max(-28, Math.min(28, -center * rate * factor));
-        node.style.transform = 'translate3d(0,' + shift.toFixed(2) + 'px,0)';
+    if (window.innerWidth >= 768) {
+      document.querySelectorAll(".reel").forEach(function (reel) {
+        var track = reel.querySelector(".reel-track");
+        if (!track) return;
+        var rect = reel.getBoundingClientRect();
+        var distance = reel.offsetHeight - vh;
+        var progress = distance > 0 ? clamp(-rect.top / distance, 0, 1) : 0;
+        var max = Math.max(0, track.scrollWidth - reel.clientWidth + 48);
+        track.style.transform = "translate3d(" + (-max * progress).toFixed(1) + "px,0,0)";
       });
-    } else {
-      parallaxNodes.forEach(function (node) { node.style.transform = 'none'; });
     }
-    if (eventPhoto) {
-      var rect = eventPhoto.getBoundingClientRect();
-      var progress = 1 - Math.min(1, Math.max(0, rect.top / vh));
-      var maxScale = window.innerWidth < 768 ? 1.04 : 1.1;
-      var scale = maxScale - progress * (maxScale - 1);
-      eventPhoto.style.transform = 'scale(' + scale.toFixed(3) + ')';
+    document.querySelectorAll("[data-depth]").forEach(function (node) {
+      var parent = node.closest(".cluster") || node;
+      var rect = parent.getBoundingClientRect();
+      var shift = (rect.top + rect.height / 2 - vh / 2) * parseFloat(node.getAttribute("data-depth") || "0");
+      node.style.transform = "translate3d(0," + clamp(-shift, -22, 22).toFixed(1) + "px,0)";
+    });
+    document.querySelectorAll("[data-scale]").forEach(function (img) {
+      var frame = img.parentElement;
+      var rect = frame.getBoundingClientRect();
+      var progress = clamp(1 - rect.top / vh, 0, 1);
+      var scale = 1.14 - progress * 0.14;
+      img.style.transform = "scale(" + scale.toFixed(3) + ")";
+    });
+    document.querySelectorAll("[data-drift]").forEach(function (word) {
+      var rect = word.getBoundingClientRect();
+      var progress = clamp((vh - rect.top) / (vh + rect.height), 0, 1);
+      word.style.transform = "translate3d(" + ((0.5 - progress) * 28).toFixed(1) + "vw,0,0)";
+    });
+    var kinetic = document.querySelector("[data-kinetic]");
+    if (kinetic) {
+      var rect = kinetic.getBoundingClientRect();
+      var progress = clamp((vh * 0.65 - rect.top) / (rect.height + vh * 0.2), 0, 0.999);
+      var step = Math.floor(progress * 3);
+      kinetic.querySelectorAll(".kinetic-word").forEach(function (word) {
+        word.classList.toggle("is-on", Number(word.getAttribute("data-step")) === step);
+      });
     }
   }
 
-  function requestFrame() {
-    if (ticking) return;
-    ticking = true;
-    window.requestAnimationFrame(frame);
-  }
+  if (!reduce) {
+    var ticking = false;
+    function requestScrub() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () { ticking = false; scrub(); });
+    }
+    window.addEventListener("scroll", requestScrub, { passive: true });
+    window.addEventListener("resize", requestScrub);
+    requestScrub();
 
-  window.addEventListener('scroll', requestFrame, { passive: true });
-  window.addEventListener('resize', requestFrame);
-  requestFrame();
-
-  var dialog = document.getElementById('lightbox');
-  var dialogImg = document.getElementById('lightbox-img');
-  var dialogCaption = document.getElementById('lightbox-caption');
-  var dialogClose = document.getElementById('lightbox-close');
-  var opener = null;
-  if (dialog && dialogImg && typeof dialog.showModal === 'function') {
-    Array.prototype.forEach.call(document.querySelectorAll('.shot'), function (button) {
-      button.addEventListener('click', function () {
-        var source = button.querySelector('img');
-        if (!source) return;
-        opener = button;
-        dialogImg.src = source.src;
-        dialogImg.alt = source.alt;
-        if (dialogCaption) dialogCaption.textContent = button.getAttribute('data-caption') || source.alt;
-        dialog.showModal();
+    if (fine) {
+      document.querySelectorAll("[data-tilt], .tilt").forEach(function (node) {
+        node.addEventListener("pointermove", function (event) {
+          var rect = node.getBoundingClientRect();
+          var x = (event.clientX - rect.left) / rect.width - 0.5;
+          var y = (event.clientY - rect.top) / rect.height - 0.5;
+          node.querySelectorAll("img").forEach(function (img) {
+            img.style.translate = (x * -18).toFixed(1) + "px " + (y * -12).toFixed(1) + "px";
+          });
+        });
+        node.addEventListener("pointerleave", function () {
+          node.querySelectorAll("img").forEach(function (img) { img.style.translate = "0 0"; });
+        });
       });
-    });
-    if (dialogClose) dialogClose.addEventListener('click', function () { dialog.close(); });
-    dialog.addEventListener('click', function (event) {
-      if (event.target === dialog) dialog.close();
-    });
-    dialog.addEventListener('close', function () {
-      if (opener) opener.focus();
+    }
+  } else {
+    document.querySelectorAll(".kinetic-word").forEach(function (word) {
+      word.classList.add("is-on");
     });
   }
 })();

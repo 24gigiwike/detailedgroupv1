@@ -1,9 +1,0 @@
-<svg width="900" height="1200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1200" role="img">
-  <rect width="900" height="1200" fill="#0a0a0a"/>
-  <rect x="80" y="80" width="740" height="1040" fill="none" stroke="#c0c0c0" stroke-opacity="0.35"/>
-  <text x="130" y="240" fill="#c9864a" font-family="Helvetica, Arial, sans-serif" font-size="22" letter-spacing="6">WAYFINDING</text>
-  <text x="130" y="420" fill="#fff" font-family="Helvetica, Arial, sans-serif" font-size="80">HALL</text>
-  <text x="130" y="520" fill="#fff" font-family="Helvetica, Arial, sans-serif" font-size="80">02</text>
-  <path d="M130 640 H520" stroke="#c0c0c0"/>
-  <text x="130" y="720" fill="#c0c0c0" font-family="Helvetica, Arial, sans-serif" font-size="24">LISTENING ROOM — FICTIONAL</text>
-</svg>

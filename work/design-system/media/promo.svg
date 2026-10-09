@@ -1,9 +1,0 @@
-<svg width="1000" height="700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 700" role="img">
-  <rect width="1000" height="700" fill="#0e0e0e"/>
-  <path d="M0 520 H1000" stroke="#fff" stroke-opacity="0.15"/>
-  <circle cx="720" cy="300" r="150" fill="#1a1a1a" stroke="#c9864a"/>
-  <circle cx="720" cy="300" r="40" fill="#c0c0c0"/>
-  <text x="70" y="180" fill="#c0c0c0" font-family="Helvetica, Arial, sans-serif" font-size="18" letter-spacing="5">DIGITAL ARTWORK</text>
-  <text x="70" y="280" fill="#fff" font-family="Helvetica, Arial, sans-serif" font-size="64">STAY</text>
-  <text x="70" y="360" fill="#fff" font-family="Helvetica, Arial, sans-serif" font-size="64">WITH IT</text>
-</svg>
