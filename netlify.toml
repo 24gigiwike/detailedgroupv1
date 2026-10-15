@@ -1,0 +1,5 @@
+# Temporary maintenance gate. Runs before static files.
+# To disable, set MAINTENANCE to false in netlify/edge-functions/maintenance.js.
+[[edge_functions]]
+  function = "maintenance"
+  path = "/*"
