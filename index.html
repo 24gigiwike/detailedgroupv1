@@ -423,6 +423,19 @@
             }
         }
 
+        .hero-bg-video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center center;
+            pointer-events: none;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .hero-bg-video { display: none; }
+        }
+
         /* Hero layout and typography refinements for premium whitespace */
         #hero {
             min-height: 85vh;
@@ -637,6 +650,31 @@
 <section id="hero" class="relative min-h-[85vh] flex flex-col justify-center px-margin-mobile md:px-margin-desktop w-full overflow-hidden reveal" aria-label="Hero">
 <div class="absolute inset-0 z-0">
     <canvas id="globe-canvas" style="position:absolute;top:50%;transform:translateY(-50%);right:-4%;width:min(80vh,900px);height:min(80vh,900px);opacity:0.78;filter:grayscale(1) brightness(0.90) contrast(1.12);"></canvas>
+    <video id="hero-bg-video" class="hero-bg-video" autoplay muted loop playsinline preload="none" aria-hidden="true"></video>
+    <script>
+        (function () {
+            var video = document.getElementById('hero-bg-video');
+            if (!video) return;
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            var source = document.createElement('source');
+            source.src = 'https://res.cloudinary.com/dtkluxukm/video/upload/v1792075835/OURO_hero_Video_converted_xjca8t.webm';
+            source.type = 'video/webm';
+            video.appendChild(source);
+            video.preload = 'metadata';
+            video.load();
+            function showFallback() {
+                try { video.pause(); } catch (e) {}
+                video.style.display = 'none';
+            }
+            video.addEventListener('error', showFallback);
+            video.addEventListener('loadeddata', function () {
+                var playAttempt = video.play();
+                if (playAttempt && typeof playAttempt.catch === 'function') {
+                    playAttempt.catch(showFallback);
+                }
+            });
+        })();
+    </script>
     <div class="hero-gradient-side absolute inset-0 bg-gradient-to-r from-black from-[42%] to-transparent hidden md:block"></div>
     <div class="absolute inset-0 bg-gradient-to-b from-black/90 via-black/45 to-black/80 md:hidden"></div>
     <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/45"></div>
