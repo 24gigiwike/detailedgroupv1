@@ -20,6 +20,7 @@
   var chapter = document.getElementById(id);
   if (!chapter) return;
   requestAnimationFrame(function () {
-    chapter.scrollIntoView({ block: "start" });
+    if (window.__dgLenis) window.__dgLenis.scrollTo(chapter, { immediate: true, force: true });
+    else chapter.scrollIntoView({ block: "start" });
   });
 })();

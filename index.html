@@ -101,6 +101,7 @@
             },
         }
     </script>
+<link rel="stylesheet" href="/assets/lenis/lenis.css">
 <style>
         html {
             scroll-behavior: smooth;
@@ -587,6 +588,18 @@
             font-weight: 400;
             cursor: pointer;
             transition: background-color 0.5s, color 0.5s;
+        }
+        .hero-nav-circle,
+        #hero .hero-content,
+        #hero .hero-content h1,
+        #hero .hero-content p,
+        #hero .hero-content a,
+        .hero-ouro,
+        .hero-ouro-title,
+        .hero-ouro-copy,
+        .hero-ouro-actions,
+        .hero-ouro-actions a {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", sans-serif;
         }
         .hero-nav-circle:hover {
             background: #fff;
@@ -1146,7 +1159,7 @@
 <p class="text-silver/60 max-w-3xl mx-auto mb-12">Visual storytelling, executive slide systems, presentation frameworks, and strategic visuals—our approach prepares leaders with communication assets that command attention, build trust, and ensure messages are understood and remembered.</p>
 <div class="relative">
 <div class="hidden lg:block absolute top-[40px] left-0 w-full h-[1px] bg-white/10"></div>
-<div class="how-we-work-track flex md:grid md:grid-cols-2 lg:grid-cols-5 gap-6 md:gap-12 relative z-10 overflow-x-auto md:overflow-visible -mx-margin-mobile px-margin-mobile md:mx-0 md:px-0 scroll-smooth" id="how-we-work-carousel">
+<div class="how-we-work-track flex md:grid md:grid-cols-2 lg:grid-cols-5 gap-6 md:gap-12 relative z-10 overflow-x-auto md:overflow-visible -mx-margin-mobile px-margin-mobile md:mx-0 md:px-0 scroll-smooth" id="how-we-work-carousel" data-lenis-prevent>
 <div class="how-we-work-slide reveal flex-shrink-0 w-[min(85vw,320px)] md:w-auto border border-white/10 md:border-0 p-8 md:p-0">
 <div class="w-16 h-16 md:w-20 md:h-20 bg-white mb-8 md:mb-12 mx-auto sm:mx-0" aria-hidden="true"></div>
 <h4 class="font-label-md text-label-md uppercase tracking-[0.2em] mb-4 md:mb-6 text-white text-center sm:text-left">Discovery</h4>
@@ -1412,8 +1425,9 @@
         safetyTimeout = setTimeout(exitWithClipWipe, SPLASH_CONFIG.maxDurationMs);
     })();
 </script>
+<script src="/assets/lenis/lenis.min.js"></script>
+<script src="/assets/smooth-scroll.js"></script>
 <script>
-    // Scroll fade-in reveal (ease-in)
     function initScrollReveal() {
         const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         const revealElements = document.querySelectorAll('.reveal');
@@ -1456,8 +1470,10 @@
                 const target = document.querySelector(href);
                 if (!target) return;
                 e.preventDefault();
+                e.stopPropagation();
                 const top = target.getBoundingClientRect().top + window.pageYOffset - headerOffset;
-                window.scrollTo({ top, behavior: 'smooth' });
+                if (window.__dgLenis) window.__dgLenis.scrollTo(target);
+                else window.scrollTo({ top, behavior: 'smooth' });
             });
         });
     })();
@@ -1522,6 +1538,7 @@
             menuBtn.setAttribute('aria-expanded', 'false');
             menuBtn.setAttribute('aria-label', 'Open navigation menu');
             document.body.classList.remove('menu-open');
+            if (window.__dgLenis) window.__dgLenis.start();
         }
 
         function openMenu() {
@@ -1530,6 +1547,7 @@
             mobileMenu.setAttribute('aria-hidden', 'false');
             menuBtn.setAttribute('aria-expanded', 'true');
             document.body.classList.add('menu-open');
+            if (window.__dgLenis) window.__dgLenis.stop();
         }
 
         menuBtn.addEventListener('click', openMenu);
