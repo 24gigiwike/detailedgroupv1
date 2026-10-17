@@ -4,8 +4,7 @@
   var root = document.documentElement;
   var deckOpen = false;
   var leaving = false;
-  var gallery = { track: null, setW: 1, x: 0, target: 0, vel: 0, drag: false, last: 0 };
-  var ring = { el: null, next: "", target: 0, shown: 0, armed: false };
+  var galleries = [];
 
   function go(href) {
     if (leaving) return;
@@ -67,14 +66,16 @@
   }
 
   function initExpand() {
-    var still = document.querySelector(".expand-scale");
-    var stage = document.querySelector(".hero-stage");
-    if (!still || !stage || reduced || !window.gsap || !window.ScrollTrigger) return;
+    if (reduced || !window.gsap || !window.ScrollTrigger) return;
     gsap.registerPlugin(ScrollTrigger);
-    gsap.fromTo(still, { scale: 1 }, {
-      scale: 5.4,
-      ease: "none",
-      scrollTrigger: { trigger: stage, start: "top top", end: "bottom bottom", scrub: true }
+    document.querySelectorAll(".hero-stage").forEach(function (stage) {
+      var still = stage.querySelector(".expand-scale");
+      if (!still) return;
+      gsap.fromTo(still, { scale: 1 }, {
+        scale: 5.4,
+        ease: "none",
+        scrollTrigger: { trigger: stage, start: "top top", end: "bottom bottom", scrub: true }
+      });
     });
     document.querySelectorAll(".parallax img").forEach(function (img) {
       gsap.to(img, {
@@ -85,11 +86,10 @@
     });
   }
 
-  function initGallery() {
-    var wrap = document.querySelector(".gallery");
-    var track = document.querySelector(".gallery-track");
-    if (!wrap || !track) return;
-    gallery.track = track;
+  function initGallery(wrap) {
+    var track = wrap.querySelector(".gallery-track");
+    if (!track) return;
+    var g = { track: track, setW: 1, x: 0, target: 0, vel: 0, drag: false, last: 0 };
     var originals = [].slice.call(track.children);
     originals.forEach(function (n) { track.appendChild(n.cloneNode(true)); });
     originals.forEach(function (n) { track.appendChild(n.cloneNode(true)); });
@@ -99,31 +99,31 @@
       var gap = parseFloat(getComputedStyle(track).gap) || 0;
       var width = 0;
       for (var i = 0; i < third; i++) width += kids[i].offsetWidth;
-      gallery.setW = Math.max(width + gap * third, 1);
+      g.setW = Math.max(width + gap * third, 1);
       track.dataset.angle = innerWidth < 800 ? "-4" : "-8";
     }
     measure();
     addEventListener("resize", measure);
     wrap.querySelectorAll("[data-gallery]").forEach(function (btn) {
       btn.addEventListener("click", function () {
-        gallery.target += btn.getAttribute("data-gallery") === "next" ? 360 : -360;
+        g.target += btn.getAttribute("data-gallery") === "next" ? 360 : -360;
       });
     });
     track.addEventListener("pointerdown", function (e) {
-      gallery.drag = true;
-      gallery.last = e.clientX;
-      gallery.vel = 0;
+      g.drag = true;
+      g.last = e.clientX;
+      g.vel = 0;
       track.classList.add("is-drag");
       track.setPointerCapture(e.pointerId);
     });
     track.addEventListener("pointermove", function (e) {
-      if (!gallery.drag) return;
-      var dx = e.clientX - gallery.last;
-      gallery.last = e.clientX;
-      gallery.target -= dx * 2.5;
-      gallery.vel = -dx * 2.5;
+      if (!g.drag) return;
+      var dx = e.clientX - g.last;
+      g.last = e.clientX;
+      g.target -= dx * 2.5;
+      g.vel = -dx * 2.5;
     });
-    function end() { gallery.drag = false; track.classList.remove("is-drag"); }
+    function end() { g.drag = false; track.classList.remove("is-drag"); }
     track.addEventListener("pointerup", end);
     track.addEventListener("pointercancel", end);
     var lastY = scrollY;
@@ -131,55 +131,37 @@
       var dy = scrollY - lastY;
       lastY = scrollY;
       var r = wrap.getBoundingClientRect();
-      if (r.bottom > 0 && r.top < innerHeight) gallery.target += dy;
+      if (r.bottom > 0 && r.top < innerHeight) g.target += dy;
     }, { passive: true });
-  }
-
-  function initRing() {
-    var band = document.querySelector(".next-band");
-    ring.el = document.querySelector(".scroll-ring");
-    if (!band || !ring.el || reduced) return;
-    ring.next = band.getAttribute("data-next") || "";
-    addEventListener("pointermove", function (e) {
-      if (!ring.armed) return;
-      ring.el.style.left = (e.clientX - 37) + "px";
-      ring.el.style.top = (e.clientY - 37) + "px";
-    });
-    addEventListener("wheel", function (e) {
-      if (!ring.armed) return;
-      var atBottom = innerHeight + scrollY >= document.documentElement.scrollHeight - 6;
-      if (!atBottom) return;
-      var delta = Math.max(-64, Math.min(64, e.deltaY));
-      if (delta > 0) {
-        ring.target = Math.min(1100, ring.target + delta * 0.8);
-        e.preventDefault();
-      } else ring.target = Math.max(0, ring.target + delta * 3.2);
-    }, { passive: false });
+    galleries.push(g);
   }
 
   function frame() {
-    if (gallery.track) {
-      if (!gallery.drag) gallery.vel *= 0.94;
-      gallery.target += gallery.vel;
-      gallery.x += (gallery.target - gallery.x) * 0.2;
-      var w = gallery.setW || 1;
-      var wrapped = ((gallery.x % w) + w) % w;
-      gallery.track.style.transform = "rotate(" + (gallery.track.dataset.angle || "-8") + "deg) translate3d(" + (-wrapped) + "px,-50%,0)";
-    }
-    if (ring.el) {
-      var band = document.querySelector(".next-band");
-      if (band) {
-        var r = band.getBoundingClientRect();
-        ring.armed = r.top < innerHeight * 0.8 && r.bottom > innerHeight * 0.25;
-        ring.el.classList.toggle("on", ring.armed || ring.shown > 8);
-      }
-      var follow = ring.target > ring.shown ? 0.08 : 0.32;
-      ring.shown += (ring.target - ring.shown) * follow;
-      var p = Math.max(0, Math.min(1, ring.shown / 1100));
-      ring.el.style.setProperty("--p", p.toFixed(4));
-      if (p > 0.985 && ring.next) go(ring.next);
-    }
+    galleries.forEach(function (g) {
+      if (!g.drag) g.vel *= 0.94;
+      g.target += g.vel;
+      g.x += (g.target - g.x) * 0.2;
+      var w = g.setW || 1;
+      var wrapped = ((g.x % w) + w) % w;
+      g.track.style.transform = "rotate(" + (g.track.dataset.angle || "-8") + "deg) translate3d(" + (-wrapped) + "px,-50%,0)";
+    });
     requestAnimationFrame(frame);
+  }
+
+  function samePage(url) {
+    var a = location.pathname.replace(/\/index\.html$/, "/").replace(/\/$/, "");
+    var b = url.pathname.replace(/\/index\.html$/, "/").replace(/\/$/, "");
+    return a === b;
+  }
+
+  function scrollToChapter(id, push) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    setMenu(false);
+    setDeck(false);
+    el.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+    var next = location.pathname + "#" + id;
+    if (push) history.pushState({ chapter: id }, "", next);
   }
 
   function bind() {
@@ -201,21 +183,20 @@
       try { url = new URL(a.href, location.href); } catch (err) { return; }
       if (url.origin !== location.origin) return;
       if (a.hasAttribute("data-selection")) return;
+      if (url.hash && samePage(url)) {
+        e.preventDefault();
+        scrollToChapter(url.hash.slice(1), true);
+        return;
+      }
       e.preventDefault();
       setMenu(false);
-      go(url.href);
+      go(url.pathname + url.search + url.hash);
     });
-    if (page === "overview" && !reduced) {
-      addEventListener("wheel", function (e) {
-        if (document.body.classList.contains("menu-open")) return;
-        if (deckOpen) {
-          if (e.deltaY < -24) setDeck(false);
-          e.preventDefault();
-          return;
-        }
-        if (e.deltaY > 6) { setDeck(true); e.preventDefault(); }
-      }, { passive: false });
-    }
+    addEventListener("popstate", function () {
+      var id = (location.hash || "#overview").slice(1);
+      var el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: "auto", block: "start" });
+    });
     var play = document.querySelector("[data-play]");
     if (play) play.addEventListener("click", function () {
       var v = document.querySelector(".video-frame video");
@@ -261,10 +242,39 @@
     addEventListener("resize", layoutDeck);
     initPreloader();
     initExpand();
-    initGallery();
-    initRing();
+    document.querySelectorAll(".gallery").forEach(initGallery);
     bind();
     requestAnimationFrame(frame);
+    var chapters = document.querySelectorAll(".chapter");
+    var links = document.querySelectorAll("[data-chapter]");
+    if (chapters.length && "IntersectionObserver" in window) {
+      var spy = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          var id = entry.target.id;
+          links.forEach(function (link) {
+            if (link.getAttribute("data-chapter") === id) link.setAttribute("aria-current", "true");
+            else link.removeAttribute("aria-current");
+          });
+        });
+      }, { rootMargin: "-45% 0px -45% 0px", threshold: 0 });
+      chapters.forEach(function (section) { spy.observe(section); });
+    }
+    if (location.hash) {
+      var start = document.getElementById(location.hash.slice(1));
+      if (start) start.scrollIntoView({ behavior: "auto", block: "start" });
+    }
+    var refreshTimer;
+    function queueRefresh() {
+      clearTimeout(refreshTimer);
+      refreshTimer = setTimeout(function () {
+        if (window.ScrollTrigger) ScrollTrigger.refresh();
+      }, 150);
+    }
+    document.querySelectorAll("img").forEach(function (img) {
+      if (!img.complete) img.addEventListener("load", queueRefresh, { once: true });
+    });
+    addEventListener("load", queueRefresh);
     addEventListener("pagehide", function () {
       if (window.ScrollTrigger) ScrollTrigger.getAll().forEach(function (t) { t.kill(); });
     });
