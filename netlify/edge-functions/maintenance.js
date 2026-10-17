@@ -5,7 +5,7 @@
 // Disable later: set MAINTENANCE to false and redeploy.
 // The original pages are not modified; this only decides what the host returns.
 
-const MAINTENANCE = true;
+const MAINTENANCE = false;
 
 const SCREEN = `<!DOCTYPE html>
 <html lang="en">
