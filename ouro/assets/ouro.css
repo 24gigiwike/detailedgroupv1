@@ -7,6 +7,7 @@
   --muted: #5d668d;
   --paper: #ffffff;
   --sans: "Manrope", "Avenir Next", "Segoe UI", Helvetica, Arial, sans-serif;
+  --ui: "Manrope", "Avenir Next", "Segoe UI", Helvetica, Arial, sans-serif;
   --serif: "Fraunces", "Iowan Old Style", Palatino, Georgia, serif;
   --s: calc(1vw * min(1, 100vh / 950px));
   --ease: cubic-bezier(0.7, 0.6, 0, 1);
@@ -81,6 +82,7 @@ a { text-decoration: none; }
 .topbar { top: calc(var(--s) * 4.47); }
 .dock { bottom: calc(var(--s) * 4.47); justify-content: flex-end; gap: calc(var(--s) * 0.7); }
 .topbar a, .dock a, .dock button, .menu-panel a { pointer-events: auto; }
+.topbar { justify-content: center; }
 .nav-link, .legal, .select-label {
   font-size: calc(var(--s) * 1.25);
   font-weight: 500;
@@ -104,44 +106,47 @@ body.is-study .nav-link,
 body.is-study .wordmark,
 body.is-study .legal,
 body.is-study .select-label,
+body.is-study .home-back,
 body.is-chapter .nav-link,
 body.is-chapter .wordmark,
 body.is-chapter .legal,
 body.is-chapter .select-label,
+body.is-chapter .home-back,
 body.is-story .nav-link,
 body.is-story .wordmark,
 body.is-story .legal,
-body.is-story .select-label { color: #fff; mix-blend-mode: difference; }
+body.is-story .select-label,
+body.is-story .home-back { color: #fff; mix-blend-mode: difference; }
 .menu-panel a[aria-current="true"] { text-decoration: underline; text-underline-offset: 0.28em; }
 body.is-study.is-deck main { filter: brightness(0.25); }
 
-.select-btn, .menu-btn {
+.select-btn {
   pointer-events: auto;
   height: calc(var(--s) * 3.37);
   display: inline-flex;
   align-items: center;
   gap: 0.7rem;
 }
-.menu-btn {
-  width: calc(var(--s) * 3.74);
+.home-back {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
-  background: var(--ink);
-  color: #fff;
+  gap: 0.45rem;
+  min-width: 44px;
+  min-height: 44px;
+  font-family: var(--ui);
+  font-size: calc(var(--s) * 1.15);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1;
 }
-.menu-btn span, .menu-btn span::before {
+.home-back-arrow {
   display: block;
-  width: 18px;
-  height: 2px;
-  background: currentColor;
-  position: relative;
+  flex: 0 0 auto;
+  transition: transform 0.45s var(--ease);
 }
-.menu-btn span::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 7px;
-  width: 8px;
-}
+.home-back:hover .home-back-arrow { transform: translateX(-4px); }
 
 .menu-panel {
   position: fixed;
@@ -262,6 +267,7 @@ body.menu-open { overflow: hidden; }
   z-index: 40;
   left: calc(var(--s) * 4.47);
   bottom: calc(var(--s) * 4.47);
+  font-family: var(--ui);
   font-size: calc(var(--s) * 1.18);
 }
 
@@ -676,6 +682,7 @@ body.is-deck .deck-card { transform: none; }
   .legal { left: 1rem; right: auto; width: max-content; }
   .topbar { top: 0.9rem; }
   .dock, .legal { bottom: 0.9rem; }
+  .home-back-label { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
   .hero-copy { width: 88vw; }
   .hero-copy h1 { font-size: 1.15rem; line-height: 1.25; }
   .opening .hero-copy h1 { font-size: 2rem; line-height: 1.05; }

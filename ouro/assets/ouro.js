@@ -171,8 +171,6 @@
       setMenu(false);
       setDeck(!deckOpen);
     });
-    var menu = document.querySelector("[data-menu]");
-    if (menu) menu.addEventListener("click", function () { setMenu(!document.body.classList.contains("menu-open")); });
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape") { setMenu(false); setDeck(false); }
     });
