@@ -560,54 +560,54 @@
             font-size: clamp(1rem, 1.35vw, 1.25rem);
             line-height: 1.6;
         }
-        .hero-ouro a { margin-top: 36px; }
+        .hero-ouro-actions {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 32px;
+            margin-top: 36px;
+            max-width: 100%;
+        }
+        .hero-nav-circle {
+            box-sizing: border-box;
+            flex: 0 0 auto;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 1px solid #fff;
+            background: transparent;
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            margin: 0;
+            line-height: 1;
+            font-size: 22px;
+            font-weight: 400;
+            cursor: pointer;
+            transition: background-color 0.5s, color 0.5s;
+        }
+        .hero-nav-circle:hover {
+            background: #fff;
+            color: #000;
+        }
+        .hero-nav-circle:focus-visible {
+            outline: 1px solid #fff;
+            outline-offset: 4px;
+        }
         .hero-video-shade {
             position: absolute;
             inset: 0;
             background: rgba(0,0,0,0.46);
         }
         .hero-bg-video.is-unavailable { visibility: hidden; }
-        .hero-carousel-ui {
-            position: absolute;
-            z-index: 30;
-            left: 50%;
-            bottom: 28px;
-            transform: translateX(-50%);
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-        .hero-carousel-ui [role="group"] { display: flex; gap: 8px; align-items: center; }
-        .hero-arrow, .hero-dot {
-            background: transparent;
-            color: #fff;
-            cursor: pointer;
-            padding: 0;
-        }
-        .hero-arrow {
-            width: 36px;
-            height: 36px;
-            border: 1px solid rgba(255,255,255,0.28);
-            font-size: 16px;
-            line-height: 1;
-        }
-        .hero-dot {
-            width: 7px;
-            height: 7px;
-            border: 0;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.38);
-        }
-        .hero-dot[aria-current="true"] { background: #fff; }
-        .hero-arrow:focus-visible, .hero-dot:focus-visible {
-            outline: 1px solid #fff;
-            outline-offset: 3px;
-        }
         #hero .hero-baseline { z-index: 25; }
         @media (max-width: 767px) {
-            .hero-carousel-ui { bottom: 16px; }
             .hero-ouro-copy { margin-top: 18px; }
-            .hero-ouro a { margin-top: 24px; }
+            .hero-ouro-actions { margin-top: 24px; gap: 16px; }
+            .hero-ouro-actions a { max-width: calc(100% - 68px); }
+            .hero-nav-circle { width: 52px; height: 52px; font-size: 20px; }
         }
         @media (prefers-reduced-motion: reduce) {
             .hero-track { transition: none; }
@@ -775,9 +775,9 @@
 <p class="font-body-lg text-body-md md:text-body-lg text-silver/70 mb-10 md:mb-16 max-w-3xl reveal" style="transition-delay: 0.2s;">
         We craft launch narratives—product and company launches, keynotes, strategic announcements, and leadership transitions. Clear, aligned, decisive communication when it matters most.
             </p>
-<div class="flex flex-col sm:flex-row gap-4 md:gap-8 reveal" style="transition-delay: 0.4s;">
+<div class="flex flex-col sm:flex-row sm:items-center gap-4 md:gap-8 reveal" style="transition-delay: 0.4s;">
 <a href="#contact" class="bg-white text-black font-label-md text-label-md uppercase tracking-widest px-8 md:px-12 py-4 md:py-5 font-semibold hover:opacity-90 transition-opacity text-center">Book A Consultation</a>
-<button type="button" class="border border-white/30 text-white font-label-md text-label-md uppercase tracking-widest px-8 md:px-12 py-4 md:py-5 hover:bg-white hover:text-black transition-all duration-500 text-center">At Detailed</button>
+<button type="button" class="hero-nav-circle" data-hero="next" aria-label="View OURO slide"><span aria-hidden="true">&gt;</span></button>
 </div>
 </div>
 </div>
@@ -790,18 +790,13 @@
 <div class="hero-ouro">
 <p class="hero-ouro-title">OURO</p>
 <p class="hero-ouro-copy">A personal-audio vision brought to life through brand identity, creative direction, and launch communications.</p>
+<div class="hero-ouro-actions">
 <a href="/ouro/" class="bg-white text-black font-label-md text-label-md uppercase tracking-widest px-8 md:px-12 py-4 md:py-5 font-semibold hover:opacity-90 transition-opacity text-center">Explore OURO Case Study</a>
+<button type="button" class="hero-nav-circle" data-hero="prev" aria-label="Return to Detailed Group slide"><span aria-hidden="true">&lt;</span></button>
+</div>
 </div>
 </article>
 </div>
-</div>
-<div class="hero-carousel-ui">
-<button type="button" class="hero-arrow" data-hero="prev" aria-label="Previous slide">‹</button>
-<div role="group" aria-label="Choose slide">
-<button type="button" class="hero-dot" data-index="0" aria-label="Detailed Group" aria-current="true"></button>
-<button type="button" class="hero-dot" data-index="1" aria-label="OURO"></button>
-</div>
-<button type="button" class="hero-arrow" data-hero="next" aria-label="Next slide">›</button>
 </div>
 <!-- Architectural Line -->
 <div class="hero-baseline absolute bottom-0 left-margin-mobile md:left-margin-desktop right-margin-mobile md:right-margin-desktop h-[1px] bg-white/10"></div>
@@ -813,7 +808,6 @@
     var viewport = root && root.querySelector('.hero-viewport');
     if (!root || !track || !viewport) return;
     var slides = root.querySelectorAll('.hero-slide');
-    var dots = root.querySelectorAll('.hero-dot');
     var video = document.getElementById('hero-bg-video');
     var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var index = 0;
@@ -847,18 +841,6 @@
         }
     }
 
-    var controls = root.querySelector('.hero-carousel-ui');
-
-    function placeControls() {
-        if (!controls) return;
-        if (window.innerWidth > 767) {
-            controls.style.bottom = '';
-            return;
-        }
-        var concealed = Math.max(0, root.getBoundingClientRect().bottom - window.innerHeight);
-        controls.style.bottom = (16 + concealed) + 'px';
-    }
-
     function render() {
         var width = viewport.clientWidth || 0;
         track.style.transform = 'translate3d(' + (-index * width) + 'px,0,0)';
@@ -869,12 +851,7 @@
             if (on) slide.removeAttribute('inert');
             else slide.setAttribute('inert', '');
         });
-        dots.forEach(function (dot, i) {
-            if (i === index) dot.setAttribute('aria-current', 'true');
-            else dot.removeAttribute('aria-current');
-        });
         syncVideo();
-        placeControls();
     }
 
     function stop() {
@@ -896,9 +873,6 @@
 
     root.querySelector('[data-hero="prev"]').addEventListener('click', function () { go(index - 1, true); });
     root.querySelector('[data-hero="next"]').addEventListener('click', function () { go(index + 1, true); });
-    dots.forEach(function (dot) {
-        dot.addEventListener('click', function () { go(Number(dot.getAttribute('data-index')), true); });
-    });
     root.addEventListener('keydown', function (e) {
         if (e.key === 'ArrowRight') { e.preventDefault(); go(index + 1, true); }
         if (e.key === 'ArrowLeft') { e.preventDefault(); go(index - 1, true); }
@@ -926,7 +900,6 @@
         else arm();
     });
     window.addEventListener('resize', render);
-    window.addEventListener('scroll', placeControls, { passive: true });
     window.addEventListener('pagehide', stop);
     render();
     arm();
