@@ -446,7 +446,7 @@
         }
 
         /* Center inner container and constrain width for generous margins */
-        #hero > .z-10 {
+        #hero .z-10 {
             width: 100%;
             box-sizing: border-box;
         }
@@ -500,6 +500,117 @@
             }
             /* increase paragraph contrast slightly on mobile */
             #hero .hero-content p { padding-left: 0; padding-right: 0; color: #B8B8B8; }
+        }
+
+        /* Two-slide hero. Both slides fill the existing hero box. */
+        #hero.hero-carousel {
+            padding: 0;
+        }
+        .hero-viewport {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+        }
+        .hero-track {
+            display: flex;
+            height: 100%;
+            width: 100%;
+            transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+            will-change: transform;
+        }
+        .hero-slide {
+            position: relative;
+            flex: 0 0 100%;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            box-sizing: border-box;
+            padding: 140px 24px 160px;
+        }
+        @media (min-width: 768px) {
+            .hero-slide { padding-left: 80px; padding-right: 80px; }
+        }
+        @media (max-width: 767px) {
+            .hero-slide { padding: 80px 24px; }
+        }
+        .hero-ouro {
+            position: relative;
+            z-index: 2;
+            width: min(920px, 100%);
+            margin: 0 auto;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .hero-ouro-title {
+            margin: 0;
+            color: #fff;
+            font-weight: 600;
+            letter-spacing: -0.055em;
+            line-height: 0.9;
+            font-size: clamp(4.75rem, 13vw, 9.5rem);
+        }
+        .hero-ouro-copy {
+            margin: 28px 0 0;
+            max-width: 34rem;
+            color: rgba(255,255,255,0.84);
+            font-weight: 300;
+            font-size: clamp(1rem, 1.35vw, 1.25rem);
+            line-height: 1.6;
+        }
+        .hero-ouro a { margin-top: 36px; }
+        .hero-video-shade {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.46);
+        }
+        .hero-bg-video.is-unavailable { visibility: hidden; }
+        .hero-carousel-ui {
+            position: absolute;
+            z-index: 30;
+            left: 50%;
+            bottom: 28px;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .hero-carousel-ui [role="group"] { display: flex; gap: 8px; align-items: center; }
+        .hero-arrow, .hero-dot {
+            background: transparent;
+            color: #fff;
+            cursor: pointer;
+            padding: 0;
+        }
+        .hero-arrow {
+            width: 36px;
+            height: 36px;
+            border: 1px solid rgba(255,255,255,0.28);
+            font-size: 16px;
+            line-height: 1;
+        }
+        .hero-dot {
+            width: 7px;
+            height: 7px;
+            border: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.38);
+        }
+        .hero-dot[aria-current="true"] { background: #fff; }
+        .hero-arrow:focus-visible, .hero-dot:focus-visible {
+            outline: 1px solid #fff;
+            outline-offset: 3px;
+        }
+        #hero .hero-baseline { z-index: 25; }
+        @media (max-width: 767px) {
+            .hero-carousel-ui { bottom: 16px; }
+            .hero-ouro-copy { margin-top: 18px; }
+            .hero-ouro a { margin-top: 24px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .hero-track { transition: none; }
         }
 
         /* Card flip interaction and premium video showcase styles */
@@ -647,34 +758,12 @@
 </div>
 <main class="mt-[116px]">
 <!-- Hero Section -->
-<section id="hero" class="relative min-h-[85vh] flex flex-col justify-center px-margin-mobile md:px-margin-desktop w-full overflow-hidden reveal" aria-label="Hero">
+<section id="hero" class="hero-carousel relative min-h-[85vh] flex flex-col justify-center w-full overflow-hidden reveal" aria-roledescription="carousel" aria-label="Hero">
+<div class="hero-viewport">
+<div class="hero-track" id="hero-track">
+<article class="hero-slide is-active" aria-roledescription="slide" aria-label="1 of 2">
 <div class="absolute inset-0 z-0">
     <canvas id="globe-canvas" style="position:absolute;top:50%;transform:translateY(-50%);right:-4%;width:min(80vh,900px);height:min(80vh,900px);opacity:0.78;filter:grayscale(1) brightness(0.90) contrast(1.12);"></canvas>
-    <video id="hero-bg-video" class="hero-bg-video" autoplay muted loop playsinline preload="none" aria-hidden="true"></video>
-    <script>
-        (function () {
-            var video = document.getElementById('hero-bg-video');
-            if (!video) return;
-            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-            var source = document.createElement('source');
-            source.src = 'https://res.cloudinary.com/dtkluxukm/video/upload/v1792075835/OURO_hero_Video_converted_xjca8t.webm';
-            source.type = 'video/webm';
-            video.appendChild(source);
-            video.preload = 'metadata';
-            video.load();
-            function showFallback() {
-                try { video.pause(); } catch (e) {}
-                video.style.display = 'none';
-            }
-            video.addEventListener('error', showFallback);
-            video.addEventListener('loadeddata', function () {
-                var playAttempt = video.play();
-                if (playAttempt && typeof playAttempt.catch === 'function') {
-                    playAttempt.catch(showFallback);
-                }
-            });
-        })();
-    </script>
     <div class="hero-gradient-side absolute inset-0 bg-gradient-to-r from-black from-[42%] to-transparent hidden md:block"></div>
     <div class="absolute inset-0 bg-gradient-to-b from-black/90 via-black/45 to-black/80 md:hidden"></div>
     <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/45"></div>
@@ -688,13 +777,161 @@
             </p>
 <div class="flex flex-col sm:flex-row gap-4 md:gap-8 reveal" style="transition-delay: 0.4s;">
 <a href="#contact" class="bg-white text-black font-label-md text-label-md uppercase tracking-widest px-8 md:px-12 py-4 md:py-5 font-semibold hover:opacity-90 transition-opacity text-center">Book A Consultation</a>
-<a href="ouro/" class="border border-white/30 text-white font-label-md text-label-md uppercase tracking-widest px-8 md:px-12 py-4 md:py-5 hover:bg-white hover:text-black transition-all duration-500 text-center">Explore OURO CaseStudy</a>
+<button type="button" class="border border-white/30 text-white font-label-md text-label-md uppercase tracking-widest px-8 md:px-12 py-4 md:py-5 hover:bg-white hover:text-black transition-all duration-500 text-center">At Detailed</button>
 </div>
 </div>
+</div>
+</article>
+<article class="hero-slide" aria-roledescription="slide" aria-label="2 of 2" inert>
+<div class="absolute inset-0 z-0 bg-black">
+    <video id="hero-bg-video" class="hero-bg-video" muted loop playsinline preload="none" aria-hidden="true"></video>
+    <div class="hero-video-shade"></div>
+</div>
+<div class="hero-ouro">
+<p class="hero-ouro-title">OURO</p>
+<p class="hero-ouro-copy">A personal-audio vision brought to life through brand identity, creative direction, and launch communications.</p>
+<a href="/ouro/" class="bg-white text-black font-label-md text-label-md uppercase tracking-widest px-8 md:px-12 py-4 md:py-5 font-semibold hover:opacity-90 transition-opacity text-center">Explore OURO Case Study</a>
+</div>
+</article>
+</div>
+</div>
+<div class="hero-carousel-ui">
+<button type="button" class="hero-arrow" data-hero="prev" aria-label="Previous slide">‹</button>
+<div role="group" aria-label="Choose slide">
+<button type="button" class="hero-dot" data-index="0" aria-label="Detailed Group" aria-current="true"></button>
+<button type="button" class="hero-dot" data-index="1" aria-label="OURO"></button>
+</div>
+<button type="button" class="hero-arrow" data-hero="next" aria-label="Next slide">›</button>
 </div>
 <!-- Architectural Line -->
-<div class="absolute bottom-0 left-margin-mobile md:left-margin-desktop right-margin-mobile md:right-margin-desktop h-[1px] bg-white/10"></div>
+<div class="hero-baseline absolute bottom-0 left-margin-mobile md:left-margin-desktop right-margin-mobile md:right-margin-desktop h-[1px] bg-white/10"></div>
 </section>
+<script>
+(function () {
+    var root = document.getElementById('hero');
+    var track = document.getElementById('hero-track');
+    var viewport = root && root.querySelector('.hero-viewport');
+    if (!root || !track || !viewport) return;
+    var slides = root.querySelectorAll('.hero-slide');
+    var dots = root.querySelectorAll('.hero-dot');
+    var video = document.getElementById('hero-bg-video');
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var index = 0;
+    var timer = null;
+    var userPaused = false;
+    var touchX = 0;
+    var touchY = 0;
+
+    function loadVideo() {
+        if (!video || reduced || video.dataset.ready === '1') return;
+        video.dataset.ready = '1';
+        var source = document.createElement('source');
+        source.src = 'https://res.cloudinary.com/dtkluxukm/video/upload/v1792075835/OURO_hero_Video_converted_xjca8t.webm';
+        source.type = 'video/webm';
+        video.appendChild(source);
+        video.preload = 'metadata';
+        video.addEventListener('error', function () { video.classList.add('is-unavailable'); });
+        video.load();
+    }
+
+    function syncVideo() {
+        if (!video || reduced) return;
+        if (index === 1) {
+            loadVideo();
+            var attempt = video.play();
+            if (attempt && typeof attempt.catch === 'function') {
+                attempt.catch(function () { video.classList.add('is-unavailable'); });
+            }
+        } else {
+            try { video.pause(); } catch (e) {}
+        }
+    }
+
+    var controls = root.querySelector('.hero-carousel-ui');
+
+    function placeControls() {
+        if (!controls) return;
+        if (window.innerWidth > 767) {
+            controls.style.bottom = '';
+            return;
+        }
+        var concealed = Math.max(0, root.getBoundingClientRect().bottom - window.innerHeight);
+        controls.style.bottom = (16 + concealed) + 'px';
+    }
+
+    function render() {
+        var width = viewport.clientWidth || 0;
+        track.style.transform = 'translate3d(' + (-index * width) + 'px,0,0)';
+        slides.forEach(function (slide, i) {
+            var on = i === index;
+            slide.classList.toggle('is-active', on);
+            slide.setAttribute('aria-hidden', on ? 'false' : 'true');
+            if (on) slide.removeAttribute('inert');
+            else slide.setAttribute('inert', '');
+        });
+        dots.forEach(function (dot, i) {
+            if (i === index) dot.setAttribute('aria-current', 'true');
+            else dot.removeAttribute('aria-current');
+        });
+        syncVideo();
+        placeControls();
+    }
+
+    function stop() {
+        if (timer) { window.clearTimeout(timer); timer = null; }
+    }
+
+    function arm() {
+        stop();
+        if (reduced || userPaused || document.hidden) return;
+        timer = window.setTimeout(function () { go(index + 1, false); }, 7000);
+    }
+
+    function go(next, fromUser) {
+        index = (next + slides.length) % slides.length;
+        if (fromUser) { userPaused = true; stop(); }
+        render();
+        if (!fromUser) arm();
+    }
+
+    root.querySelector('[data-hero="prev"]').addEventListener('click', function () { go(index - 1, true); });
+    root.querySelector('[data-hero="next"]').addEventListener('click', function () { go(index + 1, true); });
+    dots.forEach(function (dot) {
+        dot.addEventListener('click', function () { go(Number(dot.getAttribute('data-index')), true); });
+    });
+    root.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight') { e.preventDefault(); go(index + 1, true); }
+        if (e.key === 'ArrowLeft') { e.preventDefault(); go(index - 1, true); }
+    });
+    viewport.addEventListener('touchstart', function (e) {
+        if (!e.touches || !e.touches[0]) return;
+        touchX = e.touches[0].clientX;
+        touchY = e.touches[0].clientY;
+    }, { passive: true });
+    viewport.addEventListener('touchmove', function (e) {
+        if (!e.touches || !e.touches[0]) return;
+        var dx = e.touches[0].clientX - touchX;
+        var dy = e.touches[0].clientY - touchY;
+        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 10) e.preventDefault();
+    }, { passive: false });
+    viewport.addEventListener('touchend', function (e) {
+        if (!e.changedTouches || !e.changedTouches[0]) return;
+        var dx = e.changedTouches[0].clientX - touchX;
+        var dy = e.changedTouches[0].clientY - touchY;
+        if (Math.abs(dx) < 48 || Math.abs(dx) < Math.abs(dy)) return;
+        go(dx < 0 ? index + 1 : index - 1, true);
+    });
+    document.addEventListener('visibilitychange', function () {
+        if (document.hidden) stop();
+        else arm();
+    });
+    window.addEventListener('resize', render);
+    window.addEventListener('scroll', placeControls, { passive: true });
+    window.addEventListener('pagehide', stop);
+    render();
+    arm();
+})();
+</script>
 <!-- Marquee Section -->
 <section id="marquee" class="py-12 md:py-20 border-b border-white/5 bg-black overflow-hidden reveal">
 <div class="flex whitespace-nowrap animate-scroll">
