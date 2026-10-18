@@ -36,9 +36,13 @@
 <meta name="twitter:image" content="https://www.detailedgroup.co/social-preview.jpg">
 <meta property="og:type" content="website">
 <title>Detailed | Communication At Organizational Scale</title>
+<link rel="preconnect" href="https://cdn.tailwindcss.com">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" href="DETAILED ANIMATION.webm" as="video" type="video/webm">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&amp;icon_names=arrow_forward,auto_stories,campaign,close,hub,menu,space_dashboard&amp;display=swap" rel="stylesheet">
 <script>document.documentElement.classList.add('splash-active');</script>
 <script id="tailwind-config">
         const sfPro = ["-apple-system", "BlinkMacSystemFont", "SF Pro Display", "SF Pro Text", "Helvetica Neue", "Arial", "sans-serif"];
@@ -130,7 +134,6 @@
             opacity: 0;
             transform: translateY(12px);
             transition: opacity 0.45s cubic-bezier(0.2,0.8,0.2,1), transform 0.45s cubic-bezier(0.2,0.8,0.2,1);
-            will-change: opacity, transform;
         }
         .reveal.active {
             opacity: 1;
@@ -960,7 +963,7 @@
 </div>
 <div class="md:col-start-7 md:col-span-6 reveal" style="transition-delay: 0.3s;">
 <div class="aspect-[4/5] bg-surface-container relative overflow-hidden group border border-white/5">
-<img class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-[2s] ease-out" src="detailed-clarity.jpeg">
+<img class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-[2s] ease-out" src="detailed-clarity.jpeg" width="1080" height="1080" alt="" loading="lazy" decoding="async">
 <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-40"></div>
 </div>
 </div>
@@ -1118,11 +1121,11 @@
 <div className="trust-video-container">
   <video
     className="trust-video"
-    autoPlay
     loop
     muted
     playsInline
-    preload="auto"
+    preload="none"
+    data-defer-video
   >
     <source src="dgcube.webm" type="video/webm" />
   </video>
@@ -1197,7 +1200,7 @@
 <div class="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16">
 <article class="group reveal cursor-pointer">
 <div class="aspect-[16/9] overflow-hidden mb-8 md:mb-10 border border-white/10">
-<img class="w-full h-full object-cover grayscale opacity-50 transition-all duration-[1.5s] group-hover:scale-105 group-hover:opacity-80" data-alt="A moody, cinematic aerial shot of a glass skyscraper." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJDlv5wN6Jdxs6qoQk5laiowpl940y0mAsfdysaQf9xIxQcSZygfKSUOsXa6X-NbhMkHM9vK7BpPy_FCqRnmyEv0KmIs7O7p-STRIpCeBodz7ByVW6_Oee2GOVrtRDjF5Rg0cdnLDZPbdvxDw-KqT3BLtjS7YuRi00i8fjQ4XSanoY9G4s-3PH97_sW_8fON8H8YFwHICbb9piTQ_eeNwQpB9LnOOodmppAlG7Tq1VkVOF4beE57GZlgKHhthR69HAGouXHsjosg">
+<img class="w-full h-full object-cover grayscale opacity-50 transition-all duration-[1.5s] group-hover:scale-105 group-hover:opacity-80" alt="" width="1200" height="675" loading="lazy" decoding="async" data-alt="A moody, cinematic aerial shot of a glass skyscraper." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJDlv5wN6Jdxs6qoQk5laiowpl940y0mAsfdysaQf9xIxQcSZygfKSUOsXa6X-NbhMkHM9vK7BpPy_FCqRnmyEv0KmIs7O7p-STRIpCeBodz7ByVW6_Oee2GOVrtRDjF5Rg0cdnLDZPbdvxDw-KqT3BLtjS7YuRi00i8fjQ4XSanoY9G4s-3PH97_sW_8fON8H8YFwHICbb9piTQ_eeNwQpB9LnOOodmppAlG7Tq1VkVOF4beE57GZlgKHhthR69HAGouXHsjosg">
 </div>
 <div class="flex items-center gap-4 mb-4">
 <span class="font-label-sm text-label-sm uppercase tracking-widest text-silver/30">01 / Challenge</span>
@@ -1208,7 +1211,10 @@
 </article>
 <article class="group reveal cursor-pointer" style="transition-delay: 0.2s;">
 <div class="aspect-[16/9] overflow-hidden mb-8 md:mb-10 border border-white/10">
-<img class="w-full h-full object-cover grayscale opacity-50 transition-all duration-[1.5s] group-hover:scale-105 group-hover:opacity-80" data-alt="A macro photograph of a sleek presentation screen." src="exec.jpg">
+<picture>
+<source type="image/webp" srcset="exec-960.webp 960w, exec-1600.webp 1600w" sizes="(min-width: 768px) 46vw, 100vw">
+<img class="w-full h-full object-cover grayscale opacity-50 transition-all duration-[1.5s] group-hover:scale-105 group-hover:opacity-80" alt="" width="1600" height="1067" loading="lazy" decoding="async" data-alt="A macro photograph of a sleek presentation screen." sizes="(min-width: 768px) 46vw, 100vw" src="exec-1600.jpg" srcset="exec-960.jpg 960w, exec-1600.jpg 1600w">
+</picture>
 </div>
 <div class="flex items-center gap-4 mb-4">
 <span class="font-label-sm text-label-sm uppercase tracking-widest text-silver/30">02 / Challenge</span>
@@ -1223,7 +1229,7 @@
 <!-- Premium Video Showcase (connected to Strategic Challenges) -->
 <section id="video-showcase" class="video-showcase relative w-full overflow-hidden bg-black text-white" aria-label="Company demo video">
   <div class="video-inner reveal" style="min-height:60vh;">
-    <video id="demo-video" class="w-full h-full object-cover" autoplay muted loop preload="metadata" poster="" aria-hidden="false">
+    <video id="demo-video" class="w-full h-full object-cover" muted loop playsinline preload="none" data-defer-video poster="" aria-hidden="false">
       <source src="AURA-VISUALS.webm" type="video/webm">
       <!-- Placeholder: replace src with production demo video -->
     </video>
@@ -1323,7 +1329,7 @@
 </div>
 </div>
 </footer>
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 <script type="module">
     import { animate } from "https://cdn.jsdelivr.net/npm/motion@12.40.0/+esm";
 
@@ -1425,8 +1431,8 @@
         safetyTimeout = setTimeout(exitWithClipWipe, SPLASH_CONFIG.maxDurationMs);
     })();
 </script>
-<script src="/assets/lenis/lenis.min.js"></script>
-<script src="/assets/smooth-scroll.js"></script>
+<script defer src="/assets/lenis/lenis.min.js"></script>
+<script defer src="/assets/smooth-scroll.js"></script>
 <script>
     function initScrollReveal() {
         const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -2052,12 +2058,37 @@
 
     window.addEventListener('resize', updateSectionInverted);
 
+    document.querySelectorAll('[data-defer-video]').forEach(function (video) {
+        if (!('IntersectionObserver' in window)) {
+            video.preload = 'metadata';
+            var immediate = video.play();
+            if (immediate && immediate.catch) immediate.catch(function () {});
+            return;
+        }
+        var videoObserver = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                    if (video.preload === 'none') video.preload = 'metadata';
+                    var attempt = video.play();
+                    if (attempt && attempt.catch) attempt.catch(function () {});
+                } else {
+                    video.pause();
+                }
+            });
+        }, { rootMargin: '240px 0px' });
+        videoObserver.observe(video);
+    });
+
     const demo = document.getElementById('demo-video');
     const container = demo ? demo.closest('.video-inner') : null;
     if (demo && container && !prefersReducedMotion) {
         let ticking = false;
         function update() {
             const rect = container.getBoundingClientRect();
+            if (rect.bottom < -80 || rect.top > window.innerHeight + 80) {
+                ticking = false;
+                return;
+            }
             const translate = (rect.top - window.innerHeight / 2) * -0.08;
             demo.style.transform = `translateY(${translate}px) scale(1.02)`;
             ticking = false;

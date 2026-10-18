@@ -157,14 +157,14 @@
           io.unobserve(section);
           var shown = section.querySelector(".land-bg");
           var probe = probes[section.id];
-          if (shown && probe && !probe.src) probe.src = shown.getAttribute("src");
+          if (shown && probe && !probe.src) probe.src = shown.getAttribute("data-probe") || shown.currentSrc || shown.src;
         });
       }, { rootMargin: "240px 0px" });
       sections.forEach(function (section) { io.observe(section); });
     } else {
       sections.forEach(function (section) {
         var shown = section.querySelector(".land-bg");
-        if (shown) probes[section.id].src = shown.getAttribute("src");
+        if (shown) probes[section.id].src = shown.getAttribute("data-probe") || shown.currentSrc || shown.src;
       });
     }
 
