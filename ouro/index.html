@@ -8,12 +8,19 @@
 <link rel="preconnect" href="https://res.cloudinary.com">
 <link rel="preconnect" href="https://res.cloudinary.com" crossorigin>
 <link rel="stylesheet" href="/assets/lenis/lenis.css">
-<link rel="stylesheet" href="/ouro/assets/ouro.css?v=13">
+<link rel="stylesheet" href="/ouro/assets/ouro.css?v=14">
+<script>
+if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  document.documentElement.classList.add("is-horizontal");
+}
+</script>
 </head>
 <body class="is-landing">
 <a class="skip" href="#overview">Skip to chapters</a>
 <a class="group-link" href="/">Detailed Group</a>
-<main>
+<main class="h-scroll" id="chapters">
+<div class="h-pin">
+<div class="h-track" id="chapter-track">
   <section class="land is-video" id="overview">
     <video class="land-video" autoplay muted loop playsinline preload="metadata">
       <source src="https://res.cloudinary.com/dtkluxukm/video/upload/v1792075835/OURO_hero_Video_converted_xjca8t.webm" type="video/webm">
@@ -26,7 +33,6 @@
         <p class="lead">One product. One connected story.</p>
         <p class="note">An integrated communications direction for ORIVS and its OURO personal-audio product.</p>
       </div>
-      <a class="arrow" href="/ouro/story/" aria-label="Open Overview and Story">&gt;</a>
     </div>
   </section>
 
@@ -39,7 +45,6 @@
         <h1>THE VISION</h1>
         <p class="lead">Establishing a shared direction for the product, the launch, and the opportunity behind it.</p>
       </div>
-      <a class="arrow" href="/ouro/vision/" aria-label="Open The Vision">&gt;</a>
     </div>
   </section>
 
@@ -51,7 +56,6 @@
         <h1>BRAND IDENTITY</h1>
         <p class="lead">Building a recognizable visual identity for OURO.</p>
       </div>
-      <a class="arrow" href="/ouro/identity/" aria-label="Open Brand Identity">&gt;</a>
     </div>
   </section>
 
@@ -63,7 +67,6 @@
         <h1>CREATIVE DIRECTION</h1>
         <p class="lead">One visual language, expressed across multiple communication channels.</p>
       </div>
-      <a class="arrow" href="/ouro/creative-direction/" aria-label="Open Creative Direction">&gt;</a>
     </div>
   </section>
 
@@ -75,12 +78,13 @@
         <h1>LAUNCH COMMUNICATIONS</h1>
         <p class="lead">Bringing the product story to its launch moment and communicating the wider business opportunity.</p>
       </div>
-      <a class="arrow" href="/ouro/launch/" aria-label="Open Launch Communications">&gt;</a>
     </div>
   </section>
+</div>
+</div>
 </main>
 <script defer src="/assets/lenis/lenis.min.js"></script>
 <script defer src="/assets/smooth-scroll.js"></script>
-<script defer src="/ouro/assets/ouro.js?v=10"></script>
+<script defer src="/ouro/assets/ouro.js?v=11"></script>
 </body>
 </html>

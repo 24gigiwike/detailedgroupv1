@@ -1,5 +1,8 @@
 (function () {
-  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var reducedQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var reduced = reducedQuery.matches;
+  initHorizontal();
+
   var video = document.querySelector(".land-video");
   if (video && !reduced && "IntersectionObserver" in window) {
     var watch = new IntersectionObserver(function (entries) {
@@ -16,15 +19,115 @@
   }
 
   initPhotoContrast();
+  revealChapter(location.hash);
 
-  var id = (location.hash || "").replace("#", "");
-  if (!id) return;
-  var chapter = document.getElementById(id);
-  if (!chapter) return;
-  requestAnimationFrame(function () {
-    if (window.__dgLenis) window.__dgLenis.scrollTo(chapter, { immediate: true, force: true });
-    else chapter.scrollIntoView({ block: "start" });
-  });
+  function initHorizontal() {
+    var scroller = document.getElementById("chapters");
+    var pin = scroller && scroller.querySelector(".h-pin");
+    var track = document.getElementById("chapter-track");
+    if (!scroller || !pin || !track) return;
+
+    var active = false;
+    var progress = 0;
+
+    function travel() {
+      return Math.max(0, track.scrollWidth - pin.clientWidth);
+    }
+
+    function panels() {
+      return track.querySelectorAll(".land");
+    }
+
+    function measure() {
+      var items = panels();
+      if (reducedQuery.matches) {
+        active = false;
+        document.documentElement.classList.remove("is-horizontal");
+        scroller.style.height = "";
+        track.style.transform = "";
+        for (var i = 0; i < items.length; i++) {
+          items[i].style.width = "";
+          items[i].style.flexBasis = "";
+        }
+        return;
+      }
+      active = true;
+      document.documentElement.classList.add("is-horizontal");
+      var width = pin.clientWidth;
+      for (var j = 0; j < items.length; j++) {
+        items[j].style.width = width + "px";
+        items[j].style.flexBasis = width + "px";
+      }
+      var distance = travel();
+      scroller.style.height = (pin.clientHeight + distance) + "px";
+      if (window.__dgLenis && window.__dgLenis.resize) window.__dgLenis.resize();
+      apply();
+    }
+
+    function apply() {
+      if (!active) return;
+      var distance = travel();
+      var max = Math.max(0, scroller.offsetHeight - pin.clientHeight);
+      var start = scroller.getBoundingClientRect().top + window.scrollY;
+      var y = window.scrollY - start;
+      if (y < 0) y = 0;
+      if (y > max) y = max;
+      progress = max > 0 ? y / max : 0;
+      var x = distance * progress;
+      track.style.transform = "translate3d(" + (-x) + "px,0,0)";
+    }
+
+    var frame = 0;
+    function requestApply() {
+      if (frame) return;
+      frame = requestAnimationFrame(function () {
+        frame = 0;
+        apply();
+      });
+    }
+
+    measure();
+    addEventListener("scroll", requestApply, { passive: true });
+    var resizeTimer;
+    addEventListener("resize", function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(measure, 80);
+    });
+    reducedQuery.addEventListener("change", measure);
+    window.addEventListener("load", measure);
+
+    window.__ouroScrollToChapter = function (id, immediate) {
+      var items = panels();
+      var index = -1;
+      for (var i = 0; i < items.length; i++) {
+        if (items[i].id === id) index = i;
+      }
+      if (index < 0) return;
+      if (!active || items.length < 2) {
+        var target = document.getElementById(id);
+        if (target) target.scrollIntoView({ block: "start" });
+        return;
+      }
+      var max = Math.max(0, scroller.offsetHeight - pin.clientHeight);
+      var start = scroller.getBoundingClientRect().top + window.scrollY;
+      var y = start + (index / (items.length - 1)) * max;
+      if (window.__dgLenis && window.__dgLenis.scrollTo) {
+        window.__dgLenis.scrollTo(y, { immediate: !!immediate, force: true });
+      } else {
+        window.scrollTo(0, y);
+      }
+      apply();
+    };
+  }
+
+  function revealChapter(hash) {
+    var id = (hash || "").replace("#", "");
+    if (!id || !document.getElementById(id)) return;
+    requestAnimationFrame(function () {
+      if (window.__ouroScrollToChapter) window.__ouroScrollToChapter(id, true);
+    });
+  }
+  addEventListener("hashchange", function () { revealChapter(location.hash); });
 
   function initPhotoContrast() {
     var sections = document.querySelectorAll(".land.has-photo");
@@ -49,8 +152,8 @@
     function fallback(section) {
       var theme = section.getAttribute("data-fallback") === "dark" ? "dark" : "light";
       section.setAttribute("data-contrast-source", "fallback");
-      apply(section.querySelector(".land-copy"), theme, false);
-      apply(section.querySelector(".arrow"), theme, false);
+      var copy = section.querySelector(".land-copy");
+      if (copy) apply(copy, theme, false);
     }
 
     function contentRect(el) {
@@ -120,8 +223,8 @@
       var mode = section.getAttribute("data-contrast") || "auto";
       if (mode === "light" || mode === "dark") {
         section.setAttribute("data-contrast-source", "manual");
-        apply(section.querySelector(".land-copy"), mode, false);
-        apply(section.querySelector(".arrow"), mode, false);
+        var manualCopy = section.querySelector(".land-copy");
+        if (manualCopy) apply(manualCopy, mode, false);
         return;
       }
       var probe = probes[section.id];
@@ -130,11 +233,11 @@
         return;
       }
       try {
-        var copy = sample(probe, section, section.querySelector(".land-copy"));
-        var arrow = sample(probe, section, section.querySelector(".arrow"));
+        var copyEl = section.querySelector(".land-copy");
+        if (!copyEl) return;
+        var copy = sample(probe, section, copyEl);
         section.setAttribute("data-contrast-source", "image");
-        apply(section.querySelector(".land-copy"), copy.theme, copy.mixed);
-        apply(section.querySelector(".arrow"), arrow.theme, arrow.mixed);
+        apply(copyEl, copy.theme, copy.mixed);
       } catch (err) {
         fallback(section);
       }
@@ -159,7 +262,7 @@
           var probe = probes[section.id];
           if (shown && probe && !probe.src) probe.src = shown.getAttribute("data-probe") || shown.currentSrc || shown.src;
         });
-      }, { rootMargin: "240px 0px" });
+      }, { rootMargin: "0px 100% 0px 0px" });
       sections.forEach(function (section) { io.observe(section); });
     } else {
       sections.forEach(function (section) {

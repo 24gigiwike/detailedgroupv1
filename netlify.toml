@@ -66,3 +66,64 @@
   [headers.values]
     Cache-Control = "public, max-age=604800"
 
+# Former OURO chapter pages now live in the single /ouro/ experience.
+[[redirects]]
+  from = "/ouro/story"
+  to = "/ouro/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/ouro/story/"
+  to = "/ouro/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/ouro/vision"
+  to = "/ouro/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/ouro/vision/"
+  to = "/ouro/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/ouro/identity"
+  to = "/ouro/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/ouro/identity/"
+  to = "/ouro/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/ouro/creative-direction"
+  to = "/ouro/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/ouro/creative-direction/"
+  to = "/ouro/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/ouro/launch"
+  to = "/ouro/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/ouro/launch/"
+  to = "/ouro/"
+  status = 301
+  force = true
+
