@@ -86,13 +86,16 @@
           panel.style.width = width + "px";
           panel.style.flexBasis = width + "px";
         }
+        var columns = seq.querySelector("#event-columns");
         if (!active) {
           seq.style.height = "";
           track.style.transform = "";
+          if (columns) columns.style.transform = "";
           return;
         }
         var distance = Math.max(0, track.scrollWidth - full);
-        seq.style.height = (pin.clientHeight + distance) + "px";
+        var extra = columns && narrow ? Math.max(0, columns.offsetHeight - pin.clientHeight) : 0;
+        seq.style.height = (pin.clientHeight + distance + extra) + "px";
       });
       if (window.__dgLenis && window.__dgLenis.resize) window.__dgLenis.resize();
       apply();
@@ -105,12 +108,30 @@
         var pin = seq.querySelector(".h-pin");
         var track = seq.querySelector(".h-track");
         var distance = Math.max(0, track.scrollWidth - pin.clientWidth);
+        var columns = seq.querySelector("#event-columns");
+        var extra = columns && window.matchMedia("(max-width: 700px)").matches
+          ? Math.max(0, columns.offsetHeight - pin.clientHeight) : 0;
         var max = Math.max(0, seq.offsetHeight - pin.clientHeight);
         var start = seq.getBoundingClientRect().top + y;
         var local = y - start;
         if (local < 0) local = 0;
         if (local > max) local = max;
         var x = max > 0 ? (local / max) * distance : 0;
+        if (extra && columns) {
+          var colLeft = columns.offsetLeft;
+          var yShift = 0;
+          if (local <= colLeft) x = local;
+          else if (local <= colLeft + extra) {
+            x = colLeft;
+            yShift = local - colLeft;
+          } else {
+            x = local - extra;
+            yShift = extra;
+          }
+          columns.style.transform = "translate3d(0," + (-yShift) + "px,0)";
+        } else if (columns) {
+          columns.style.transform = "";
+        }
         track.style.transform = "translate3d(" + (-x) + "px,0,0)";
       });
     }
