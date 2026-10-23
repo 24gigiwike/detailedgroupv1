@@ -107,13 +107,12 @@
       dialog.hidden = true;
       document.documentElement.classList.remove("is-reading");
       removeEventListener("scroll", holdScroll);
+      if (opener && opener.focus) opener.focus({ preventScroll: true });
+      window.scrollTo(0, lockedY);
       if (window.__dgLenis && window.__dgLenis.start) window.__dgLenis.start();
       if (window.__dgLenis && window.__dgLenis.scrollTo) {
         window.__dgLenis.scrollTo(lockedY, { immediate: true, force: true });
-      } else {
-        window.scrollTo(0, lockedY);
       }
-      if (opener) opener.focus();
     }
 
     document.querySelectorAll(".read-more").forEach(function (button) {

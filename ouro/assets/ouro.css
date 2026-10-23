@@ -170,7 +170,8 @@ html.is-reading body {
   padding: clamp(5.5rem, 12vh, 8rem) clamp(1.4rem, 5vw, 5rem) clamp(2.2rem, 7vh, 4.5rem);
   background: #070b18;
 }
-#overview { height: auto; }
+#overview,
+#launch { height: auto; }
 .panel.is-video { background: var(--ink); }
 .ouro-mark {
   margin: 0;
