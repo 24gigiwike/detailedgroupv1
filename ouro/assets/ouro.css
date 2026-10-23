@@ -172,20 +172,6 @@ html.is-reading body {
 }
 #overview { height: auto; }
 .panel.is-video { background: var(--ink); }
-.panel.is-banner {
-  align-items: center;
-  justify-content: flex-start;
-  padding: clamp(2rem, 6vh, 4rem) clamp(1.4rem, 3vw, 2.6rem);
-  background: linear-gradient(165deg, #24356f 0%, #12182e 48%, #05060c 100%);
-}
-.banner-title {
-  margin: 0;
-  max-width: 8ch;
-  font-size: clamp(2rem, 3.4vw, 4.2rem);
-  font-weight: 500;
-  letter-spacing: -0.045em;
-  line-height: 0.92;
-}
 .ouro-mark {
   margin: 0;
   width: min(16rem, 72vw);
@@ -394,7 +380,6 @@ html.is-reading body {
 }
 @media (max-width: 700px) {
   .group-link { top: 1rem; right: 1rem; }
-  .banner-title { font-size: clamp(1.8rem, 8vw, 2.6rem); }
   #event-columns { height: auto; min-height: 0; overflow: visible; }
   .cols-4 { flex-direction: column; height: auto; }
   .cols-4 .col {
