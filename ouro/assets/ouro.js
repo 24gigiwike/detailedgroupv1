@@ -40,7 +40,7 @@
     }
   }
 
-  initSequences();
+  initReading();
 
   if (!reduced && "IntersectionObserver" in window) {
     var watch = new IntersectionObserver(function (entries) {
@@ -60,125 +60,100 @@
   initPhotoContrast();
   revealChapter(location.hash);
 
-  function initSequences() {
-    var seqs = [].slice.call(document.querySelectorAll(".h-seq"));
-    if (!seqs.length) return;
-    var active = false;
+  function initReading() {
+    var dialog = document.getElementById("read-overlay");
+    var title = document.getElementById("read-title");
+    var body = dialog && dialog.querySelector(".read-body");
+    var closeBtn = dialog && dialog.querySelector(".read-close");
+    if (!dialog || !title || !body || !closeBtn) return;
+    var opener = null;
+    var lockedY = 0;
+    var open = false;
 
-    function measure() {
-      active = !reducedQuery.matches;
-      document.documentElement.classList.toggle("is-horizontal", active);
-      var narrow = window.matchMedia("(max-width: 700px)").matches;
-      seqs.forEach(function (seq) {
-        var pin = seq.querySelector(".h-pin");
-        var track = seq.querySelector(".h-track");
-        var panels = track.children;
-        var full = pin.clientWidth;
-        var banner = narrow ? Math.round(full * 0.78) : Math.round(full * 0.4);
-        for (var i = 0; i < panels.length; i++) {
-          var panel = panels[i];
-          if (!active) {
-            panel.style.width = "";
-            panel.style.flexBasis = "";
-            continue;
-          }
-          var width = panel.classList.contains("is-banner") ? banner : full;
-          panel.style.width = width + "px";
-          panel.style.flexBasis = width + "px";
-        }
-        var columns = seq.querySelector("#event-columns");
-        if (!active) {
-          seq.style.height = "";
-          track.style.transform = "";
-          if (columns) columns.style.transform = "";
-          return;
-        }
-        var distance = Math.max(0, track.scrollWidth - full);
-        var extra = columns && narrow ? Math.max(0, columns.offsetHeight - pin.clientHeight) : 0;
-        seq.style.height = (pin.clientHeight + distance + extra) + "px";
-      });
-      if (window.__dgLenis && window.__dgLenis.resize) window.__dgLenis.resize();
-      apply();
+    function holdScroll() {
+      if (!open || window.scrollY === lockedY) return;
+      if (window.__dgLenis && window.__dgLenis.scrollTo) {
+        window.__dgLenis.scrollTo(lockedY, { immediate: true, force: true });
+      } else {
+        window.scrollTo(0, lockedY);
+      }
     }
 
-    function apply() {
-      if (!active) return;
-      var y = window.scrollY;
-      seqs.forEach(function (seq) {
-        var pin = seq.querySelector(".h-pin");
-        var track = seq.querySelector(".h-track");
-        var distance = Math.max(0, track.scrollWidth - pin.clientWidth);
-        var columns = seq.querySelector("#event-columns");
-        var extra = columns && window.matchMedia("(max-width: 700px)").matches
-          ? Math.max(0, columns.offsetHeight - pin.clientHeight) : 0;
-        var max = Math.max(0, seq.offsetHeight - pin.clientHeight);
-        var start = seq.getBoundingClientRect().top + y;
-        var local = y - start;
-        if (local < 0) local = 0;
-        if (local > max) local = max;
-        var x = max > 0 ? (local / max) * distance : 0;
-        if (extra && columns) {
-          var colLeft = columns.offsetLeft;
-          var yShift = 0;
-          if (local <= colLeft) x = local;
-          else if (local <= colLeft + extra) {
-            x = colLeft;
-            yShift = local - colLeft;
-          } else {
-            x = local - extra;
-            yShift = extra;
-          }
-          columns.style.transform = "translate3d(0," + (-yShift) + "px,0)";
-        } else if (columns) {
-          columns.style.transform = "";
-        }
-        track.style.transform = "translate3d(" + (-x) + "px,0,0)";
+    function focusables() {
+      return [].slice.call(dialog.querySelectorAll("button, a[href], [tabindex]")).filter(function (el) {
+        return el.tabIndex >= 0 && !el.disabled;
       });
     }
 
-    var frame = 0;
-    function requestApply() {
-      if (frame) return;
-      frame = requestAnimationFrame(function () {
-        frame = 0;
-        apply();
-      });
+    function show(source, button) {
+      if (!source || open) return;
+      title.textContent = source.getAttribute("data-title") || "";
+      body.innerHTML = source.innerHTML;
+      opener = button;
+      lockedY = window.scrollY;
+      open = true;
+      dialog.hidden = false;
+      requestAnimationFrame(function () { dialog.classList.add("is-open"); });
+      document.documentElement.classList.add("is-reading");
+      if (window.__dgLenis && window.__dgLenis.stop) window.__dgLenis.stop();
+      addEventListener("scroll", holdScroll, { passive: true });
+      closeBtn.focus();
     }
 
-    measure();
-    addEventListener("scroll", requestApply, { passive: true });
-    var resizeTimer;
-    addEventListener("resize", function () {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(measure, 80);
+    function hide() {
+      if (!open) return;
+      open = false;
+      dialog.classList.remove("is-open");
+      dialog.hidden = true;
+      document.documentElement.classList.remove("is-reading");
+      removeEventListener("scroll", holdScroll);
+      if (window.__dgLenis && window.__dgLenis.start) window.__dgLenis.start();
+      if (window.__dgLenis && window.__dgLenis.scrollTo) {
+        window.__dgLenis.scrollTo(lockedY, { immediate: true, force: true });
+      } else {
+        window.scrollTo(0, lockedY);
+      }
+      if (opener) opener.focus();
+    }
+
+    document.querySelectorAll(".read-more").forEach(function (button) {
+      button.addEventListener("click", function () {
+        show(document.getElementById(button.getAttribute("data-read")), button);
+      });
     });
-    reducedQuery.addEventListener("change", measure);
-    window.addEventListener("load", measure);
-
-    window.__ouroScrollToChapter = function (id, immediate) {
-      var el = document.getElementById(id);
-      if (!el) return;
-      var seq = el.closest(".h-seq");
-      if (!active || !seq) {
-        el.scrollIntoView({ block: "start" });
+    closeBtn.addEventListener("click", hide);
+    document.addEventListener("keydown", function (event) {
+      if (!open) return;
+      if (event.key === "Escape") {
+        event.preventDefault();
+        hide();
         return;
       }
-      var start = seq.getBoundingClientRect().top + window.scrollY;
-      var y = start + el.offsetLeft;
-      if (window.__dgLenis && window.__dgLenis.scrollTo) {
-        window.__dgLenis.scrollTo(y, { immediate: !!immediate, force: true });
-      } else {
-        window.scrollTo(0, y);
+      if (event.key !== "Tab") return;
+      var items = focusables();
+      if (!items.length) return;
+      var first = items[0];
+      var last = items[items.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
       }
-      apply();
-    };
+    });
   }
 
   function revealChapter(hash) {
     var id = (hash || "").replace("#", "");
-    if (!id || !document.getElementById(id)) return;
+    var el = id && document.getElementById(id);
+    if (!el) return;
     requestAnimationFrame(function () {
-      if (window.__ouroScrollToChapter) window.__ouroScrollToChapter(id, true);
+      if (window.__dgLenis && window.__dgLenis.scrollTo) {
+        window.__dgLenis.scrollTo(el, { immediate: true, force: true });
+      } else {
+        el.scrollIntoView({ block: "start" });
+      }
     });
   }
   addEventListener("hashchange", function () { revealChapter(location.hash); });
@@ -316,7 +291,7 @@
           var probe = probes[section.id];
           if (shown && probe && !probe.src) probe.src = shown.getAttribute("data-probe") || shown.currentSrc || shown.src;
         });
-      }, { rootMargin: "0px 100% 0px 0px" });
+      }, { rootMargin: "200px 0px" });
       sections.forEach(function (section) { io.observe(section); });
     } else {
       sections.forEach(function (section) {
