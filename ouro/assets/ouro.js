@@ -40,7 +40,7 @@
     }
   }
 
-  initReading();
+  initChapterNav();
 
   if (!reduced && "IntersectionObserver" in window) {
     var watch = new IntersectionObserver(function (entries) {
@@ -60,85 +60,39 @@
   initPhotoContrast();
   revealChapter(location.hash);
 
-  function initReading() {
-    var dialog = document.getElementById("read-overlay");
-    var title = document.getElementById("read-title");
-    var body = dialog && dialog.querySelector(".read-body");
-    var closeBtn = dialog && dialog.querySelector(".read-close");
-    if (!dialog || !title || !body || !closeBtn) return;
-    var opener = null;
-    var lockedY = 0;
-    var open = false;
+  function initChapterNav() {
+    var root = document.querySelector(".chapter-nav");
+    if (!root) return;
+    var toggle = root.querySelector(".chapter-toggle");
+    var menu = root.querySelector(".chapter-menu");
+    var closeBtn = root.querySelector(".chapter-close");
+    if (!toggle || !menu || !closeBtn) return;
 
-    function holdScroll() {
-      if (!open || window.scrollY === lockedY) return;
-      if (window.__dgLenis && window.__dgLenis.scrollTo) {
-        window.__dgLenis.scrollTo(lockedY, { immediate: true, force: true });
-      } else {
-        window.scrollTo(0, lockedY);
-      }
+    function setOpen(on) {
+      root.classList.toggle("is-open", on);
+      toggle.setAttribute("aria-expanded", on ? "true" : "false");
+      menu.hidden = !on;
+      if (on) closeBtn.focus({ preventScroll: true });
     }
 
-    function focusables() {
-      return [].slice.call(dialog.querySelectorAll("button, a[href], [tabindex]")).filter(function (el) {
-        return el.tabIndex >= 0 && !el.disabled;
-      });
-    }
-
-    function show(source, button) {
-      if (!source || open) return;
-      title.textContent = source.getAttribute("data-title") || "";
-      body.innerHTML = source.innerHTML;
-      opener = button;
-      lockedY = window.scrollY;
-      open = true;
-      dialog.hidden = false;
-      requestAnimationFrame(function () { dialog.classList.add("is-open"); });
-      document.documentElement.classList.add("is-reading");
-      if (window.__dgLenis && window.__dgLenis.stop) window.__dgLenis.stop();
-      addEventListener("scroll", holdScroll, { passive: true });
-      closeBtn.focus();
-    }
-
-    function hide() {
-      if (!open) return;
-      open = false;
-      dialog.classList.remove("is-open");
-      dialog.hidden = true;
-      document.documentElement.classList.remove("is-reading");
-      removeEventListener("scroll", holdScroll);
-      if (opener && opener.focus) opener.focus({ preventScroll: true });
-      window.scrollTo(0, lockedY);
-      if (window.__dgLenis && window.__dgLenis.start) window.__dgLenis.start();
-      if (window.__dgLenis && window.__dgLenis.scrollTo) {
-        window.__dgLenis.scrollTo(lockedY, { immediate: true, force: true });
-      }
-    }
-
-    document.querySelectorAll(".read-more").forEach(function (button) {
-      button.addEventListener("click", function () {
-        show(document.getElementById(button.getAttribute("data-read")), button);
-      });
+    toggle.addEventListener("click", function (event) {
+      event.stopPropagation();
+      setOpen(menu.hidden);
     });
-    closeBtn.addEventListener("click", hide);
+    closeBtn.addEventListener("click", function (event) {
+      event.stopPropagation();
+      setOpen(false);
+      toggle.focus({ preventScroll: true });
+    });
+    document.addEventListener("click", function (event) {
+      if (menu.hidden || root.contains(event.target)) return;
+      setOpen(false);
+    });
     document.addEventListener("keydown", function (event) {
-      if (!open) return;
-      if (event.key === "Escape") {
+      if (event.key === "Escape" && !menu.hidden) {
         event.preventDefault();
-        hide();
-        return;
-      }
-      if (event.key !== "Tab") return;
-      var items = focusables();
-      if (!items.length) return;
-      var first = items[0];
-      var last = items[items.length - 1];
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
+        setOpen(false);
+        toggle.focus();
       }
     });
   }
