@@ -5,6 +5,9 @@
 // a clean neutral placeholder panel with a subtle "Media pending" label.
 // =========================================================================
 const ouroMedia = {
+  // [LAUNCH_HERO_MEDIA_URL] - Launch Communications Hero Video
+  launchHero: "https://res.cloudinary.com/dtkluxukm/video/upload/v1792483605/OPENING_FILM_converted_1_otfynh.webm",
+
   // [BRAND_HERO_MEDIA_URL] - Brand Identity Hero Background Video/Image
   brandHero: "https://res.cloudinary.com/dtkluxukm/video/upload/v1792948648/VID_i2hl0y.mp4",
 
@@ -21,41 +24,21 @@ const ouroMedia = {
     // [KEYNOTE_SLIDE_01_MEDIA_URL] - Slide 01: Opening Film
     openingFilm: "https://res.cloudinary.com/dtkluxukm/video/upload/v1792948648/VID_i2hl0y.mp4",
 
-    // [KEYNOTE_SLIDE_02_MEDIA_URL] - Slide 02: NEXT '26
-    next26: "https://res.cloudinary.com/dtkluxukm/video/upload/v1792948648/VID_i2hl0y.mp4",
-
-    // [KEYNOTE_SLIDE_03_MEDIA_URL] - Slide 03: The Future Isn't Louder
-    futureNotLouder: "https://res.cloudinary.com/dtkluxukm/video/upload/v1792948648/VID_i2hl0y.mp4",
-
-    // [KEYNOTE_SLIDE_04_MEDIA_URL] - Slide 04: Designed Around Life
-    designedAroundLife: "https://res.cloudinary.com/dtkluxukm/video/upload/v1792948648/VID_i2hl0y.mp4",
-
-    // [KEYNOTE_SLIDE_05_MEDIA_URL] - Slide 05: One Question
-    oneQuestion: "https://res.cloudinary.com/dtkluxukm/video/upload/v1792948648/VID_i2hl0y.mp4",
-
-    // [KEYNOTE_SLIDE_06_MEDIA_URL] - Slide 06: How Should Personal Audio Feel?
-    personalAudioQuestion: "https://res.cloudinary.com/dtkluxukm/video/upload/v1792948648/VID_i2hl0y.mp4",
-
-    // [KEYNOTE_SLIDE_07_MEDIA_URL] - Slide 07: Built With Intention
-    builtWithIntention: "https://res.cloudinary.com/dtkluxukm/video/upload/v1792948648/VID_i2hl0y.mp4",
-
-    // [KEYNOTE_SLIDE_08_MEDIA_URL] - Slide 08: Product Film
-    productFilm: "https://res.cloudinary.com/dtkluxukm/video/upload/v1792948648/VID_i2hl0y.mp4",
-
-    // [KEYNOTE_SLIDE_09_MEDIA_URL] - Slide 09: Product Reveal
-    productReveal: "https://res.cloudinary.com/dtkluxukm/video/upload/v1792948648/VID_i2hl0y.mp4",
-
-    // [KEYNOTE_SLIDE_10_MEDIA_URL] - Slide 10: Designed To Disappear
-    designedToDisappear: "https://res.cloudinary.com/dtkluxukm/video/upload/v1792948648/VID_i2hl0y.mp4",
-
-    // [KEYNOTE_SLIDE_11_MEDIA_URL] - Slide 11: Craftsmanship
-    craftsmanship: "https://res.cloudinary.com/dtkluxukm/video/upload/v1792948648/VID_i2hl0y.mp4",
-
-    // [KEYNOTE_SLIDE_12_MEDIA_URL] - Slide 12: Companion App
-    companionApp: "https://res.cloudinary.com/dtkluxukm/video/upload/v1792948648/VID_i2hl0y.mp4",
+    // Slides 02–12: Genuinely pending unique media assets (left empty to display clean placeholders)
+    next26: "",
+    futureNotLouder: "",
+    designedAroundLife: "",
+    oneQuestion: "",
+    personalAudioQuestion: "",
+    builtWithIntention: "",
+    productFilm: "",
+    productReveal: "",
+    designedToDisappear: "",
+    craftsmanship: "",
+    companionApp: "",
 
     // [KEYNOTE_CLOSING_IMAGE_URL] - Slide 13: Closing
-    closing: ""
+    closing: "https://res.cloudinary.com/dtkluxukm/image/upload/v1792478854/OURO_CEO_LAUNCH_KEYNOTE.002_pe3k3w.png"
   }
 };
 
@@ -149,6 +132,63 @@ const ouroMedia = {
           '<img alt="OURO Brand Identity visual 5" width="1200" height="800" loading="lazy" decoding="async" src="' + url + '">';
       }
     }
+
+    // Dynamically sync next-chapter CTA backgrounds with ouroMedia destinations
+    syncCtaBackgrounds();
+  }
+
+  function syncCtaBackgrounds() {
+    var ctaMap = {
+      launch: ouroMedia.launchHero,
+      brand: ouroMedia.brandHero,
+      event: ouroMedia.eventHero,
+      investor: ouroMedia.investorHero
+    };
+
+    var ctas = document.querySelectorAll(".next-chapter[data-cta-dest]");
+    ctas.forEach(function (cta) {
+      var dest = cta.getAttribute("data-cta-dest");
+      var url = ctaMap[dest];
+      if (!isValidUrl(url)) return;
+
+      var video = cta.querySelector("video");
+      var source = cta.querySelector("video source");
+      var img = cta.querySelector("img");
+
+      if (isVideo(url)) {
+        if (source) {
+          if (source.src !== url) {
+            source.src = url;
+            source.type = url.indexOf(".webm") !== -1 ? "video/webm" : "video/mp4";
+            if (video) video.load();
+          }
+        } else {
+          var v = document.createElement("video");
+          v.autoplay = true;
+          v.muted = true;
+          v.loop = true;
+          v.playsInline = true;
+          v.preload = "none";
+          v.setAttribute("aria-hidden", "true");
+          v.innerHTML = '<source src="' + url + '" type="' + (url.indexOf(".webm") !== -1 ? "video/webm" : "video/mp4") + '">';
+          if (img) {
+            cta.replaceChild(v, img);
+          } else {
+            cta.insertBefore(v, cta.firstChild);
+          }
+        }
+      } else {
+        if (img) {
+          if (img.src !== url) img.src = url;
+        } else if (video) {
+          var newImg = document.createElement("img");
+          newImg.src = url;
+          newImg.alt = "Next Chapter Background";
+          newImg.setAttribute("aria-hidden", "true");
+          cta.replaceChild(newImg, video);
+        }
+      }
+    });
   }
 
   // Keynote Carousel functionality
