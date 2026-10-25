@@ -25,17 +25,17 @@ const ouroMedia = {
     openingFilm: "https://res.cloudinary.com/dtkluxukm/video/upload/v1792948648/VID_i2hl0y.mp4",
 
     // Slides 02–12: Genuinely pending unique media assets (left empty to display clean placeholders)
-    next26: "",
-    futureNotLouder: "",
-    designedAroundLife: "",
-    oneQuestion: "",
-    personalAudioQuestion: "",
-    builtWithIntention: "",
-    productFilm: "",
-    productReveal: "",
-    designedToDisappear: "",
-    craftsmanship: "",
-    companionApp: "",
+    next26: "https://res.cloudinary.com/dtkluxukm/video/upload/v1792948648/VID_i2hl0y.mp4",
+    futureNotLouder: "https://res.cloudinary.com/dtkluxukm/image/upload/v1792952042/2_1_pvka94.png",
+    designedAroundLife: "https://res.cloudinary.com/dtkluxukm/video/upload/v1792951626/designed_around_life_pjxyzg.mp4",
+    oneQuestion: "https://res.cloudinary.com/dtkluxukm/image/upload/v1792951947/3_1_xpfbk4.png",
+    personalAudioQuestion: "https://res.cloudinary.com/dtkluxukm/image/upload/v1792327282/ouro-vision_cmzfuv.jpg",
+    builtWithIntention: "https://res.cloudinary.com/dtkluxukm/image/upload/v1792951904/4_1_yb2xsg.png",
+    productFilm: "https://res.cloudinary.com/dtkluxukm/video/upload/v1792075835/OURO_hero_Video_converted_xjca8t.webm",
+    productReveal: "https://res.cloudinary.com/dtkluxukm/video/upload/v1792075835/OURO_hero_Video_converted_xjca8t.webm",
+    designedToDisappear: "https://res.cloudinary.com/dtkluxukm/image/upload/v1792951776/OURO_CEO_LAUNCH_KEYNOTE.001_1_ivgaai.png",
+    craftsmanship: "https://res.cloudinary.com/dtkluxukm/image/upload/v1792951723/OURO_CEO_LAUNCH_KEYNOTE.006_cvnxrg.png",
+    companionApp: "https://res.cloudinary.com/dtkluxukm/image/upload/v1792478377/launch_visuals_one_ggdl7n.jpg",
 
     // [KEYNOTE_CLOSING_IMAGE_URL] - Slide 13: Closing
     closing: "https://res.cloudinary.com/dtkluxukm/image/upload/v1792478854/OURO_CEO_LAUNCH_KEYNOTE.002_pe3k3w.png"
