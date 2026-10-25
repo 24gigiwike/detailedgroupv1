@@ -22,7 +22,7 @@ const ouroMedia = {
 
   keynote: {
     // [KEYNOTE_SLIDE_01_MEDIA_URL] - Slide 01: Opening Film
-    openingFilm: "https://res.cloudinary.com/dtkluxukm/video/upload/v1792948648/VID_i2hl0y.mp4",
+    openingFilm: "https://res.cloudinary.com/dtkluxukm/video/upload/v1792483605/OPENING_FILM_converted_1_otfynh.webm",
 
     // Slides 02–12: Genuinely pending unique media assets (left empty to display clean placeholders)
     next26: "https://res.cloudinary.com/dtkluxukm/video/upload/v1792948648/VID_i2hl0y.mp4",
