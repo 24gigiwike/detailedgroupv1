@@ -17,8 +17,7 @@ const ouroMedia = {
   // [EVENT_HERO_MEDIA_URL] - Event Brand Identity Hero Background Video/Image
   eventHero: "https://res.cloudinary.com/dtkluxukm/video/upload/v1792948648/VID_i2hl0y.mp4",
 
-  // [INVESTOR_HERO_VIDEO_URL] - Reused automatically from Overview & Story
-  investorHero: "https://res.cloudinary.com/dtkluxukm/video/upload/v1792075835/OURO_hero_Video_converted_xjca8t.webm",
+  // [INVESTOR_HERO_IMAGE_URL] - Investor Communications static hero image\r\n  investorHero: "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010915/SLIDE_3_ytoouv.png",\r\n\r\n  investorDeck: [\r\n    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010916/SLIDE_1_av2ch4.png",\r\n    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010917/SLIDE_2_y58w9w.png",\r\n    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010915/SLIDE_3_ytoouv.png",\r\n    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010915/SLIDE_4_vbt64l.png",\r\n    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010915/SLIDE_5_hkuvkw.png",\r\n    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010916/SLIDE_6_nyebrq.png",\r\n    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010916/SLIDE_7_ntfck3.png",\r\n    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010914/SLIDE_8_zsm4n1.png",\r\n    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010915/SLIDE_9_oajmjc.png",\r\n    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010916/SLIDE_10_hkrgsv.png",\r\n    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010916/SLIDE_11_k5i05u.png",\r\n    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010916/SLIDE_12_sgllp2.png",\r\n    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010916/SLIDE_13_zlxlrt.png"\r\n  ],
 
   keynote: {
     // [KEYNOTE_SLIDE_01_MEDIA_URL] - Slide 01: Opening Film
@@ -639,3 +638,4 @@ const ouroMedia = {
     });
   }
 })();
+

@@ -716,3 +716,8 @@ html:has(body.is-landing)::-webkit-scrollbar {
   .next-chapter:hover video,
   .next-chapter:hover img { transform: none; }
 }
+
+.editorial-copy { max-width: 820px; margin: 0 auto; text-align: center; }
+.editorial-copy h2, .editorial-copy .essay-support { text-align: center; }
+.editorial-copy p { text-align: justify; text-align-last: center; }
+@media (max-width: 640px) { .editorial-copy p { text-align: left; text-align-last: left; } }
