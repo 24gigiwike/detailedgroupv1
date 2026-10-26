@@ -17,7 +17,24 @@ const ouroMedia = {
   // [EVENT_HERO_MEDIA_URL] - Event Brand Identity Hero Background Video/Image
   eventHero: "https://res.cloudinary.com/dtkluxukm/video/upload/v1792948648/VID_i2hl0y.mp4",
 
-  // [INVESTOR_HERO_IMAGE_URL] - Investor Communications static hero image\r\n  investorHero: "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010915/SLIDE_3_ytoouv.png",\r\n\r\n  investorDeck: [\r\n    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010916/SLIDE_1_av2ch4.png",\r\n    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010917/SLIDE_2_y58w9w.png",\r\n    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010915/SLIDE_3_ytoouv.png",\r\n    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010915/SLIDE_4_vbt64l.png",\r\n    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010915/SLIDE_5_hkuvkw.png",\r\n    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010916/SLIDE_6_nyebrq.png",\r\n    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010916/SLIDE_7_ntfck3.png",\r\n    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010914/SLIDE_8_zsm4n1.png",\r\n    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010915/SLIDE_9_oajmjc.png",\r\n    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010916/SLIDE_10_hkrgsv.png",\r\n    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010916/SLIDE_11_k5i05u.png",\r\n    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010916/SLIDE_12_sgllp2.png",\r\n    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010916/SLIDE_13_zlxlrt.png"\r\n  ],
+  // [INVESTOR_HERO_IMAGE_URL] - Investor Communications static hero image
+  investorHero: "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010915/SLIDE_3_ytoouv.png",
+
+  investorDeck: [
+    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010916/SLIDE_1_av2ch4.png",
+    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010917/SLIDE_2_y58w9w.png",
+    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010915/SLIDE_3_ytoouv.png",
+    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010915/SLIDE_4_vbt64l.png",
+    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010915/SLIDE_5_hkuvkw.png",
+    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010916/SLIDE_6_nyebrq.png",
+    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010916/SLIDE_7_ntfck3.png",
+    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010914/SLIDE_8_zsm4n1.png",
+    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010915/SLIDE_9_oajmjc.png",
+    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010916/SLIDE_10_hkrgsv.png",
+    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010916/SLIDE_11_k5i05u.png",
+    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010916/SLIDE_12_sgllp2.png",
+    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010916/SLIDE_13_zlxlrt.png"
+  ],
 
   keynote: {
     // [KEYNOTE_SLIDE_01_MEDIA_URL] - Slide 01: Opening Film
@@ -60,6 +77,8 @@ const ouroMedia = {
   initChapterNav();
   syncMediaSlots();
   initKeynoteCarousel();
+  initInvestorDeckCarousel();
+  initScrollReveal();
 
   if (!reduced && "IntersectionObserver" in window) {
     var watch = new IntersectionObserver(
@@ -107,6 +126,14 @@ const ouroMedia = {
       if (ev && ev.src !== ouroMedia.eventHero) {
         ev.src = ouroMedia.eventHero;
         if (ev.parentElement) ev.parentElement.load();
+      }
+    }
+
+    var investorHeroSlot = document.querySelector("[data-media-slot='investorHero']");
+    if (investorHeroSlot && isValidUrl(ouroMedia.investorHero)) {
+      var investorImage = investorHeroSlot.querySelector(".investor-hero-image");
+      if (investorImage && investorImage.src !== ouroMedia.investorHero) {
+        investorImage.src = ouroMedia.investorHero;
       }
     }
 
@@ -187,6 +214,195 @@ const ouroMedia = {
           cta.replaceChild(newImg, video);
         }
       }
+    });
+  }
+
+  function initInvestorDeckCarousel() {
+    var root = document.querySelector(".investor-carousel");
+    var dialog = document.querySelector(".investor-viewer");
+    if (!root || !dialog || typeof dialog.showModal !== "function") return;
+
+    var images = Array.isArray(ouroMedia.investorDeck) ? ouroMedia.investorDeck : [];
+    var button = root.querySelector(".investor-image-button");
+    var image = root.querySelector(".investor-carousel-image");
+    var placeholder = root.querySelector(".investor-carousel-placeholder");
+    var counter = root.querySelector(".investor-carousel-counter");
+    var previous = root.querySelector(".investor-carousel-prev");
+    var next = root.querySelector(".investor-carousel-next");
+    var viewerImage = dialog.querySelector(".investor-viewer-image");
+    var viewerCounter = dialog.querySelector(".investor-viewer-counter");
+    var viewerClose = dialog.querySelector(".investor-viewer-close");
+    var viewerPrevious = dialog.querySelector(".investor-viewer-prev");
+    var viewerNext = dialog.querySelector(".investor-viewer-next");
+    if (!button || !image || !placeholder || !counter || !previous || !next ||
+      !viewerImage || !viewerCounter || !viewerClose || !viewerPrevious || !viewerNext || !images.length) return;
+
+    var index = 0;
+    var timer = 0;
+    var hovered = root.matches(":hover");
+    var focused = false;
+    var savedFocus = null;
+    var savedScroll = 0;
+    var savedBodyStyles = null;
+    var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    function formatIndex(value) {
+      return ("0" + (value + 1)).slice(-2) + " / " + ("0" + images.length).slice(-2);
+    }
+
+    function render() {
+      var url = images[index];
+      var valid = isValidUrl(url);
+      var label = "Investor deck slide " + (index + 1);
+      counter.textContent = formatIndex(index);
+      viewerCounter.textContent = formatIndex(index);
+      button.setAttribute("aria-label", "Open slide " + (index + 1) + " in image viewer");
+      image.alt = label;
+      viewerImage.alt = label;
+      button.hidden = !valid;
+      placeholder.hidden = valid;
+      if (!valid) return;
+      image.onerror = function () {
+        button.hidden = true;
+        placeholder.hidden = false;
+        placeholder.textContent = "Investor deck image pending";
+      };
+      image.onload = null;
+      image.classList.add("is-changing");
+      window.setTimeout(function () {
+        image.src = url;
+        image.classList.remove("is-changing");
+      }, 120);
+      viewerImage.src = url;
+    }
+
+    function move(delta) {
+      index = (index + delta + images.length) % images.length;
+      render();
+    }
+
+    function stopAutoplay() {
+      window.clearInterval(timer);
+      timer = 0;
+    }
+
+    function updateAutoplay() {
+      stopAutoplay();
+      if (!reducedMotion.matches && !hovered && !focused && !dialog.open) {
+        timer = window.setInterval(function () {
+          move(1);
+        }, 5000);
+      }
+    }
+
+    function openViewer() {
+      savedFocus = document.activeElement;
+      savedScroll = window.scrollY;
+      savedBodyStyles = {
+        position: document.body.style.position,
+        top: document.body.style.top,
+        width: document.body.style.width
+      };
+      stopAutoplay();
+      if (window.__dgLenis && window.__dgLenis.stop) window.__dgLenis.stop();
+      document.body.style.position = "fixed";
+      document.body.style.top = "-" + savedScroll + "px";
+      document.body.style.width = "100%";
+      render();
+      dialog.showModal();
+      viewerClose.focus();
+    }
+
+    button.addEventListener("click", openViewer);
+    previous.addEventListener("click", function () { move(-1); });
+    next.addEventListener("click", function () { move(1); });
+    viewerPrevious.addEventListener("click", function () { move(-1); });
+    viewerNext.addEventListener("click", function () { move(1); });
+    viewerClose.addEventListener("click", function () { dialog.close(); });
+
+    root.addEventListener("mouseenter", function () {
+      hovered = true;
+      updateAutoplay();
+    });
+    root.addEventListener("mouseleave", function () {
+      hovered = false;
+      updateAutoplay();
+    });
+    root.addEventListener("focusin", function () {
+      focused = true;
+      updateAutoplay();
+    });
+    root.addEventListener("focusout", function (event) {
+      if (root.contains(event.relatedTarget)) return;
+      focused = false;
+      updateAutoplay();
+    });
+
+    dialog.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        dialog.close();
+      } else if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        move(-1);
+      } else if (event.key === "ArrowRight") {
+        event.preventDefault();
+        move(1);
+      }
+    });
+    dialog.addEventListener("close", function () {
+      if (savedBodyStyles) {
+        document.body.style.position = savedBodyStyles.position;
+        document.body.style.top = savedBodyStyles.top;
+        document.body.style.width = savedBodyStyles.width;
+      }
+      if (window.__dgLenis && window.__dgLenis.start) {
+        window.__dgLenis.start();
+        window.__dgLenis.scrollTo(savedScroll, { immediate: true, force: true });
+      } else {
+        window.scrollTo(0, savedScroll);
+      }
+      if (savedFocus && savedFocus.focus) savedFocus.focus({ preventScroll: true });
+      updateAutoplay();
+    });
+
+    var touchStartX = 0;
+    var touchStartY = 0;
+    dialog.addEventListener("touchstart", function (event) {
+      if (event.touches.length !== 1) return;
+      touchStartX = event.touches[0].clientX;
+      touchStartY = event.touches[0].clientY;
+    }, { passive: true });
+    dialog.addEventListener("touchend", function (event) {
+      if (event.changedTouches.length !== 1) return;
+      var deltaX = event.changedTouches[0].clientX - touchStartX;
+      var deltaY = event.changedTouches[0].clientY - touchStartY;
+      if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY)) move(deltaX < 0 ? 1 : -1);
+    }, { passive: true });
+
+    if (reducedMotion.addEventListener) {
+      reducedMotion.addEventListener("change", updateAutoplay);
+    }
+    render();
+    updateAutoplay();
+  }
+
+  function initScrollReveal() {
+    if (reduced || !("IntersectionObserver" in window)) return;
+    var targets = document.querySelectorAll(
+      ".editorial-copy > h2, .editorial-copy > .essay-support, .editorial-copy > p, .gallery-item, .investor-deck-intro"
+    );
+    if (!targets.length) return;
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-revealed");
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: 0.12, rootMargin: "0px 0px -4% 0px" });
+    targets.forEach(function (target) {
+      target.classList.add("scroll-reveal");
+      observer.observe(target);
     });
   }
 
@@ -638,4 +854,3 @@ const ouroMedia = {
     });
   }
 })();
-
