@@ -117,6 +117,7 @@ html:has(body.is-landing)::-webkit-scrollbar {
 }
 .land-video { object-fit: cover; }
 .land-shade { background: rgba(12, 16, 36, 0.46); }
+#hero[data-media-slot="investorHero"] .land-shade { background: rgba(0, 0, 0, 0.65); }
 
 .land-inner {
   position: relative;
@@ -634,6 +635,7 @@ html:has(body.is-landing)::-webkit-scrollbar {
   inset: 0;
   background: rgba(5, 8, 16, 0.46);
 }
+.next-chapter[data-cta-dest="investor"] .next-shade { background: rgba(0, 0, 0, 0.65); }
 .next-label,
 .chapter-closeout span {
   position: relative;
@@ -744,12 +746,20 @@ html:has(body.is-landing)::-webkit-scrollbar {
 
 .scroll-reveal {
   opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 700ms var(--ease), transform 700ms var(--ease);
+  transform: translateY(30px);
+  transition: opacity 750ms var(--ease), transform 750ms var(--ease);
+  transition-delay: var(--reveal-delay, 0ms);
 }
 .scroll-reveal.is-revealed {
   opacity: 1;
   transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }
 
 .investor-deck-section {
@@ -771,10 +781,9 @@ html:has(body.is-landing)::-webkit-scrollbar {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 45vh;
-  height: min(76vh, 900px);
-  height: min(76dvh, 900px);
-  padding: clamp(1rem, 3vw, 2.5rem);
+  width: min(88vw, 1360px);
+  margin: 0 auto;
+  padding: 0;
   background: #e9e9e6;
 }
 .investor-image-button {
@@ -782,7 +791,7 @@ html:has(body.is-landing)::-webkit-scrollbar {
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 100%;
+  height: auto;
   padding: 0;
   border: 0;
   background: transparent;
@@ -790,7 +799,7 @@ html:has(body.is-landing)::-webkit-scrollbar {
 }
 .investor-carousel-image {
   width: 100%;
-  height: 100%;
+  height: auto;
   object-fit: contain;
   transition: opacity 250ms ease;
 }
@@ -873,7 +882,7 @@ html:has(body.is-landing)::-webkit-scrollbar {
 }
 
 @media (max-width: 640px) {
-  .investor-carousel-view { height: 58vh; height: 58dvh; min-height: 18rem; padding: 0.75rem; }
+  .investor-carousel-view { width: 95vw; }
   .investor-viewer-content { padding: 4rem 3rem; }
   .investor-viewer-prev { left: 0.5rem; }
   .investor-viewer-next { right: 0.5rem; }
@@ -882,6 +891,5 @@ html:has(body.is-landing)::-webkit-scrollbar {
   .investor-viewer-counter { bottom: 0.75rem; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .scroll-reveal,
   .investor-carousel-image { transition: none; }
 }

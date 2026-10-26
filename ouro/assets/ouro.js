@@ -15,7 +15,7 @@ const ouroMedia = {
   brandExtraImage: "https://res.cloudinary.com/dtkluxukm/video/upload/v1792948648/VID_i2hl0y.mp4",
 
   // [EVENT_HERO_MEDIA_URL] - Event Brand Identity Hero Background Video/Image
-  eventHero: "https://res.cloudinary.com/dtkluxukm/video/upload/v1792948648/VID_i2hl0y.mp4",
+  eventHero: "https://res.cloudinary.com/dtkluxukm/video/upload/v1793017263/1012_rbfjsm.mov",
 
   // [INVESTOR_HERO_IMAGE_URL] - Investor Communications static hero image
   investorHero: "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010915/SLIDE_3_ytoouv.png",
@@ -74,6 +74,12 @@ const ouroMedia = {
     return /\.(mp4|webm|mov)(\?.*)?$/i.test(url) || /\/video\/upload\//i.test(url);
   }
 
+  function videoType(url) {
+    if (/\.webm(\?.*)?$/i.test(url)) return "video/webm";
+    if (/\.mov(\?.*)?$/i.test(url)) return "video/quicktime";
+    return "video/mp4";
+  }
+
   initChapterNav();
   syncMediaSlots();
   initKeynoteCarousel();
@@ -125,6 +131,7 @@ const ouroMedia = {
       var ev = eventHeroSlot.querySelector("video source");
       if (ev && ev.src !== ouroMedia.eventHero) {
         ev.src = ouroMedia.eventHero;
+        ev.type = videoType(ouroMedia.eventHero);
         if (ev.parentElement) ev.parentElement.load();
       }
     }
@@ -185,7 +192,7 @@ const ouroMedia = {
         if (source) {
           if (source.src !== url) {
             source.src = url;
-            source.type = url.indexOf(".webm") !== -1 ? "video/webm" : "video/mp4";
+            source.type = videoType(url);
             if (video) video.load();
           }
         } else {
@@ -196,7 +203,7 @@ const ouroMedia = {
           v.playsInline = true;
           v.preload = "none";
           v.setAttribute("aria-hidden", "true");
-          v.innerHTML = '<source src="' + url + '" type="' + (url.indexOf(".webm") !== -1 ? "video/webm" : "video/mp4") + '">';
+          v.innerHTML = '<source src="' + url + '" type="' + videoType(url) + '">';
           if (img) {
             cta.replaceChild(v, img);
           } else {
@@ -390,16 +397,32 @@ const ouroMedia = {
   function initScrollReveal() {
     if (reduced || !("IntersectionObserver" in window)) return;
     var targets = document.querySelectorAll(
-      ".editorial-copy > h2, .editorial-copy > .essay-support, .editorial-copy > p, .gallery-item, .investor-deck-intro"
+      ".editorial-copy > h2, .editorial-copy > .essay-support, .editorial-copy > .editorial-body, " +
+      ".gallery-item img, .gallery-item video, .keynote-header > .kicker, " +
+      ".keynote-header > .keynote-heading, .keynote-header > .keynote-subtitle, .investor-deck-intro"
     );
     if (!targets.length) return;
+
+    targets.forEach(function (target) {
+      var group = target.closest(".editorial-copy, .gallery-container, .keynote-header");
+      if (!group) return;
+      var selector = group.classList.contains("editorial-copy")
+        ? ":scope > h2, :scope > .essay-support, :scope > .editorial-body"
+        : group.classList.contains("gallery-container")
+          ? ".gallery-item img, .gallery-item video"
+          : ":scope > .kicker, :scope > .keynote-heading, :scope > .keynote-subtitle";
+      var siblings = Array.from(group.querySelectorAll(selector));
+      var position = siblings.indexOf(target);
+      if (position > 0) target.style.setProperty("--reveal-delay", Math.min(position * 90, 270) + "ms");
+    });
+
     var observer = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         if (!entry.isIntersecting) return;
         entry.target.classList.add("is-revealed");
         observer.unobserve(entry.target);
       });
-    }, { threshold: 0.12, rootMargin: "0px 0px -4% 0px" });
+    }, { threshold: 0.12 });
     targets.forEach(function (target) {
       target.classList.add("scroll-reveal");
       observer.observe(target);
