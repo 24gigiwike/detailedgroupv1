@@ -11,11 +11,8 @@ const ouroMedia = {
   // [BRAND_HERO_MEDIA_URL] - Brand Identity Hero Background Video/Image
   brandHero: "https://res.cloudinary.com/dtkluxukm/video/upload/v1792948648/VID_i2hl0y.mp4",
 
-  // [BRAND_EXTRA_IMAGE_URL] - Brand Identity Gallery 5th Asset
-  brandExtraImage: "https://res.cloudinary.com/dtkluxukm/video/upload/v1792948648/VID_i2hl0y.mp4",
-
   // [EVENT_HERO_MEDIA_URL] - Event Brand Identity Hero Background Video/Image
-  eventHero: "https://res.cloudinary.com/dtkluxukm/video/upload/v1793017263/1012_rbfjsm.mov",
+  eventHero: "https://res.cloudinary.com/dtkluxukm/video/upload/v1793020793/1012_uehfly.webm",
 
   // [INVESTOR_HERO_IMAGE_URL] - Investor Communications static hero image
   investorHero: "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010915/SLIDE_3_ytoouv.png",
@@ -141,28 +138,6 @@ const ouroMedia = {
       var investorImage = investorHeroSlot.querySelector(".investor-hero-image");
       if (investorImage && investorImage.src !== ouroMedia.investorHero) {
         investorImage.src = ouroMedia.investorHero;
-      }
-    }
-
-    var brandExtraSlot = document.querySelector("[data-media-slot='brandExtraImage']");
-    if (brandExtraSlot && isValidUrl(ouroMedia.brandExtraImage)) {
-      var url = ouroMedia.brandExtraImage;
-      if (isVideo(url)) {
-        var bEv = brandExtraSlot.querySelector("video source");
-        if (bEv) {
-          if (bEv.src !== url) {
-            bEv.src = url;
-            if (bEv.parentElement) bEv.parentElement.load();
-          }
-        } else {
-          brandExtraSlot.innerHTML =
-            '<video class="gallery-media" autoplay muted loop playsinline preload="metadata">' +
-            '<source src="' + url + '" type="' + (url.indexOf(".webm") !== -1 ? "video/webm" : "video/mp4") + '">' +
-            '</video>';
-        }
-      } else {
-        brandExtraSlot.innerHTML =
-          '<img alt="OURO Brand Identity visual 5" width="1200" height="800" loading="lazy" decoding="async" src="' + url + '">';
       }
     }
 
