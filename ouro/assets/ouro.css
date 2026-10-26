@@ -237,38 +237,30 @@ html:has(body.is-landing)::-webkit-scrollbar {
   object-fit: contain;
 }
 
-.brand-gallery .gallery-container {
+.brand-gallery .gallery-container,
+.event-gallery .gallery-container {
   width: min(1100px, 100%);
   gap: clamp(4rem, 6vw, 6rem);
 }
-.brand-gallery .gallery-item { align-items: center; }
+.brand-gallery .gallery-item,
+.event-gallery .gallery-item { align-items: center; }
 .brand-gallery .gallery-item img,
-.brand-gallery .gallery-item video {
+.brand-gallery .gallery-item video,
+.event-gallery .gallery-item img,
+.event-gallery .gallery-item video {
   width: auto;
   max-width: min(85%, 950px);
   max-height: none;
 }
 
-/* Curated variations in width (68%–80%) & horizontal positioning: Event Brand Identity */
-.event-gallery .item-1 { max-width: 76%; margin-left: auto; margin-right: auto; align-items: center; }
-.event-gallery .item-2 { max-width: 70%; margin-left: 0; margin-right: auto; align-items: flex-start; }
-.event-gallery .item-3 { max-width: 74%; margin-left: auto; margin-right: 0; align-items: flex-end; }
-.event-gallery .item-4 { max-width: 68%; margin-left: auto; margin-right: auto; align-items: center; }
-.event-gallery .item-5 { max-width: 80%; margin-left: auto; margin-right: auto; align-items: center; }
-.event-gallery .item-6 { max-width: 74%; margin-left: clamp(1rem, 4vw, 3rem); margin-right: auto; align-items: flex-start; }
-
 @media (max-width: 768px) {
   .vertical-gallery { padding: 3rem 1.25rem 4rem; }
-  .gallery-container { gap: 2.25rem; }
-  .event-gallery .gallery-item {
-    max-width: 100% !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-    align-items: stretch !important;
-  }
-  .brand-gallery .gallery-container { gap: 2.5rem; }
+  .brand-gallery .gallery-container,
+  .event-gallery .gallery-container { gap: 2.5rem; }
   .brand-gallery .gallery-item img,
-  .brand-gallery .gallery-item video {
+  .brand-gallery .gallery-item video,
+  .event-gallery .gallery-item img,
+  .event-gallery .gallery-item video {
     width: auto;
     max-width: 100%;
   }
