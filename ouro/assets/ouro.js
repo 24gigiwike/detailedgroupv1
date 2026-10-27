@@ -10,6 +10,7 @@ const ouroMedia = {
 
   // [BRAND_HERO_MEDIA_URL] - Brand Identity Hero Background Video/Image
   brandHero: "https://res.cloudinary.com/dtkluxukm/video/upload/v1792948648/VID_i2hl0y.mp4",
+  BRAND_IDENTITY_MOBILE_HERO_VIDEO_URL: "https://res.cloudinary.com/dtkluxukm/video/upload/v1793096258/hgjhbjnkml_ka71i6.mp4",
 
   // [EVENT_HERO_MEDIA_URL] - Event Brand Identity Hero Background Video/Image
   eventHero: "https://res.cloudinary.com/dtkluxukm/video/upload/v1793020793/1012_uehfly.webm",
@@ -79,6 +80,7 @@ const ouroMedia = {
 
   initChapterNav();
   syncMediaSlots();
+  initLaunchHeroAudio();
   initKeynoteCarousel();
   initInvestorDeckCarousel();
   initScrollReveal();
@@ -88,6 +90,8 @@ const ouroMedia = {
       function (entries) {
         entries.forEach(function (entry) {
           var video = entry.target;
+          if (video.closest("[data-launch-audio]")) return;
+          if (video.closest(".event-gallery")) return;
           // Do not autoplay video if it belongs to an inactive keynote slide
           var keynoteSlide = video.closest(".keynote-slide");
           if (keynoteSlide && !keynoteSlide.classList.contains("is-active")) {
@@ -105,6 +109,8 @@ const ouroMedia = {
       { threshold: 0.25 }
     );
     document.querySelectorAll("video").forEach(function (video) {
+      if (video.closest("[data-launch-audio]")) return;
+      if (video.closest(".event-gallery")) return;
       watch.observe(video);
     });
   }
@@ -115,13 +121,7 @@ const ouroMedia = {
   // Synchronize media slots from ouroMedia configuration
   function syncMediaSlots() {
     var brandHeroSlot = document.querySelector("[data-media-slot='brandHero']");
-    if (brandHeroSlot && isValidUrl(ouroMedia.brandHero)) {
-      var bv = brandHeroSlot.querySelector("video source");
-      if (bv && bv.src !== ouroMedia.brandHero) {
-        bv.src = ouroMedia.brandHero;
-        if (bv.parentElement) bv.parentElement.load();
-      }
-    }
+    if (brandHeroSlot) syncBrandHeroVideo(brandHeroSlot);
 
     var eventHeroSlot = document.querySelector("[data-media-slot='eventHero']");
     if (eventHeroSlot && isValidUrl(ouroMedia.eventHero)) {
@@ -143,6 +143,106 @@ const ouroMedia = {
 
     // Dynamically sync next-chapter CTA backgrounds with ouroMedia destinations
     syncCtaBackgrounds();
+  }
+
+  function syncBrandHeroVideo(slot) {
+    var video = slot.querySelector("video.land-video");
+    var source = video && video.querySelector("source");
+    if (!video || !source) return;
+
+    var mobileQuery = window.matchMedia("(max-width: 767px)");
+    function updateSource() {
+      var url = mobileQuery.matches && isValidUrl(ouroMedia.BRAND_IDENTITY_MOBILE_HERO_VIDEO_URL)
+        ? ouroMedia.BRAND_IDENTITY_MOBILE_HERO_VIDEO_URL
+        : ouroMedia.brandHero;
+      if (!isValidUrl(url) || source.src === url) return;
+      source.src = url;
+      source.type = videoType(url);
+      video.load();
+    }
+
+    updateSource();
+    if (mobileQuery.addEventListener) {
+      mobileQuery.addEventListener("change", updateSource);
+    } else if (mobileQuery.addListener) {
+      mobileQuery.addListener(updateSource);
+    }
+  }
+
+  function initLaunchHeroAudio() {
+    var hero = document.querySelector("[data-launch-audio]");
+    if (!hero) return;
+    var video = hero.querySelector("video.land-video");
+    var toggle = hero.querySelector(".hero-sound-toggle");
+    if (!video || !toggle) return;
+
+    var userEnabledAudio = false;
+    var userChoseMute = false;
+    var browserAllowedAudio = false;
+
+    function updateToggle() {
+      var enabled = !video.muted;
+      toggle.textContent = enabled ? "Sound on" : "Sound off";
+      toggle.setAttribute("aria-label", enabled ? "Turn sound off" : "Turn sound on");
+      toggle.setAttribute("aria-pressed", enabled ? "true" : "false");
+    }
+
+    function playMuted() {
+      video.muted = true;
+      updateToggle();
+      var playPromise = video.play();
+      if (playPromise && playPromise.catch) playPromise.catch(function () {});
+    }
+
+    function playWithSound() {
+      video.muted = false;
+      updateToggle();
+      var playPromise = video.play();
+      if (playPromise && playPromise.then) {
+        playPromise.then(function () {
+          if (!userChoseMute && !video.muted) browserAllowedAudio = true;
+        }).catch(function () {
+          browserAllowedAudio = false;
+          playMuted();
+        });
+      } else {
+        browserAllowedAudio = !video.muted;
+      }
+    }
+
+    toggle.addEventListener("click", function () {
+      if (!video.muted) {
+        userEnabledAudio = false;
+        userChoseMute = true;
+        video.muted = true;
+        updateToggle();
+        return;
+      }
+      userEnabledAudio = true;
+      userChoseMute = false;
+      playWithSound();
+    });
+
+    if ("IntersectionObserver" in window) {
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) {
+            video.muted = true;
+            updateToggle();
+            video.pause();
+            return;
+          }
+          if (userEnabledAudio || (browserAllowedAudio && !userChoseMute)) {
+            playWithSound();
+          } else {
+            playMuted();
+          }
+        });
+      }, { threshold: 0.25 });
+      observer.observe(hero);
+    } else {
+      playWithSound();
+    }
   }
 
   function syncCtaBackgrounds() {
@@ -374,21 +474,23 @@ const ouroMedia = {
     var targets = document.querySelectorAll(
       ".editorial-copy > h2, .editorial-copy > .essay-support, .editorial-copy > .editorial-body, " +
       ".gallery-item img, .gallery-item video, .keynote-header > .kicker, " +
-      ".keynote-header > .keynote-heading, .keynote-header > .keynote-subtitle, .investor-deck-intro"
+      ".keynote-header > .keynote-heading, .keynote-header > .keynote-subtitle, .investor-deck-intro, " +
+      ".next-chapter .next-label"
     );
     if (!targets.length) return;
 
     targets.forEach(function (target) {
       var group = target.closest(".editorial-copy, .gallery-container, .keynote-header");
-      if (!group) return;
-      var selector = group.classList.contains("editorial-copy")
-        ? ":scope > h2, :scope > .essay-support, :scope > .editorial-body"
-        : group.classList.contains("gallery-container")
-          ? ".gallery-item img, .gallery-item video"
-          : ":scope > .kicker, :scope > .keynote-heading, :scope > .keynote-subtitle";
-      var siblings = Array.from(group.querySelectorAll(selector));
-      var position = siblings.indexOf(target);
-      if (position > 0) target.style.setProperty("--reveal-delay", Math.min(position * 90, 270) + "ms");
+      if (group) {
+        var selector = group.classList.contains("editorial-copy")
+          ? ":scope > h2, :scope > .essay-support, :scope > .editorial-body"
+          : group.classList.contains("gallery-container")
+            ? ".gallery-item img, .gallery-item video"
+            : ":scope > .kicker, :scope > .keynote-heading, :scope > .keynote-subtitle";
+        var siblings = Array.from(group.querySelectorAll(selector));
+        var position = siblings.indexOf(target);
+        if (position > 0) target.style.setProperty("--reveal-delay", Math.min(position * 90, 270) + "ms");
+      }
     });
 
     var observer = new IntersectionObserver(function (entries) {
@@ -439,11 +541,39 @@ const ouroMedia = {
           video.loop = true;
           video.playsInline = true;
           video.preload = "metadata";
+          video.setAttribute("playsinline", "");
           var source = document.createElement("source");
           source.src = url;
           source.type = url.indexOf(".webm") !== -1 ? "video/webm" : "video/mp4";
           video.appendChild(source);
           wrap.appendChild(video);
+          var soundToggle = document.createElement("button");
+          soundToggle.className = "keynote-sound-toggle";
+          soundToggle.type = "button";
+          soundToggle.textContent = "Sound off";
+          soundToggle.setAttribute("aria-label", "Turn sound on");
+          soundToggle.setAttribute("aria-pressed", "false");
+          soundToggle.addEventListener("click", function (event) {
+            event.stopPropagation();
+            if (video.muted) {
+              video.muted = false;
+              var playPromise = video.play();
+              if (playPromise && playPromise.catch) {
+                playPromise.catch(function () {
+                  video.muted = true;
+                  soundToggle.textContent = "Sound off";
+                  soundToggle.setAttribute("aria-label", "Turn sound on");
+                  soundToggle.setAttribute("aria-pressed", "false");
+                });
+              }
+            } else {
+              video.muted = true;
+            }
+            soundToggle.textContent = video.muted ? "Sound off" : "Sound on";
+            soundToggle.setAttribute("aria-label", video.muted ? "Turn sound on" : "Turn sound off");
+            soundToggle.setAttribute("aria-pressed", video.muted ? "false" : "true");
+          });
+          wrap.appendChild(soundToggle);
         } else {
           var img = document.createElement("img");
           img.className = "slide-media";
@@ -502,6 +632,13 @@ const ouroMedia = {
         var oldVideo = prevSlide.querySelector("video");
         if (oldVideo) {
           oldVideo.pause();
+          oldVideo.muted = true;
+          var oldSoundToggle = prevSlide.querySelector(".keynote-sound-toggle");
+          if (oldSoundToggle) {
+            oldSoundToggle.textContent = "Sound off";
+            oldSoundToggle.setAttribute("aria-label", "Turn sound on");
+            oldSoundToggle.setAttribute("aria-pressed", "false");
+          }
         }
       }
 
