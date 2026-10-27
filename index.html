@@ -721,6 +721,27 @@
     margin-top: 32px;
   }
 }
+
+@media (min-width: 768px) {
+  main.editorial-alignment h1,
+  main.editorial-alignment h2,
+  main.editorial-alignment h3,
+  main.editorial-alignment h4,
+  main.editorial-alignment p {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+  }
+}
+@media (max-width: 767px) {
+  main.editorial-alignment h1,
+  main.editorial-alignment h2,
+  main.editorial-alignment h3,
+  main.editorial-alignment h4,
+  main.editorial-alignment p {
+    text-align: left;
+  }
+}
     </style>
 
 </head>
@@ -787,7 +808,7 @@
 <div class="flex items-center gap-8 md:gap-16 px-4 shrink-0" id="marquee-track"></div>
 </div>
 </div>
-<main class="mt-[116px]">
+<main class="mt-[116px] editorial-alignment">
 <!-- Hero Section -->
 <section id="hero" class="hero-carousel relative min-h-[85vh] flex flex-col justify-center w-full overflow-hidden reveal" aria-roledescription="carousel" aria-label="Hero">
 <div class="hero-viewport">
@@ -2216,4 +2237,3 @@
     }
   </script>
 </body></html>
-
