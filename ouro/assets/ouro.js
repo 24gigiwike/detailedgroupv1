@@ -81,6 +81,7 @@ const ouroMedia = {
   initChapterNav();
   syncMediaSlots();
   initLaunchHeroAudio();
+  initEventGalleryAutoplay();
   initKeynoteCarousel();
   initInvestorDeckCarousel();
   initScrollReveal();
@@ -91,7 +92,6 @@ const ouroMedia = {
         entries.forEach(function (entry) {
           var video = entry.target;
           if (video.closest("[data-launch-audio]")) return;
-          if (video.closest(".event-gallery")) return;
           // Do not autoplay video if it belongs to an inactive keynote slide
           var keynoteSlide = video.closest(".keynote-slide");
           if (keynoteSlide && !keynoteSlide.classList.contains("is-active")) {
@@ -110,7 +110,6 @@ const ouroMedia = {
     );
     document.querySelectorAll("video").forEach(function (video) {
       if (video.closest("[data-launch-audio]")) return;
-      if (video.closest(".event-gallery")) return;
       watch.observe(video);
     });
   }
@@ -242,6 +241,28 @@ const ouroMedia = {
       observer.observe(hero);
     } else {
       playWithSound();
+    }
+  }
+
+  function initEventGalleryAutoplay() {
+    var video = document.querySelector(".event-gallery video[autoplay]");
+    if (!video) return;
+
+    function play() {
+      var playPromise = video.play();
+      if (playPromise && playPromise.catch) playPromise.catch(function () {});
+    }
+
+    if ("IntersectionObserver" in window) {
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) play();
+          else video.pause();
+        });
+      }, { threshold: 0.25 });
+      observer.observe(video);
+    } else {
+      play();
     }
   }
 
@@ -472,7 +493,7 @@ const ouroMedia = {
   function initScrollReveal() {
     if (reduced || !("IntersectionObserver" in window)) return;
     var targets = document.querySelectorAll(
-      ".editorial-copy > h2, .editorial-copy > .essay-support, .editorial-copy > .editorial-body, " +
+      ".editorial-copy > .editorial-intro, .editorial-copy > .editorial-body, " +
       ".gallery-item img, .gallery-item video, .keynote-header > .kicker, " +
       ".keynote-header > .keynote-heading, .keynote-header > .keynote-subtitle, .investor-deck-intro, " +
       ".next-chapter .next-label"
@@ -483,7 +504,7 @@ const ouroMedia = {
       var group = target.closest(".editorial-copy, .gallery-container, .keynote-header");
       if (group) {
         var selector = group.classList.contains("editorial-copy")
-          ? ":scope > h2, :scope > .essay-support, :scope > .editorial-body"
+          ? ":scope > .editorial-intro, :scope > .editorial-body"
           : group.classList.contains("gallery-container")
             ? ".gallery-item img, .gallery-item video"
             : ":scope > .kicker, :scope > .keynote-heading, :scope > .keynote-subtitle";
