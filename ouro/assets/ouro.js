@@ -52,7 +52,7 @@ const ouroMedia = {
     companionApp: "https://res.cloudinary.com/dtkluxukm/image/upload/v1792478377/launch_visuals_one_ggdl7n.jpg",
 
     // [KEYNOTE_CLOSING_IMAGE_URL] - Slide 13: Closing
-    closing: "https://res.cloudinary.com/dtkluxukm/image/upload/v1793022354/prd5_kwxiv7.png"
+    closing: "https://res.cloudinary.com/dtkluxukm/image/upload/v1792478377/next26one_bax8kv.jpg"
   }
 };
 
