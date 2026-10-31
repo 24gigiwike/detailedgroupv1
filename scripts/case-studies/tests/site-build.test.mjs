@@ -132,6 +132,10 @@ test("assembles static site, published routes, legacy OURO routes, and assets", 
   for (const excluded of [".git", ".pages.yml", "data/case-studies", "netlify.toml", "middleware.js", "api", "package.json"]) {
     await assert.rejects(readdir(join(outputDirectory, excluded)));
   }
+  await writeRecord(validDataDirectory, "test-project.json", {
+    ...publishedFixture,
+    overview: { ...publishedFixture.overview, heading: "Edited CMS heading" }
+  });
   await writeFile(join(outputDirectory, "previous-build-only.txt"), "stale");
   const rebuild = await buildSite({
     sourceRoot: sourceFixture,
@@ -140,6 +144,8 @@ test("assembles static site, published routes, legacy OURO routes, and assets", 
   });
   assert.equal(rebuild.generatedPageCount, 8);
   await assert.rejects(readFile(join(outputDirectory, "previous-build-only.txt")));
+  const updatedOverview = await readFile(join(outputDirectory, "case-studies/test-project/index.html"), "utf8");
+  assert.match(updatedOverview, /Edited CMS heading/);
 });
 
 test("fails invalid media validation without changing the prior build output", async () => {

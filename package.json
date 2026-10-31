@@ -2,7 +2,10 @@
   "name": "detailedgroup-static-site",
   "private": true,
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@vercel/functions": "3.10.5"
   },
   "scripts": {
     "build": "node scripts/site-build.mjs",

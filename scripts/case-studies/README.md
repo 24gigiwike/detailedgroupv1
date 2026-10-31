@@ -65,26 +65,61 @@ previous Git revision; do not delete the source OURO files.
 pages and `ouro/assets/ouro.js`. Gallery items may include intrinsic width and height to preserve
 the existing media aspect ratios. Newlines in editorial headings render as mobile-only line breaks.
 
-## Hosting configuration (not activated)
+## Vercel publishing and activation
 
-The repository includes `netlify.toml` with an edge maintenance function, redirects, and response
-headers. Netlify reads that configuration from the repository root, not from the publish folder.
-If the live site is on Netlify, set the build command to `npm run build` and the publish directory
-to `dist` in the Netlify site settings (or later in the root configuration as a separately approved
-deployment change). Keep the repository-root `netlify.toml` and `netlify/edge-functions/` available
-to the build/deploy process so the redirects, headers, and maintenance edge function remain active.
-Do not upload `dist/` as a standalone folder without those root deployment files.
+The publishing flow is Pages CMS commit → configured GitHub branch → Vercel Git deployment.
+Confirm the branch Pages CMS writes to is the Vercel Production Branch; Vercel creates Preview
+deployments for other connected branches and Production deployments for the configured production
+branch. The repository itself does not declare the Pages CMS repository/branch connection.
 
-The repository also contains root `middleware.js` and `api/contact.js`, which follow Vercel
-middleware/function conventions. The checked-in files do not establish which provider currently
-serves production; confirm the connected hosting project and its settings before activation. A
-Vercel project should use the repository as its project root, `npm run build` as its build command,
-and `dist` as its output directory, while leaving root middleware and API code available to
-Vercel's runtime. Do not configure a second host as a replacement.
+Configure the existing Vercel project (do not create a second host):
 
-`api/contact.js` is server-side code and is deliberately not copied into the static output. Its
-runtime must remain connected to the active host; in particular, verify `/api/contact` in a
-deployment preview before activation. The repository's Netlify configuration does not define a
-Netlify function for that endpoint. The build also does not copy `netlify.toml`, middleware, API
-code, or edge-function code into `dist/`; the hosting provider must consume the repository-level
-runtime configuration separately.
+- Framework Preset: **Other**
+- Root Directory: repository root
+- Build Command and Output Directory are fixed by `vercel.json`: `npm run build` and `dist`.
+- Node.js runtime: 22.x (the project and `@vercel/functions` require Node.js 20 or newer).
+
+`vercel.json` explicitly registers the existing root `middleware.js` as Vercel Routing Middleware
+through its `proxy.entrypoint` setting. The middleware uses Vercel's `next()` helper to continue
+normal requests; it runs on all paths. The existing maintenance gate is currently disabled in its
+shared implementation. When enabled, it gates static pages and API requests, except for its
+developer-preview-cookie flow. It is a maintenance screen, not authentication.
+
+The build output contains only public static files and generated HTML. Keep deploying from the
+repository root so Vercel can separately discover `api/contact.js` as a Node.js Function and
+`middleware.js` as Routing Middleware; do not deploy `dist/` as a standalone project. The API
+remains CommonJS. `trailingSlash: true` preserves directory-style URLs. `vercel.json` carries over
+only the eight explicit historical OURO alias redirects from `netlify.toml`; no catch-all or CMS
+rewrites are added. The Netlify edge gate and headers are not used by Vercel. Generated
+directory-style `index.html` routes serve the existing OURO URLs and new
+`/case-studies/{slug}/` paths without rewrites.
+
+Set these Vercel environment variables for Preview and Production without adding their values to
+Git. `@vercel/functions` is an explicit runtime dependency for Vercel's middleware `next()` helper;
+the existing API remains CommonJS.
+
+- `EMAIL_SERVICE_API_KEY` — required Resend API key.
+- `TO_EMAIL` — optional recipient; defaults to `hello@detailedgroup.co`.
+
+The sender is currently fixed in `api/contact.js`. The contact API is tested locally with a mocked
+provider; this does not prove that the Vercel function is deployed or that environment variables
+are configured. In a Preview, first test `GET /api/contact` (expected 405) and invalid `POST`
+requests (expected 400); neither sends email. Only test a valid submission with an approved test
+recipient and the project owner's consent.
+
+Before production activation:
+
+1. Push the reviewed branch through the approved Git workflow and wait for its Vercel Preview.
+2. Verify the Preview URL, generated routes, assets, marquee, contact API routing, and middleware.
+   Confirm Pages CMS targets the intended repository and that its publishing branch triggers the
+   expected Vercel deployment.
+3. Obtain explicit production approval. Do not promote Preview automatically.
+4. After the approved production deployment, smoke-test the homepage, all five OURO routes,
+   `/case-studies/`, one published project, `/api/contact` with a safe invalid request, and the
+   maintenance gate state.
+5. To roll back, use Vercel Deployments to promote the last known-good deployment. If a CMS commit
+   fails validation, the failed build should not replace the active deployment; correct or revert
+   the record in Pages CMS/GitHub, then rebuild.
+
+For local checks, run `npm run build:check`, `npm test`, and `npm run build`. The generated `dist/`
+is ignored by Git and is not deployed from a local machine by these commands.

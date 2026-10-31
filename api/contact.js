@@ -76,13 +76,13 @@ module.exports = async function handler(req, res) {
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      return res.status(502).json({ error: 'Email provider error', details: errorText });
+      console.error('Contact email provider returned a non-success status:', response.status);
+      return res.status(502).json({ error: 'Email provider error' });
     }
 
     return res.status(200).json({ success: true });
   } catch (error) {
-    console.error('Contact API error:', error);
+    console.error('Contact API request failed.');
     return res.status(500).json({ error: 'Failed to send email.' });
   }
 }
