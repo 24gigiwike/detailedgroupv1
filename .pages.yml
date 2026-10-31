@@ -1,3 +1,101 @@
+media:
+  - name: case_study_images
+    label: "Case Study Images"
+    input: "assets/case-studies"
+    output: "/assets/case-studies"
+    categories: [image]
+    extensions: [jpg, jpeg, png, webp, avif]
+
+components:
+  caseStudyChapter:
+    type: object
+    fields:
+      - name: enabled
+        label: "Enabled"
+        type: boolean
+      - name: heading
+        label: "Heading"
+        type: string
+      - name: intro
+        label: "Introductory Text"
+        type: text
+      - name: body
+        label: "Editorial Body"
+        type: text
+      - name: heroMediaType
+        label: "Hero Media Type"
+        type: select
+        options:
+          values: [image, video]
+      - name: desktopHeroMediaUrl
+        label: "Desktop Hero Media URL"
+        type: string
+      - name: mobileHeroMediaUrl
+        label: "Mobile Hero Media URL"
+        type: string
+      - name: heroPosterImage
+        label: "Hero Poster Image"
+        type: image
+        options:
+          media: case_study_images
+      - name: gallery
+        label: "Gallery Items"
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{mediaType} — {caption}"
+        fields:
+          - name: mediaType
+            label: "Media Type"
+            type: select
+            options:
+              values: [image, video]
+          - name: mediaUrl
+            label: "Media URL"
+            type: string
+          - name: alt
+            label: "Alternative Text"
+            type: text
+          - name: caption
+            label: "Caption"
+            type: text
+  keynoteSlide:
+    type: object
+    fields:
+      - name: title
+        label: "Slide Title"
+        type: string
+      - name: mediaType
+        label: "Slide Media Type"
+        type: select
+        options:
+          values: [image, video]
+      - name: mediaUrl
+        label: "Media URL"
+        type: string
+      - name: speaker
+        label: "Speaker"
+        type: string
+      - name: directionNotes
+        label: "Motion / Direction Notes"
+        type: text
+      - name: script
+        label: "Speaker Script"
+        type: text
+  investorDeckSlide:
+    type: object
+    fields:
+      - name: imageUrl
+        label: "Image URL"
+        type: string
+      - name: alt
+        label: "Alternative Text"
+        type: text
+      - name: title
+        label: "Slide Title"
+        type: string
+
 content:
   - name: marquee_settings
     label: "Header Marquee"
@@ -13,3 +111,116 @@ content:
             label: "Event Text"
             type: text
             placeholder: "EXECUTIVE COMMUNICATIONS FORUM • JUNE 25"
+  - name: case_studies
+    label: "Case Studies"
+    type: collection
+    path: "data/case-studies"
+    format: json
+    filename: "{slug}.json"
+    subfolders: false
+    exclude: [".gitkeep"]
+    operations:
+      create: true
+      rename: true
+      delete: true
+    view:
+      primary: title
+      fields: [title, slug, status, category, displayOrder]
+      sort: [displayOrder, title]
+      default:
+        sort: displayOrder
+        order: asc
+    fields:
+      - name: title
+        label: "Project Title"
+        type: string
+        required: true
+      - name: slug
+        label: "URL Slug"
+        type: string
+        required: true
+        pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+      - name: shortDescription
+        label: "Short Description"
+        type: text
+        required: true
+      - name: coverImage
+        label: "Cover Image"
+        type: image
+        required: true
+        options:
+          media: case_study_images
+      - name: category
+        label: "Project Category"
+        type: string
+        required: true
+      - name: status
+        label: "Publication Status"
+        type: select
+        required: true
+        options:
+          values: [draft, published]
+      - name: displayOrder
+        label: "Display Order"
+        type: number
+        required: true
+      - name: overview
+        label: "Overview & Story"
+        type: object
+        fields:
+          - name: heading
+            label: "Heading"
+            type: string
+            required: true
+          - name: intro
+            label: "Introductory Text"
+            type: text
+            required: true
+          - name: body
+            label: "Editorial Body"
+            type: text
+            required: true
+          - name: heroMediaType
+            label: "Hero Media Type"
+            type: select
+            required: true
+            options:
+              values: [image, video]
+          - name: heroMediaUrl
+            label: "Hero Media URL"
+            type: string
+            required: true
+          - name: mobileHeroMediaUrl
+            label: "Mobile Hero Media URL"
+            type: string
+          - name: heroPosterImage
+            label: "Hero Poster / Fallback Image"
+            type: image
+            options:
+              media: case_study_images
+      - name: brandIdentity
+        label: "Chapter 1 — Brand Identity"
+        component: caseStudyChapter
+      - name: launch
+        label: "Chapter 2 — Launch Communications"
+        component: caseStudyChapter
+      - name: eventBrandIdentity
+        label: "Chapter 3 — Event Brand Identity"
+        component: caseStudyChapter
+      - name: investorCommunications
+        label: "Chapter 4 — Investor Communications"
+        component: caseStudyChapter
+      - name: keynoteSlides
+        label: "Keynote Slides"
+        component: keynoteSlide
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{title} — {speaker}"
+      - name: investorDeckSlides
+        label: "Investor Deck Slides"
+        component: investorDeckSlide
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{title} — {index}"
