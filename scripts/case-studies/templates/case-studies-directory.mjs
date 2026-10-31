@@ -1,10 +1,11 @@
 import { escapeHtml, renderDocument } from "./html.mjs";
+import { getLegacyRouteMapping } from "../lib/legacy-route-mapping.mjs";
 
 export function renderCaseStudiesDirectory(records) {
   const cards = records
     .filter((record) => record.status === "published")
     .sort((left, right) => left.displayOrder - right.displayOrder || left.title.localeCompare(right.title))
-    .map((record) => `<a class="next-chapter directory-panel" href="/case-studies/${escapeHtml(record.slug)}/">
+    .map((record) => `<a class="next-chapter directory-panel" href="${getLegacyRouteMapping(record.slug)?.overview || `/case-studies/${escapeHtml(record.slug)}/`}">
       <img src="${escapeHtml(record.coverImage)}" alt="" aria-hidden="true" loading="lazy" decoding="async">
       <span class="next-shade" aria-hidden="true"></span>
       <span class="next-label">${escapeHtml(record.title)} <span aria-hidden="true">→</span></span>

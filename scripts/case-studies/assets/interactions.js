@@ -66,22 +66,22 @@
       });
     }
 
-    function initImageFallbacks() {
-      document.querySelectorAll("img[data-poster]").forEach(function (image) {
-        image.addEventListener("error", function () {
-          var fallback = image.dataset.poster;
-          if (!fallback || image.src === new URL(fallback, window.location.href).href) return;
-          var picture = image.closest("picture");
-          if (picture) picture.querySelectorAll("source").forEach(function (source) { source.remove(); });
-          image.src = fallback;
-          image.removeAttribute("data-poster");
-        }, { once: true });
-      });
-    }
-
     updateSources();
     if (query.addEventListener) query.addEventListener("change", updateSources);
     else if (query.addListener) query.addListener(updateSources);
+  }
+
+  function initImageFallbacks() {
+    document.querySelectorAll("img[data-poster]").forEach(function (image) {
+      image.addEventListener("error", function () {
+        var fallback = image.dataset.poster;
+        if (!fallback || image.src === new URL(fallback, window.location.href).href) return;
+        var picture = image.closest("picture");
+        if (picture) picture.querySelectorAll("source").forEach(function (source) { source.remove(); });
+        image.src = fallback;
+        image.removeAttribute("data-poster");
+      }, { once: true });
+    });
   }
 
   function initLaunchHeroAudio() {

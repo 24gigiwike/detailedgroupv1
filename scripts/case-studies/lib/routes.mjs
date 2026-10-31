@@ -1,3 +1,5 @@
+import { getLegacyRouteMapping, validateLegacyRouteMappings } from "./legacy-route-mapping.mjs";
+
 const chapters = [
   ["brandIdentity", "brand-identity", "Brand Identity"],
   ["launch", "launch", "Launch Communications"],
@@ -6,17 +8,19 @@ const chapters = [
 ];
 
 export function generateRoutes(records) {
+  validateLegacyRouteMappings(records.map((record) => ({ record, filename: `${record.slug}.json` })));
   const routes = [];
   for (const record of records) {
     if (record.status !== "published") continue;
-    const basePath = `/case-studies/${record.slug}/`;
+    const legacyMapping = getLegacyRouteMapping(record.slug);
+    const basePath = legacyMapping?.overview || `/case-studies/${record.slug}/`;
     const enabledChapters = chapters
       .filter(([field]) => record[field]?.enabled === true)
-      .map(([field, slug, label]) => ({
+      .map(([field, chapterSlug, label]) => ({
         field,
-        slug,
+        slug: chapterSlug,
         label,
-        path: `${basePath}${slug}/`,
+        path: legacyMapping?.chapters[field] || `${basePath}${chapterSlug}/`,
         content: record[field]
       }));
     routes.push({
@@ -36,6 +40,10 @@ export function generateRoutes(records) {
         next: index === enabledChapters.length - 1 ? null : enabledChapters[index + 1]
       });
     });
+  }
+  const paths = routes.map((route) => route.path);
+  if (new Set(paths).size !== paths.length) {
+    throw new Error("Generated case study routes contain duplicate paths.");
   }
   return routes;
 }

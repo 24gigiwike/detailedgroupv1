@@ -42,6 +42,9 @@ function validateHero(hero, record, field, errors, mediaTypeField, urlField) {
   if (hero.heroPosterImage && !isMediaUrl(hero.heroPosterImage)) {
     addError(errors, record, `${field}.heroPosterImage`, "must be an HTTP(S) or root-relative image URL");
   }
+  if (hero.heroLogoImage && !isMediaUrl(hero.heroLogoImage)) {
+    addError(errors, record, `${field}.heroLogoImage`, "must be an HTTP(S) or root-relative image URL");
+  }
 }
 
 function validateGallery(gallery, record, field, errors) {
@@ -68,6 +71,11 @@ function validateGallery(gallery, record, field, errors) {
     if (item.caption !== undefined && typeof item.caption !== "string") {
       addError(errors, record, `${itemField}.caption`, "must be text");
     }
+    if ((item.width !== undefined || item.height !== undefined) &&
+        (!Number.isInteger(item.width) || item.width <= 0 ||
+         !Number.isInteger(item.height) || item.height <= 0)) {
+      addError(errors, record, itemField, "width and height must be positive integers when provided");
+    }
   });
 }
 
@@ -91,7 +99,7 @@ function validateSlides(slides, record, field, errors, kind) {
       if (!isMediaUrl(slide.mediaUrl)) {
         addError(errors, record, `${slideField}.mediaUrl`, "must be an HTTP(S) or root-relative URL");
       }
-      for (const name of ["speaker", "directionNotes", "script"]) {
+      for (const name of ["speaker", "directionNotes", "motionLabel", "contextLabel", "script", "scriptNote"]) {
         if (slide[name] !== undefined && typeof slide[name] !== "string") {
           addError(errors, record, `${slideField}.${name}`, "must be text");
         }
@@ -188,7 +196,7 @@ export function validateCaseStudies(entries) {
 
     validateSlides(record.keynoteSlides, entry, "keynoteSlides", errors, "keynote");
     validateSlides(record.investorDeckSlides, entry, "investorDeckSlides", errors, "investor");
-    for (const name of ["keynoteHeading", "keynoteIntro", "investorDeckHeading"]) {
+    for (const name of ["keynoteHeading", "keynoteKicker", "keynoteIntro", "investorDeckHeading"]) {
       if (record[name] !== undefined && typeof record[name] !== "string") {
         addError(errors, entry, name, "must be text");
       }

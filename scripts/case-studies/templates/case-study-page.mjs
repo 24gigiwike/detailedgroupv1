@@ -1,8 +1,12 @@
 import { escapeHtml, renderDocument, renderMedia, renderText } from "./html.mjs";
+import { getLegacyRouteMapping } from "../lib/legacy-route-mapping.mjs";
 
 function renderMenu(route) {
   const entries = [
-    { path: `/case-studies/${route.record.slug}/`, label: "Overview & Story" },
+    {
+      path: getLegacyRouteMapping(route.record.slug)?.overview || `/case-studies/${route.record.slug}/`,
+      label: "Overview & Story"
+    },
     ...route.chapters.map((chapter) => ({ path: chapter.path, label: chapter.label }))
   ];
   return `<a class="skip" href="#hero">Skip to chapter</a>
@@ -21,6 +25,12 @@ function getEditorialContent(route) {
   return route.type === "overview" ? route.record.overview : route.chapter.content;
 }
 
+function renderEditorialHeading(value) {
+  const [firstLine, ...remainingLines] = String(value || "").split("\n");
+  if (!remainingLines.length) return escapeHtml(value || "");
+  return `${escapeHtml(firstLine)}<br class="mobile-editorial-break"> ${escapeHtml(remainingLines.join(" "))}`;
+}
+
 function renderHero(route) {
   const isOverview = route.type === "overview";
   const content = getEditorialContent(route);
@@ -35,21 +45,32 @@ function renderHero(route) {
   const heroHeading = isOverview
     ? (content.heroHeading || route.record.title)
     : (content.heroHeading || content.heading);
-  const heroIntro = content.heroIntro || content.intro;
+  const heroIntro = content.heroIntro ?? content.intro;
   const note = isOverview ? (content.heroNote || route.record.shortDescription) : content.heroNote;
   const chapterNumber = isOverview
     ? "01"
     : String(route.chapters.indexOf(route.chapter) + 2).padStart(2, "0");
 
-  return `<section class="panel is-video" id="hero"${!isOverview && route.chapter.field === "launch" ? " data-launch-audio" : ""}>
+  const mediaSlot = route.record.slug === "ouro" && !isOverview &&
+    route.chapter.field === "investorCommunications" ? ' data-media-slot="investorHero"' : "";
+  const heroAttributes = `${!isOverview && route.chapter.field === "launch" ? " data-launch-audio" : ""}${mediaSlot}`;
+  const shade = route.record.slug === "ouro" && !isOverview &&
+    route.chapter.field === "eventBrandIdentity"
+    ? '<div class="land-shade" style="background: rgba(0, 0, 0, 0.45);" aria-hidden="true"></div>'
+    : '<div class="land-shade" aria-hidden="true"></div>';
+  const heading = isOverview && content.heroLogoImage
+    ? `<h1 class="ouro-mark"><img src="${escapeHtml(content.heroLogoImage)}" alt="${escapeHtml(route.record.title)}" width="328" height="98"></h1>`
+    : `<h1 class="hero-title">${escapeHtml(heroHeading)}</h1>`;
+
+  return `<section class="panel is-video" id="hero"${heroAttributes}>
     ${media}
-    <div class="land-shade" aria-hidden="true"></div>
+    ${shade}
     ${!isOverview && route.chapter.field === "launch" && content.heroMediaType === "video"
       ? '<button class="hero-sound-toggle" type="button" aria-label="Turn sound on" aria-pressed="false">Sound off</button>'
       : ""}
     <div class="hero-copy">
       <p class="kicker">${chapterNumber} — ${escapeHtml(label)}</p>
-      <h1 class="hero-title">${escapeHtml(heroHeading)}</h1>
+      ${heading}
       ${heroIntro ? `<p class="lead">${escapeHtml(heroIntro)}</p>` : ""}
       ${note ? `<p class="note">${escapeHtml(note)}</p>` : ""}
     </div>
@@ -65,7 +86,7 @@ function renderEssay(route) {
 
   return `<section class="essay" aria-labelledby="${headlineId}">
     <div class="essay-col editorial-copy">
-      <p class="editorial-intro" id="${headlineId}"><strong>${escapeHtml(editorialHeading || "")}</strong></p>
+      <p class="editorial-intro" id="${headlineId}"><strong>${renderEditorialHeading(editorialHeading)}</strong></p>
       ${editorialIntro ? `<p><span>${escapeHtml(editorialIntro)}</span></p>` : ""}
       ${body.split("\n").filter(Boolean).map((paragraph) => paragraph.replace("<p>", '<p class="editorial-body">')).join("\n")}
     </div>
@@ -83,12 +104,18 @@ function renderGallery(chapter) {
 
   return `<section class="vertical-gallery ${galleryClass}" aria-label="${escapeHtml(chapter.label)} gallery">
     <div class="gallery-container">
-      ${items.map((item) => `<figure class="gallery-item">
-        ${item.mediaType === "video"
-          ? `<video class="gallery-media" data-scroll-video autoplay muted loop playsinline preload="metadata" aria-label="${escapeHtml(item.alt || item.caption || chapter.label)}"><source src="${escapeHtml(item.mediaUrl)}" type="${item.mediaUrl.toLowerCase().includes(".webm") ? "video/webm" : "video/mp4"}"></video>`
-          : `<img class="gallery-media" src="${escapeHtml(item.mediaUrl)}" alt="${escapeHtml(item.alt || "")}" loading="lazy" decoding="async">`}
+      ${items.map((item) => {
+        const dimensions = Number.isInteger(item.width) && Number.isInteger(item.height)
+          ? ` width="${item.width}" height="${item.height}"`
+          : "";
+        const media = item.mediaType === "video"
+          ? `<video class="gallery-media" data-scroll-video autoplay muted loop playsinline preload="metadata"${dimensions} aria-label="${escapeHtml(item.alt || item.caption || chapter.label)}"><source src="${escapeHtml(item.mediaUrl)}" type="${item.mediaUrl.toLowerCase().includes(".webm") ? "video/webm" : "video/mp4"}"></video>`
+          : `<img class="gallery-media" src="${escapeHtml(item.mediaUrl)}" alt="${escapeHtml(item.alt || "")}" loading="lazy" decoding="async"${dimensions}>`;
+        return `<figure class="gallery-item">
+        ${media}
         ${item.caption ? `<figcaption>${escapeHtml(item.caption)}</figcaption>` : ""}
-      </figure>`).join("\n")}
+      </figure>`;
+      }).join("\n")}
     </div>
   </section>`;
 }
@@ -97,7 +124,9 @@ function renderKeynoteSlide(slide, index) {
   const title = escapeHtml(slide.title);
   const speaker = slide.speaker ? escapeHtml(slide.speaker) : "";
   const motion = slide.directionNotes ? escapeHtml(slide.directionNotes) : "";
+  const contextLabel = slide.contextLabel ? escapeHtml(slide.contextLabel) : "";
   const script = renderText(slide.script || "");
+  const scriptNote = renderText(slide.scriptNote || "");
   const visual = slide.mediaType === "video"
     ? `<video class="slide-media" muted loop playsinline preload="metadata"><source src="${escapeHtml(slide.mediaUrl)}" type="${slide.mediaUrl.toLowerCase().includes(".webm") ? "video/webm" : "video/mp4"}"></video><button class="keynote-sound-toggle" type="button" aria-label="Turn sound on" aria-pressed="false">Sound off</button>`
     : `<img class="slide-media" src="${escapeHtml(slide.mediaUrl)}" alt="${title}" loading="lazy" decoding="async">`;
@@ -108,7 +137,7 @@ function renderKeynoteSlide(slide, index) {
       <div class="slide-badge">
         <span class="badge-idx">${String(index + 1).padStart(2, "0")}</span>
         <span class="badge-title">${title}</span>
-        ${motion ? '<span class="badge-motion">Motion</span>' : ""}
+        ${slide.motionLabel ? `<span class="badge-motion">${escapeHtml(slide.motionLabel)}</span>` : ""}
       </div>
     </div>
     <div class="slide-script-section">
@@ -116,13 +145,14 @@ function renderKeynoteSlide(slide, index) {
         <span class="script-badge-num">Slide ${String(index + 1).padStart(2, "0")}</span>
         <h3 class="slide-script-heading">${title}</h3>
         <div class="script-meta-tags">
+          ${contextLabel ? `<span class="script-tag">${contextLabel}</span>` : ""}
           ${speaker ? `<span class="script-tag">Speaker: ${speaker}</span>` : ""}
-          ${motion ? `<span class="script-tag">${motion}</span>` : ""}
+          ${motion ? `<span class="script-tag">Motion: ${motion}</span>` : ""}
         </div>
       </div>
       <div class="slide-script-body">
         ${script}
-        ${motion ? `<div class="script-note-box">${motion}</div>` : ""}
+        ${scriptNote ? `<div class="script-note-box">${scriptNote}</div>` : ""}
       </div>
     </div>
   </article>`;
@@ -132,11 +162,12 @@ function renderKeynote(record) {
   const slides = record.keynoteSlides || [];
   if (!slides.length) return "";
   const heading = record.keynoteHeading || "Keynote Presentation";
+  const kicker = record.keynoteKicker || "Presentation";
   const intro = record.keynoteIntro || "";
 
   return `<section class="keynote-section" id="keynote" aria-label="${escapeHtml(heading)}">
     <div class="keynote-header">
-      <p class="kicker">Presentation</p>
+      <p class="kicker">${escapeHtml(kicker)}</p>
       <h2 class="keynote-heading">${escapeHtml(heading)}</h2>
       ${intro ? `<p class="keynote-subtitle">${escapeHtml(intro)}</p>` : ""}
     </div>
@@ -195,6 +226,12 @@ function renderInvestorDeck(record) {
 function renderOverviewLinks(route) {
   return route.chapters.map((chapter) => {
     const content = chapter.content;
+    const ctaDestination = {
+      brandIdentity: "brand",
+      launch: "launch",
+      eventBrandIdentity: "event",
+      investorCommunications: "investor"
+    }[chapter.field];
     const media = renderMedia({
       type: content.heroMediaType,
       url: content.desktopHeroMediaUrl,
@@ -204,7 +241,7 @@ function renderOverviewLinks(route) {
       className: "",
       preload: "none"
     });
-    return `<a class="next-chapter directory-panel" href="${chapter.path}" aria-label="Explore ${escapeHtml(chapter.label)}">
+    return `<a class="next-chapter directory-panel" href="${chapter.path}" data-cta-dest="${ctaDestination}" aria-label="Explore ${escapeHtml(chapter.label)}">
     ${media}
     <span class="next-shade" aria-hidden="true"></span>
     <span class="next-label">${escapeHtml(chapter.label)} <span aria-hidden="true">→</span></span>
@@ -215,6 +252,12 @@ function renderOverviewLinks(route) {
 function renderNextLink(route) {
   if (route.next) {
     const content = route.next.content;
+    const ctaDestination = {
+      brandIdentity: "brand",
+      launch: "launch",
+      eventBrandIdentity: "event",
+      investorCommunications: "investor"
+    }[route.next.field];
     const media = renderMedia({
       type: content.heroMediaType,
       url: content.desktopHeroMediaUrl,
@@ -224,7 +267,7 @@ function renderNextLink(route) {
       className: "",
       preload: "none"
     });
-    return `<a class="next-chapter" href="${route.next.path}" aria-label="Explore ${escapeHtml(route.next.label)}">
+    return `<a class="next-chapter" href="${route.next.path}" data-cta-dest="${ctaDestination}" aria-label="Explore ${escapeHtml(route.next.label)}">
       ${media}
       <span class="next-shade" aria-hidden="true"></span>
       <span class="next-label">${escapeHtml(route.next.label)} <span aria-hidden="true">→</span></span>
@@ -249,5 +292,9 @@ export function renderCaseStudyPage(route) {
     pageBody += `\n  ${renderNextLink(route)}`;
   }
   pageBody += "\n</main>";
-  return renderDocument(`${route.record.title} — ${isOverview ? "Overview & Story" : route.chapter.label}`, pageBody);
+  const pageTitle = isOverview ? "Overview & Story" : route.chapter.label;
+  const documentTitle = route.record.slug === "ouro"
+    ? `${pageTitle} — ${route.record.title}`
+    : `${route.record.title} — ${pageTitle}`;
+  return renderDocument(documentTitle, pageBody);
 }

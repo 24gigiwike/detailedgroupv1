@@ -29,3 +29,12 @@ lines; `**bold**` and `*italic*` emphasis are rendered safely without permitting
 
 The generator is a preview/output foundation, not yet wired to the hosting build. Existing OURO
 HTML, assets, routes, CSS, JavaScript, and deployment settings remain unchanged.
+
+The published `ouro` record uses the explicit legacy mapping in `lib/legacy-route-mapping.mjs`,
+so its generated preview uses `/ouro/` and the four existing chapter paths rather than creating
+`/case-studies/ouro/` duplicates. Validation requires all mapped OURO chapters to remain enabled.
+The map affects only generated output; the current site routes are not replaced or activated.
+
+`data/case-studies/ouro.json` is the editable content source prepared from the five current OURO
+pages and `ouro/assets/ouro.js`. Gallery items may include intrinsic width and height to preserve
+the existing media aspect ratios. Newlines in editorial headings render as mobile-only line breaks.

@@ -72,6 +72,12 @@ components:
           - name: alt
             label: "Alternative Text"
             type: text
+          - name: width
+            label: "Intrinsic Width"
+            type: number
+          - name: height
+            label: "Intrinsic Height"
+            type: number
           - name: caption
             label: "Caption"
             type: text
@@ -95,8 +101,17 @@ components:
       - name: directionNotes
         label: "Motion / Direction Notes"
         type: text
+      - name: motionLabel
+        label: "Motion Badge Label"
+        type: string
+      - name: contextLabel
+        label: "Additional Slide Label"
+        type: string
       - name: script
         label: "Speaker Script"
+        type: text
+      - name: scriptNote
+        label: "Script Note"
         type: text
   investorDeckSlide:
     type: object
@@ -190,6 +205,11 @@ content:
           - name: heroHeading
             label: "Hero Heading"
             type: string
+          - name: heroLogoImage
+            label: "Hero Logo Image"
+            type: image
+            options:
+              media: case_study_images
           - name: intro
             label: "Introductory Text"
             type: text
@@ -249,6 +269,9 @@ content:
             summary: "{title} — {speaker}"
       - name: keynoteHeading
         label: "Keynote Section Heading"
+        type: string
+      - name: keynoteKicker
+        label: "Keynote Section Kicker"
         type: string
       - name: keynoteIntro
         label: "Keynote Section Introductory Text"

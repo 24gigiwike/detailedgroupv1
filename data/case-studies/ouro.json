@@ -1,0 +1,365 @@
+{
+  "title": "OURO",
+  "slug": "ouro",
+  "shortDescription": "An integrated communications direction for ORIVS and its OURO personal-audio product.",
+  "coverImage": "https://res.cloudinary.com/dtkluxukm/image/upload/f_auto,q_auto:good,w_1400,c_limit/v1792429070/copy_of_6_tjnzkw.png",
+  "category": "Integrated communications",
+  "status": "published",
+  "displayOrder": 1,
+  "overview": {
+    "heading": "One product. One connected story.",
+    "heroHeading": "OURO",
+    "heroLogoImage": "https://res.cloudinary.com/dtkluxukm/image/upload/f_auto,q_auto:good,w_1400,c_limit/v1792429070/copy_of_6_tjnzkw.png",
+    "intro": "An integrated communications direction for ORIVS and its OURO personal-audio product.",
+    "heroIntro": "One product. One connected story.",
+    "heroNote": "An integrated communications direction for ORIVS and its OURO personal-audio product.",
+    "editorialHeading": "One product.\nOne connected story.",
+    "editorialIntro": "An integrated communications direction for ORIVS and its OURO personal-audio product.",
+    "body": "Introducing a product takes more than a **strong identity** or a well-executed launch. It calls for a **clear understanding** of what the product represents, how it should be positioned, and how its story should travel across audiences and channels. For ORIVS, the introduction of OURO presented an opportunity to bring these considerations together as **one communications challenge**.\n\nThe work extended beyond visual identity to consider positioning, creative direction, the launch experience and the communication of the product’s wider business potential. Rather than treating each element as a separate exercise, Detailed developed a **connected direction** intended to give the product a **consistent narrative and visual foundation** across formats, platforms and stages of its introduction.",
+    "heroMediaType": "video",
+    "heroMediaUrl": "https://res.cloudinary.com/dtkluxukm/video/upload/v1792075835/OURO_hero_Video_converted_xjca8t.webm"
+  },
+  "brandIdentity": {
+    "enabled": true,
+    "heading": "A recognizable identity, built around the product.",
+    "heroHeading": "BRAND IDENTITY",
+    "intro": "Building a recognizable visual identity for OURO.",
+    "heroIntro": "Building a recognizable visual identity for OURO.",
+    "editorialHeading": "A recognizable identity, built around the product.",
+    "editorialIntro": "A visual language designed to give OURO a consistent presence across its communications.",
+    "body": "OURO’s brand identity forms part of the wider product introduction, giving the product a **recognizable visual presence** across its communications. The identity direction connects the product’s visual expression with the **positioning and narrative** developed for its launch.\n\nAcross different applications, the aim is to maintain a **clear sense of consistency** while allowing the system to adapt to different formats and contexts. The work shown here brings together selected identity applications to demonstrate how the **visual language** is expressed across the product’s wider communications.",
+    "heroMediaType": "video",
+    "desktopHeroMediaUrl": "https://res.cloudinary.com/dtkluxukm/video/upload/v1792948648/VID_i2hl0y.mp4",
+    "mobileHeroMediaUrl": "https://res.cloudinary.com/dtkluxukm/video/upload/v1793096258/hgjhbjnkml_ka71i6.mp4",
+    "gallery": [
+      {
+        "mediaType": "image",
+        "mediaUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/v1792327282/ouro-vision_cmzfuv.jpg",
+        "alt": "OURO Brand Identity gallery image 01",
+        "width": 1920,
+        "height": 1080
+      },
+      {
+        "mediaType": "video",
+        "mediaUrl": "https://res.cloudinary.com/dtkluxukm/video/upload/v1793103793/Product_Render_bmprab.webm",
+        "alt": "OURO Brand Identity gallery video"
+      },
+      {
+        "mediaType": "image",
+        "mediaUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/v1793100467/prd3_lmp7cc.png",
+        "alt": "OURO Brand Identity gallery image 03",
+        "width": 1920,
+        "height": 1080
+      },
+      {
+        "mediaType": "image",
+        "mediaUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/v1793022296/Typography_vfz4lu.jpg",
+        "alt": "OURO Brand Identity gallery image 04",
+        "width": 1920,
+        "height": 1080
+      },
+      {
+        "mediaType": "image",
+        "mediaUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/v1793022294/prd6_ynj9ub.png",
+        "alt": "OURO Brand Identity gallery image 06",
+        "width": 1920,
+        "height": 1080
+      },
+      {
+        "mediaType": "video",
+        "mediaUrl": "https://res.cloudinary.com/dtkluxukm/video/upload/v1792948648/VID_i2hl0y.mp4",
+        "alt": "OURO Brand Identity gallery video 07",
+        "width": 1920,
+        "height": 1080
+      },
+      {
+        "mediaType": "image",
+        "mediaUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/v1793022303/prd4_x5l5te.png",
+        "alt": "OURO Brand Identity gallery image 08",
+        "width": 1920,
+        "height": 1080
+      },
+      {
+        "mediaType": "image",
+        "mediaUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/v1793022304/prd2_uwbye5.png",
+        "alt": "OURO Brand Identity gallery image 09",
+        "width": 1920,
+        "height": 1080
+      },
+      {
+        "mediaType": "image",
+        "mediaUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/v1792327279/ouro-creativedirection_eu6ypg.jpg",
+        "alt": "OURO Brand Identity gallery image 10",
+        "width": 1920,
+        "height": 1080
+      },
+      {
+        "mediaType": "image",
+        "mediaUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/v1793022294/prd1_hagtip.png",
+        "alt": "OURO Brand Identity gallery image 11",
+        "width": 1920,
+        "height": 1080
+      }
+    ]
+  },
+  "launch": {
+    "enabled": true,
+    "heading": "Bringing the product story to its launch moment.",
+    "heroHeading": "LAUNCH COMMUNICATIONS",
+    "intro": "Bringing the product story to its launch moment and communicating the wider business opportunity.",
+    "heroIntro": "Bringing the product story to its launch moment and communicating the wider business opportunity.",
+    "editorialHeading": "Bringing the product story to its launch moment.",
+    "editorialIntro": "Connecting the launch concept, keynote narrative and campaign communications through one coordinated direction.",
+    "body": "The launch communications work explored how OURO’s identity and strategic narrative could be brought together in a **coordinated product introduction**. At its centre was the **NEXT ’26 launch concept**, providing a framework for connecting the event identity, keynote storytelling, campaign communications and the wider launch experience.\n\nThe direction considered the **launch as a journey** from building awareness and anticipation to the main product presentation and the communications supporting it. The aim was to make each element feel part of the same introduction, with a **consistent story** carried across the different moments and materials.",
+    "heroMediaType": "video",
+    "desktopHeroMediaUrl": "https://res.cloudinary.com/dtkluxukm/video/upload/v1792483605/OPENING_FILM_converted_1_otfynh.webm",
+    "heroPosterImage": "https://res.cloudinary.com/dtkluxukm/video/upload/so_0,f_jpg,q_auto,w_1200/v1792483605/OPENING_FILM_converted_1_otfynh.jpg"
+  },
+  "eventBrandIdentity": {
+    "enabled": true,
+    "heading": "One visual language, expressed across the launch.",
+    "heroHeading": "One visual language, expressed across the launch.",
+    "intro": "Extending the OURO story into the event environment.",
+    "heroIntro": "",
+    "heroNote": "The event identity carries the OURO product story into the room, from the stage to the materials people hold.",
+    "editorialHeading": "One visual language, expressed across the launch.",
+    "editorialIntro": "Extending the OURO story into the event environment.",
+    "body": "Within the **NEXT ’26 launch concept**, the event identity brought the OURO product story into the event environment. The visual direction was intended to carry a **consistent identity** across the different points where the launch was experienced, from the **main stage** to supporting materials and other event touchpoints.\n\nTogether, the applications show how **one design direction** can work across different surfaces, formats and moments while remaining connected to the **wider product narrative**.",
+    "heroMediaType": "video",
+    "desktopHeroMediaUrl": "https://res.cloudinary.com/dtkluxukm/video/upload/v1793020793/1012_uehfly.webm",
+    "gallery": [
+      {
+        "mediaType": "video",
+        "mediaUrl": "https://res.cloudinary.com/dtkluxukm/video/upload/v1793096257/IDENTITY_TREATMENT_z7wrt4.mp4",
+        "alt": "OURO Event Brand Identity gallery video"
+      },
+      {
+        "mediaType": "image",
+        "mediaUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/f_auto,q_auto:good,w_1400,c_limit/v1792478377/next26one_bax8kv.jpg",
+        "alt": "OURO Event application 6",
+        "width": 1400,
+        "height": 933
+      },
+      {
+        "mediaType": "image",
+        "mediaUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/f_auto,q_auto:good,w_1400,c_limit/v1792478414/2_rb5bfi.jpg",
+        "alt": "OURO Event application 5",
+        "width": 1400,
+        "height": 933
+      },
+      {
+        "mediaType": "image",
+        "mediaUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/f_auto,q_auto:good,w_1200,c_limit/v1792478418/5_u5u2ci.jpg",
+        "alt": "OURO Event application 1",
+        "width": 1200,
+        "height": 800
+      },
+      {
+        "mediaType": "image",
+        "mediaUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/f_auto,q_auto:good,w_1200,c_limit/v1792478418/7_unfepv.jpg",
+        "alt": "OURO Event application 2",
+        "width": 1200,
+        "height": 800
+      },
+      {
+        "mediaType": "image",
+        "mediaUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/f_auto,q_auto:good,w_1200,c_limit/v1792478382/next26two_z38jhu.jpg",
+        "alt": "OURO Event application 3",
+        "width": 1200,
+        "height": 800
+      },
+      {
+        "mediaType": "image",
+        "mediaUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/f_auto,q_auto:good,w_1200,c_limit/v1792478418/8_m3zlvn.jpg",
+        "alt": "OURO Event application 4",
+        "width": 1200,
+        "height": 800
+      }
+    ]
+  },
+  "investorCommunications": {
+    "enabled": true,
+    "heading": "Making the wider opportunity clear.",
+    "heroHeading": "Investor Communications",
+    "intro": "Carrying the product narrative into investor-facing communication.",
+    "heroIntro": "",
+    "editorialHeading": "Making the wider opportunity clear.",
+    "editorialIntro": "Carrying the product narrative into investor-facing communication.",
+    "body": "The investor communications direction translated OURO's wider product narrative into a focused presentation of its business potential, maintaining continuity with the product identity and launch communications.",
+    "heroMediaType": "image",
+    "desktopHeroMediaUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010915/SLIDE_3_ytoouv.png"
+  },
+  "keynoteHeading": "CEO + Product Keynote",
+  "keynoteKicker": "Presentation",
+  "keynoteIntro": "The NEXT ’26 product keynote and executive presentation.",
+  "keynoteSlides": [
+    {
+      "title": "OPENING FILM",
+      "mediaType": "video",
+      "mediaUrl": "https://res.cloudinary.com/dtkluxukm/video/upload/v1792483605/OPENING_FILM_converted_1_otfynh.webm",
+      "speaker": "None",
+      "directionNotes": "YES",
+      "motionLabel": "Motion",
+      "script": "**Purpose:** Introduce ORIVS and establish its philosophy before the launch begins.",
+      "scriptNote": "**Transition note:** Film resolves into NEXT ’26. CEO walks on stage."
+    },
+    {
+      "title": "NEXT '26",
+      "mediaType": "image",
+      "mediaUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/v1792478377/next26one_bax8kv.jpg",
+      "speaker": "CEO",
+      "directionNotes": "YES",
+      "script": "Good morning.\n\nThank you for joining us.\n\nEvery year we come together to share what we're building.\n\nBut today...\n\nWe'd like to begin somewhere else.\n\nWe'd like to begin with people."
+    },
+    {
+      "title": "THE FUTURE ISN'T LOUDER",
+      "mediaType": "image",
+      "mediaUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/v1792952042/2_1_pvka94.png",
+      "speaker": "CEO",
+      "directionNotes": "NO",
+      "script": "Technology has never been more capable.\n\nEvery year it's faster.\n\nSmarter.\n\nMore connected.\n\nYet somewhere along the way...\n\nIt also became louder.\n\nMore notifications.\n\nMore interruptions.\n\nMore demands on our attention.\n\nWe believe the future should feel different."
+    },
+    {
+      "title": "DESIGNED AROUND LIFE",
+      "mediaType": "video",
+      "mediaUrl": "https://res.cloudinary.com/dtkluxukm/video/upload/v1792951626/designed_around_life_pjxyzg.mp4",
+      "speaker": "CEO",
+      "directionNotes": "REQUIRED",
+      "motionLabel": "Required",
+      "script": "*Motion opening text:* Life doesn't happen in one place...\n\nLife doesn't happen in one place.\n\nIt moves.\n\nBetween work...\n\nAnd home.\n\nBetween movement...\n\nAnd stillness.\n\nBetween focus...\n\nAnd rest.\n\nWe believed technology should move naturally through those moments.\n\nNot ask us to reorganize our lives around it.",
+      "scriptNote": "*Motion ending text:* Designed Around Life."
+    },
+    {
+      "title": "ONE QUESTION",
+      "mediaType": "image",
+      "mediaUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/v1792951947/3_1_xpfbk4.png",
+      "speaker": "CEO",
+      "directionNotes": "NO",
+      "script": "*Opening text:* So we asked ourselves one question...\n\nSo we asked ourselves one question.\n\nNot..."
+    },
+    {
+      "title": "HOW SHOULD PERSONAL AUDIO FEEL?",
+      "mediaType": "image",
+      "mediaUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/v1792951947/3_1_xpfbk4.png",
+      "directionNotes": "NO",
+      "contextLabel": "Question Sequence",
+      "script": "*On-screen text:*\n\nHow can we add more?\n\nBut...\n\nHow should personal audio feel?\n\nHow should personal audio feel?",
+      "scriptNote": "This content belongs to the question sequence following \"One Question\". Preserved without inventing missing dialogue."
+    },
+    {
+      "title": "BUILT WITH INTENTION",
+      "mediaType": "image",
+      "mediaUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/v1792951904/4_1_yb2xsg.png",
+      "speaker": "CEO",
+      "directionNotes": "NO",
+      "script": "Every decision that followed came back to that question.\n\nEvery material.\n\nEvery interaction.\n\nEvery detail.\n\nGuided by one simple belief.\n\nThe best technology doesn't compete for your attention.\n\nIt quietly earns its place in your life."
+    },
+    {
+      "title": "PRODUCT FILM",
+      "mediaType": "video",
+      "mediaUrl": "https://res.cloudinary.com/dtkluxukm/video/upload/v1792075835/OURO_hero_Video_converted_xjca8t.webm",
+      "speaker": "None",
+      "directionNotes": "REQUIRED",
+      "motionLabel": "Required",
+      "script": "*Description:* Product film plays."
+    },
+    {
+      "title": "PRODUCT REVEAL",
+      "mediaType": "image",
+      "mediaUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/v1792478854/OURO_CEO_LAUNCH_KEYNOTE.002_pe3k3w.png",
+      "speaker": "CEO",
+      "directionNotes": "REQUIRED",
+      "motionLabel": "Required",
+      "script": "Meet OURO.\n\nDesigned Around Life.\n\nBuilt With Intention.",
+      "scriptNote": "**Transition:** I'd now like to invite our Head of Product to take you behind the thinking, design and engineering of OURO."
+    },
+    {
+      "title": "DESIGNED TO DISAPPEAR",
+      "mediaType": "image",
+      "mediaUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/v1792951776/OURO_CEO_LAUNCH_KEYNOTE.001_1_ivgaai.png",
+      "speaker": "Head of Product",
+      "directionNotes": "NO",
+      "script": "*On-screen text:* We wanted OURO to disappear into your day...\n\nWe wanted OURO to disappear into your day.\n\nNot because it does less...\n\nBut because it asks less of you.\n\nEvery decision was made to help technology feel natural.\n\nSomething that supports your life without demanding your attention."
+    },
+    {
+      "title": "CRAFTSMANSHIP",
+      "mediaType": "image",
+      "mediaUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/v1792951723/OURO_CEO_LAUNCH_KEYNOTE.006_cvnxrg.png",
+      "speaker": "Head of Product",
+      "directionNotes": "NO",
+      "script": "Premium products aren't defined by complexity.\n\nThey're defined by intention.\n\nEvery material...\n\nEvery finish...\n\nEvery interaction...\n\nExists because it improves the experience."
+    },
+    {
+      "title": "COMPANION APP",
+      "mediaType": "image",
+      "mediaUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/v1792478377/launch_visuals_one_ggdl7n.jpg",
+      "speaker": "Head of Product",
+      "directionNotes": "NO",
+      "script": "*Motion/demo opening text:* Great hardware deserves thoughtful software...\n\nGreat hardware deserves thoughtful software.\n\nThe companion app extends the experience without becoming another distraction.\n\nIt gives you effortless control.\n\nPersonalization.\n\nNoise control.\n\nTransparency.\n\nEverything is designed to get you back to what matters.",
+      "scriptNote": "End of app demonstration."
+    },
+    {
+      "title": "CLOSING",
+      "mediaType": "image",
+      "mediaUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/v1792478377/next26one_bax8kv.jpg",
+      "speaker": "Head of Product",
+      "directionNotes": "NO",
+      "script": "Every product reflects the values of the people who create it.\n\nOURO reflects our belief that technology should quietly earn its place in people's lives.\n\nThank you."
+    }
+  ],
+  "investorDeckHeading": "Investor Deck",
+  "investorDeckSlides": [
+    {
+      "imageUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010916/SLIDE_1_av2ch4.png",
+      "alt": "Investor deck slide 1"
+    },
+    {
+      "imageUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010917/SLIDE_2_y58w9w.png",
+      "alt": "Investor deck slide 2"
+    },
+    {
+      "imageUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010915/SLIDE_3_ytoouv.png",
+      "alt": "Investor deck slide 3"
+    },
+    {
+      "imageUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010915/SLIDE_4_vbt64l.png",
+      "alt": "Investor deck slide 4"
+    },
+    {
+      "imageUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010915/SLIDE_5_hkuvkw.png",
+      "alt": "Investor deck slide 5"
+    },
+    {
+      "imageUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010916/SLIDE_6_nyebrq.png",
+      "alt": "Investor deck slide 6"
+    },
+    {
+      "imageUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010916/SLIDE_7_ntfck3.png",
+      "alt": "Investor deck slide 7"
+    },
+    {
+      "imageUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010914/SLIDE_8_zsm4n1.png",
+      "alt": "Investor deck slide 8"
+    },
+    {
+      "imageUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010915/SLIDE_9_oajmjc.png",
+      "alt": "Investor deck slide 9"
+    },
+    {
+      "imageUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010916/SLIDE_10_hkrgsv.png",
+      "alt": "Investor deck slide 10"
+    },
+    {
+      "imageUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010916/SLIDE_11_k5i05u.png",
+      "alt": "Investor deck slide 11"
+    },
+    {
+      "imageUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010916/SLIDE_12_sgllp2.png",
+      "alt": "Investor deck slide 12"
+    },
+    {
+      "imageUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010916/SLIDE_13_zlxlrt.png",
+      "alt": "Investor deck slide 13"
+    }
+  ]
+}
