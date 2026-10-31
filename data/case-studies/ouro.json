@@ -7,7 +7,7 @@
   "status": "published",
   "displayOrder": 1,
   "overview": {
-    "heading": "One product. One connected story.",
+    "heading": "One direct product. One connected story.",
     "heroHeading": "OURO",
     "heroLogoImage": "https://res.cloudinary.com/dtkluxukm/image/upload/f_auto,q_auto:good,w_1400,c_limit/v1792429070/copy_of_6_tjnzkw.png",
     "intro": "An integrated communications direction for ORIVS and its OURO personal-audio product.",
@@ -120,7 +120,6 @@
     "heading": "One visual language, expressed across the launch.",
     "heroHeading": "One visual language, expressed across the launch.",
     "intro": "Extending the OURO story into the event environment.",
-    "heroIntro": "",
     "heroNote": "The event identity carries the OURO product story into the room, from the stage to the materials people hold.",
     "editorialHeading": "One visual language, expressed across the launch.",
     "editorialIntro": "Extending the OURO story into the event environment.",
@@ -182,16 +181,12 @@
     "heading": "Making the wider opportunity clear.",
     "heroHeading": "Investor Communications",
     "intro": "Carrying the product narrative into investor-facing communication.",
-    "heroIntro": "",
     "editorialHeading": "Making the wider opportunity clear.",
     "editorialIntro": "Carrying the product narrative into investor-facing communication.",
     "body": "The investor communications direction translated OURO's wider product narrative into a focused presentation of its business potential, maintaining continuity with the product identity and launch communications.",
     "heroMediaType": "image",
     "desktopHeroMediaUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010915/SLIDE_3_ytoouv.png"
   },
-  "keynoteHeading": "CEO + Product Keynote",
-  "keynoteKicker": "Presentation",
-  "keynoteIntro": "The NEXT ’26 product keynote and executive presentation.",
   "keynoteSlides": [
     {
       "title": "OPENING FILM",
@@ -307,7 +302,9 @@
       "script": "Every product reflects the values of the people who create it.\n\nOURO reflects our belief that technology should quietly earn its place in people's lives.\n\nThank you."
     }
   ],
-  "investorDeckHeading": "Investor Deck",
+  "keynoteHeading": "CEO + Product Keynote",
+  "keynoteKicker": "Presentation",
+  "keynoteIntro": "The NEXT ’26 product keynote and executive presentation.",
   "investorDeckSlides": [
     {
       "imageUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010916/SLIDE_1_av2ch4.png",
@@ -361,5 +358,6 @@
       "imageUrl": "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010916/SLIDE_13_zlxlrt.png",
       "alt": "Investor deck slide 13"
     }
-  ]
+  ],
+  "investorDeckHeading": "Investor Deck"
 }
