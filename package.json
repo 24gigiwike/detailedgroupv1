@@ -1,0 +1,12 @@
+{
+  "name": "detailedgroup-static-site",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "node scripts/site-build.mjs",
+    "build:check": "node scripts/case-studies/build.mjs --check",
+    "test": "node --test scripts/case-studies/tests/*.test.mjs"
+  }
+}
