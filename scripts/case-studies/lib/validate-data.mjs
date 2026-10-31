@@ -11,7 +11,8 @@ function isNonEmptyString(value) {
 
 function isMediaUrl(value) {
   if (!isNonEmptyString(value)) return false;
-  if (value.startsWith("/") && !value.startsWith("//")) return true;
+  if (value.startsWith("/") && !value.startsWith("//") &&
+      !value.includes("\\") && !/[\u0000-\u001f\s]/.test(value)) return true;
   try {
     const url = new URL(value);
     return url.protocol === "https:" || url.protocol === "http:";
@@ -147,6 +148,11 @@ export function validateCaseStudies(entries) {
       for (const name of ["heading", "intro", "body"]) {
         if (!isNonEmptyString(overview[name])) addError(errors, entry, `overview.${name}`, "is required");
       }
+      for (const name of ["heroHeading", "heroIntro", "heroNote", "editorialHeading", "editorialIntro"]) {
+        if (overview[name] !== undefined && typeof overview[name] !== "string") {
+          addError(errors, entry, `overview.${name}`, "must be text");
+        }
+      }
       validateHero(overview, entry, "overview", errors, "heroMediaType", "heroMediaUrl");
     }
 
@@ -164,6 +170,11 @@ export function validateCaseStudies(entries) {
       for (const name of ["heading", "intro", "body"]) {
         if (!isNonEmptyString(chapter[name])) addError(errors, entry, `${field}.${name}`, "is required when enabled");
       }
+      for (const name of ["heroHeading", "heroIntro", "heroNote", "editorialHeading", "editorialIntro"]) {
+        if (chapter[name] !== undefined && typeof chapter[name] !== "string") {
+          addError(errors, entry, `${field}.${name}`, "must be text");
+        }
+      }
       validateHero(
         chapter,
         entry,
@@ -177,6 +188,11 @@ export function validateCaseStudies(entries) {
 
     validateSlides(record.keynoteSlides, entry, "keynoteSlides", errors, "keynote");
     validateSlides(record.investorDeckSlides, entry, "investorDeckSlides", errors, "investor");
+    for (const name of ["keynoteHeading", "keynoteIntro", "investorDeckHeading"]) {
+      if (record[name] !== undefined && typeof record[name] !== "string") {
+        addError(errors, entry, name, "must be text");
+      }
+    }
   }
   return errors;
 }

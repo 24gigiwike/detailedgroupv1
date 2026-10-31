@@ -16,8 +16,23 @@ components:
       - name: heading
         label: "Heading"
         type: string
+      - name: heroHeading
+        label: "Hero Heading"
+        type: string
       - name: intro
         label: "Introductory Text"
+        type: text
+      - name: heroIntro
+        label: "Hero Introductory Text"
+        type: text
+      - name: heroNote
+        label: "Hero Supporting Note"
+        type: text
+      - name: editorialHeading
+        label: "Editorial Heading"
+        type: text
+      - name: editorialIntro
+        label: "Editorial Introductory Text"
         type: text
       - name: body
         label: "Editorial Body"
@@ -172,10 +187,25 @@ content:
             label: "Heading"
             type: string
             required: true
+          - name: heroHeading
+            label: "Hero Heading"
+            type: string
           - name: intro
             label: "Introductory Text"
             type: text
             required: true
+          - name: heroIntro
+            label: "Hero Introductory Text"
+            type: text
+          - name: heroNote
+            label: "Hero Supporting Note"
+            type: text
+          - name: editorialHeading
+            label: "Editorial Heading"
+            type: text
+          - name: editorialIntro
+            label: "Editorial Introductory Text"
+            type: text
           - name: body
             label: "Editorial Body"
             type: text
@@ -217,6 +247,12 @@ content:
           collapsible:
             collapsed: true
             summary: "{title} — {speaker}"
+      - name: keynoteHeading
+        label: "Keynote Section Heading"
+        type: string
+      - name: keynoteIntro
+        label: "Keynote Section Introductory Text"
+        type: text
       - name: investorDeckSlides
         label: "Investor Deck Slides"
         component: investorDeckSlide
@@ -224,3 +260,6 @@ content:
           collapsible:
             collapsed: true
             summary: "{title} — {index}"
+      - name: investorDeckHeading
+        label: "Investor Deck Heading"
+        type: string

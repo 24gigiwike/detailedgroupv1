@@ -1,9 +1,8 @@
 import { escapeHtml, renderDocument, renderMedia, renderText } from "./html.mjs";
 
 function renderMenu(route) {
-  const overviewPath = `/case-studies/${route.record.slug}/`;
   const entries = [
-    { path: overviewPath, label: "Overview & Story" },
+    { path: `/case-studies/${route.record.slug}/`, label: "Overview & Story" },
     ...route.chapters.map((chapter) => ({ path: chapter.path, label: chapter.label }))
   ];
   return `<a class="skip" href="#hero">Skip to chapter</a>
@@ -18,34 +17,57 @@ function renderMenu(route) {
 </div>`;
 }
 
+function getEditorialContent(route) {
+  return route.type === "overview" ? route.record.overview : route.chapter.content;
+}
+
 function renderHero(route) {
   const isOverview = route.type === "overview";
-  const content = isOverview ? route.record.overview : route.chapter.content;
+  const content = getEditorialContent(route);
   const label = isOverview ? "Overview & Story" : route.chapter.label;
   const media = renderMedia({
     type: content.heroMediaType,
     url: isOverview ? content.heroMediaUrl : content.desktopHeroMediaUrl,
     mobileUrl: content.mobileHeroMediaUrl,
     poster: content.heroPosterImage || "",
-    alt: route.record.title
+    alt: isOverview ? route.record.title : ""
   });
-  return `<section class="panel is-video" id="hero">
+  const heroHeading = isOverview
+    ? (content.heroHeading || route.record.title)
+    : (content.heroHeading || content.heading);
+  const heroIntro = content.heroIntro || content.intro;
+  const note = isOverview ? (content.heroNote || route.record.shortDescription) : content.heroNote;
+  const chapterNumber = isOverview
+    ? "01"
+    : String(route.chapters.indexOf(route.chapter) + 2).padStart(2, "0");
+
+  return `<section class="panel is-video" id="hero"${!isOverview && route.chapter.field === "launch" ? " data-launch-audio" : ""}>
     ${media}
     <div class="land-shade" aria-hidden="true"></div>
+    ${!isOverview && route.chapter.field === "launch" && content.heroMediaType === "video"
+      ? '<button class="hero-sound-toggle" type="button" aria-label="Turn sound on" aria-pressed="false">Sound off</button>'
+      : ""}
     <div class="hero-copy">
-      <p class="kicker">${isOverview ? "01" : String(route.chapters.indexOf(route.chapter) + 2).padStart(2, "0")} — ${escapeHtml(label)}</p>
-      <h1 class="hero-title">${escapeHtml(content.heading || route.record.title)}</h1>
-      ${content.intro ? `<p class="lead">${escapeHtml(content.intro)}</p>` : ""}
+      <p class="kicker">${chapterNumber} — ${escapeHtml(label)}</p>
+      <h1 class="hero-title">${escapeHtml(heroHeading)}</h1>
+      ${heroIntro ? `<p class="lead">${escapeHtml(heroIntro)}</p>` : ""}
+      ${note ? `<p class="note">${escapeHtml(note)}</p>` : ""}
     </div>
   </section>`;
 }
 
-function renderEssay(content, id) {
-  return `<section class="essay" aria-labelledby="${id}">
+function renderEssay(route) {
+  const content = getEditorialContent(route);
+  const headlineId = route.type === "overview" ? "overview-headline" : "chapter-headline";
+  const editorialHeading = content.editorialHeading || content.heading;
+  const editorialIntro = content.editorialIntro || content.intro;
+  const body = renderText(content.body);
+
+  return `<section class="essay" aria-labelledby="${headlineId}">
     <div class="essay-col editorial-copy">
-      <p class="editorial-intro" id="${id}"><strong>${escapeHtml(content.heading || "")}</strong></p>
-      ${content.intro ? `<p><span>${escapeHtml(content.intro)}</span></p>` : ""}
-      <div class="editorial-body">${renderText(content.body)}</div>
+      <p class="editorial-intro" id="${headlineId}"><strong>${escapeHtml(editorialHeading || "")}</strong></p>
+      ${editorialIntro ? `<p><span>${escapeHtml(editorialIntro)}</span></p>` : ""}
+      ${body.split("\n").filter(Boolean).map((paragraph) => paragraph.replace("<p>", '<p class="editorial-body">')).join("\n")}
     </div>
   </section>`;
 }
@@ -53,40 +75,120 @@ function renderEssay(content, id) {
 function renderGallery(chapter) {
   const items = chapter.content.gallery || [];
   if (!items.length) return "";
-  return `<section class="vertical-gallery" aria-label="${escapeHtml(chapter.label)} gallery">
+  const galleryClass = chapter.field === "brandIdentity"
+    ? "brand-gallery"
+    : chapter.field === "eventBrandIdentity"
+      ? "event-gallery"
+      : "chapter-gallery";
+
+  return `<section class="vertical-gallery ${galleryClass}" aria-label="${escapeHtml(chapter.label)} gallery">
     <div class="gallery-container">
-      ${items.map((item) => `<figure class="gallery-item">${item.mediaType === "video"
-        ? `<video class="gallery-media" controls playsinline preload="metadata" aria-label="${escapeHtml(item.alt || item.caption || chapter.label)}"><source src="${escapeHtml(item.mediaUrl)}"></video>`
-        : `<img class="gallery-media" src="${escapeHtml(item.mediaUrl)}" alt="${escapeHtml(item.alt || "")}" loading="lazy" decoding="async">`}${item.caption ? `<figcaption>${escapeHtml(item.caption)}</figcaption>` : ""}</figure>`).join("\n")}
+      ${items.map((item) => `<figure class="gallery-item">
+        ${item.mediaType === "video"
+          ? `<video class="gallery-media" data-scroll-video autoplay muted loop playsinline preload="metadata" aria-label="${escapeHtml(item.alt || item.caption || chapter.label)}"><source src="${escapeHtml(item.mediaUrl)}" type="${item.mediaUrl.toLowerCase().includes(".webm") ? "video/webm" : "video/mp4"}"></video>`
+          : `<img class="gallery-media" src="${escapeHtml(item.mediaUrl)}" alt="${escapeHtml(item.alt || "")}" loading="lazy" decoding="async">`}
+        ${item.caption ? `<figcaption>${escapeHtml(item.caption)}</figcaption>` : ""}
+      </figure>`).join("\n")}
     </div>
   </section>`;
 }
 
-function renderKeynoteSlides(record) {
+function renderKeynoteSlide(slide, index) {
+  const title = escapeHtml(slide.title);
+  const speaker = slide.speaker ? escapeHtml(slide.speaker) : "";
+  const motion = slide.directionNotes ? escapeHtml(slide.directionNotes) : "";
+  const script = renderText(slide.script || "");
+  const visual = slide.mediaType === "video"
+    ? `<video class="slide-media" muted loop playsinline preload="metadata"><source src="${escapeHtml(slide.mediaUrl)}" type="${slide.mediaUrl.toLowerCase().includes(".webm") ? "video/webm" : "video/mp4"}"></video><button class="keynote-sound-toggle" type="button" aria-label="Turn sound on" aria-pressed="false">Sound off</button>`
+    : `<img class="slide-media" src="${escapeHtml(slide.mediaUrl)}" alt="${title}" loading="lazy" decoding="async">`;
+
+  return `<article class="keynote-slide${index === 0 ? " is-active" : ""}" id="slide-${String(index + 1).padStart(2, "0")}" data-slide-index="${index}" data-title="${title}">
+    <div class="slide-visual">
+      <div class="slide-media-wrap">${visual}<div class="slide-shade" aria-hidden="true"></div></div>
+      <div class="slide-badge">
+        <span class="badge-idx">${String(index + 1).padStart(2, "0")}</span>
+        <span class="badge-title">${title}</span>
+        ${motion ? '<span class="badge-motion">Motion</span>' : ""}
+      </div>
+    </div>
+    <div class="slide-script-section">
+      <div class="slide-script-meta">
+        <span class="script-badge-num">Slide ${String(index + 1).padStart(2, "0")}</span>
+        <h3 class="slide-script-heading">${title}</h3>
+        <div class="script-meta-tags">
+          ${speaker ? `<span class="script-tag">Speaker: ${speaker}</span>` : ""}
+          ${motion ? `<span class="script-tag">${motion}</span>` : ""}
+        </div>
+      </div>
+      <div class="slide-script-body">
+        ${script}
+        ${motion ? `<div class="script-note-box">${motion}</div>` : ""}
+      </div>
+    </div>
+  </article>`;
+}
+
+function renderKeynote(record) {
   const slides = record.keynoteSlides || [];
   if (!slides.length) return "";
-  return `<section class="vertical-gallery" aria-label="Keynote presentation slides">
-    <div class="gallery-container">
-      ${slides.map((slide, index) => `<figure class="gallery-item">
-        ${slide.mediaType === "video"
-          ? `<video class="gallery-media" controls playsinline preload="metadata"><source src="${escapeHtml(slide.mediaUrl)}"></video>`
-          : `<img class="gallery-media" src="${escapeHtml(slide.mediaUrl)}" alt="${escapeHtml(slide.title)}" loading="lazy" decoding="async">`}
-        <figcaption><strong>${String(index + 1).padStart(2, "0")} — ${escapeHtml(slide.title)}</strong>${slide.speaker ? `<p>Speaker: ${escapeHtml(slide.speaker)}</p>` : ""}${slide.directionNotes ? `<p>${escapeHtml(slide.directionNotes)}</p>` : ""}${slide.script ? `<div class="editorial-body">${renderText(slide.script)}</div>` : ""}</figcaption>
-      </figure>`).join("\n")}
+  const heading = record.keynoteHeading || "Keynote Presentation";
+  const intro = record.keynoteIntro || "";
+
+  return `<section class="keynote-section" id="keynote" aria-label="${escapeHtml(heading)}">
+    <div class="keynote-header">
+      <p class="kicker">Presentation</p>
+      <h2 class="keynote-heading">${escapeHtml(heading)}</h2>
+      ${intro ? `<p class="keynote-subtitle">${escapeHtml(intro)}</p>` : ""}
+    </div>
+    <div class="keynote-stage" tabindex="0" role="region" aria-roledescription="carousel" aria-label="${escapeHtml(heading)} slides">
+      <div class="keynote-deck">
+        ${slides.map(renderKeynoteSlide).join("\n")}
+      </div>
+      <div class="keynote-controls" aria-label="Keynote controls">
+        <div class="keynote-counter"><span class="current-slide">01</span> / <span class="total-slides">${String(slides.length).padStart(2, "0")}</span></div>
+        <div class="keynote-current-title" aria-live="polite">${escapeHtml(slides[0].title)}</div>
+        <div class="keynote-nav-btns">
+          <button type="button" class="keynote-nav-btn prev" aria-label="Previous slide" disabled>← Prev</button>
+          <button type="button" class="keynote-nav-btn next" aria-label="Next slide"${slides.length === 1 ? " disabled" : ""}>Next →</button>
+        </div>
+      </div>
     </div>
   </section>`;
 }
 
-function renderInvestorSlides(record) {
+function renderInvestorDeck(record) {
   const slides = record.investorDeckSlides || [];
   if (!slides.length) return "";
-  return `<section class="vertical-gallery" aria-label="Investor deck slides">
-    <div class="gallery-container">
-      ${slides.map((slide, index) => `<figure class="gallery-item">
-        <img class="gallery-media" src="${escapeHtml(slide.imageUrl)}" alt="${escapeHtml(slide.alt || slide.title || `Investor deck slide ${index + 1}`)}" loading="lazy" decoding="async">
-        ${slide.title ? `<figcaption>${escapeHtml(slide.title)}</figcaption>` : ""}
-      </figure>`).join("\n")}
+  const heading = record.investorDeckHeading || "Investor Deck";
+  const initialSlide = slides[0];
+
+  return `<section class="investor-deck-section" aria-labelledby="investor-deck-heading">
+    <div class="investor-deck-intro editorial-copy" data-reveal>
+      <h2 id="investor-deck-heading">${escapeHtml(heading)}</h2>
     </div>
+    <div class="investor-carousel" aria-label="${escapeHtml(heading)} carousel">
+      <div class="investor-carousel-view" role="group" aria-roledescription="carousel" aria-label="${escapeHtml(heading)} slides">
+        <button class="investor-image-button" type="button" aria-label="Open slide 1 in image viewer">
+          <img class="investor-carousel-image" src="${escapeHtml(initialSlide.imageUrl)}" alt="${escapeHtml(initialSlide.alt || initialSlide.title || "Investor deck slide 1")}" decoding="async">
+        </button>
+        <div class="investor-carousel-placeholder" hidden>${escapeHtml(heading)} image unavailable</div>
+        <div class="investor-slide-data" hidden>${slides.map((slide, index) => `<span data-url="${escapeHtml(slide.imageUrl)}" data-alt="${escapeHtml(slide.alt || slide.title || `Investor deck slide ${index + 1}`)}" data-title="${escapeHtml(slide.title || "")}"></span>`).join("")}</div>
+      </div>
+      <div class="investor-carousel-controls">
+        <button class="investor-carousel-prev" type="button" aria-label="Previous slide">←</button>
+        <span class="investor-carousel-counter" aria-live="polite">01 / ${String(slides.length).padStart(2, "0")}</span>
+        <button class="investor-carousel-next" type="button" aria-label="Next slide">→</button>
+      </div>
+    </div>
+    <dialog class="investor-viewer" aria-label="${escapeHtml(heading)} image viewer">
+      <div class="investor-viewer-content">
+        <button class="investor-viewer-close" type="button" aria-label="Close image viewer">×</button>
+        <button class="investor-viewer-prev" type="button" aria-label="Previous slide">←</button>
+        <img class="investor-viewer-image" src="${escapeHtml(initialSlide.imageUrl)}" alt="${escapeHtml(initialSlide.alt || initialSlide.title || "Investor deck slide 1")}">
+        <button class="investor-viewer-next" type="button" aria-label="Next slide">→</button>
+        <span class="investor-viewer-counter" aria-live="polite">01 / ${String(slides.length).padStart(2, "0")}</span>
+      </div>
+    </dialog>
   </section>`;
 }
 
@@ -98,7 +200,9 @@ function renderOverviewLinks(route) {
       url: content.desktopHeroMediaUrl,
       mobileUrl: content.mobileHeroMediaUrl,
       poster: content.heroPosterImage || "",
-      alt: ""
+      alt: "",
+      className: "",
+      preload: "none"
     });
     return `<a class="next-chapter directory-panel" href="${chapter.path}" aria-label="Explore ${escapeHtml(chapter.label)}">
     ${media}
@@ -110,28 +214,38 @@ function renderOverviewLinks(route) {
 
 function renderNextLink(route) {
   if (route.next) {
+    const content = route.next.content;
+    const media = renderMedia({
+      type: content.heroMediaType,
+      url: content.desktopHeroMediaUrl,
+      mobileUrl: content.mobileHeroMediaUrl,
+      poster: content.heroPosterImage || "",
+      alt: "",
+      className: "",
+      preload: "none"
+    });
     return `<a class="next-chapter" href="${route.next.path}" aria-label="Explore ${escapeHtml(route.next.label)}">
+      ${media}
       <span class="next-shade" aria-hidden="true"></span>
       <span class="next-label">${escapeHtml(route.next.label)} <span aria-hidden="true">→</span></span>
     </a>`;
   }
-  return `<a class="chapter-closeout" href="/case-studies/${route.record.slug}/"><span>Back to ${escapeHtml(route.record.title)} →</span></a>`;
+  return `<a class="chapter-closeout" href="/"><span>Detailed Group →</span></a>`;
 }
 
 export function renderCaseStudyPage(route) {
   const isOverview = route.type === "overview";
-  const content = isOverview ? route.record.overview : route.chapter.content;
   let pageBody = `${renderMenu(route)}
 <main id="study">
   ${renderHero(route)}
-  ${renderEssay(content, isOverview ? "overview-headline" : "chapter-headline")}`;
+  ${renderEssay(route)}`;
 
   if (isOverview) {
     pageBody += `\n  ${renderOverviewLinks(route)}`;
   } else {
     pageBody += `\n  ${renderGallery(route.chapter)}`;
-    if (route.chapter.field === "launch") pageBody += `\n  ${renderKeynoteSlides(route.record)}`;
-    if (route.chapter.field === "investorCommunications") pageBody += `\n  ${renderInvestorSlides(route.record)}`;
+    if (route.chapter.field === "launch") pageBody += `\n  ${renderKeynote(route.record)}`;
+    if (route.chapter.field === "investorCommunications") pageBody += `\n  ${renderInvestorDeck(route.record)}`;
     pageBody += `\n  ${renderNextLink(route)}`;
   }
   pageBody += "\n</main>";

@@ -12,20 +12,38 @@ export function renderText(value = "") {
     .split(/\r?\n\s*\r?\n/)
     .map((paragraph) => paragraph.trim())
     .filter(Boolean)
-    .map((paragraph) => `<p>${escapeHtml(paragraph).replace(/\r?\n/g, "<br>")}</p>`)
+    .map((paragraph) => `<p>${escapeHtml(paragraph)
+      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+      .replace(/\*(.+?)\*/g, "<em>$1</em>")
+      .replace(/\r?\n/g, "<br>")}</p>`)
     .join("\n");
 }
 
-export function renderMedia({ type, url, mobileUrl = "", poster = "", alt = "" }) {
+function mediaTypeFor(url) {
+  if (/\.webm(?:[?#].*)?$/i.test(url)) return "video/webm";
+  if (/\.mov(?:[?#].*)?$/i.test(url)) return "video/quicktime";
+  return "video/mp4";
+}
+
+export function renderMedia({
+  type,
+  url,
+  mobileUrl = "",
+  poster = "",
+  alt = "",
+  className = "land-video",
+  preload = "metadata",
+  autoplay = true,
+  loop = true
+}) {
   const safeUrl = escapeHtml(url);
   const safeMobileUrl = mobileUrl ? escapeHtml(mobileUrl) : "";
   const safePoster = poster ? escapeHtml(poster) : "";
   const safeAlt = escapeHtml(alt);
   if (type === "video") {
-    const sourceType = (sourceUrl) => /\.webm(?:\?.*)?$/i.test(sourceUrl) ? "video/webm" : "video/mp4";
-    return `<video class="land-video" autoplay muted loop playsinline preload="metadata"${safePoster ? ` poster="${safePoster}"` : ""}>${safeMobileUrl ? `<source media="(max-width: 767px)" src="${safeMobileUrl}" type="${sourceType(mobileUrl)}">` : ""}<source src="${safeUrl}" type="${sourceType(url)}"></video>`;
+    return `<video class="${escapeHtml(className)}" data-responsive-media data-desktop-src="${safeUrl}"${safeMobileUrl ? ` data-mobile-src="${safeMobileUrl}"` : ""}${autoplay ? " autoplay" : ""} muted${loop ? " loop" : ""} playsinline preload="${escapeHtml(preload)}"${safePoster ? ` poster="${safePoster}"` : ""}><source src="${safeUrl}" type="${mediaTypeFor(url)}"></video>`;
   }
-  return `<picture>${safeMobileUrl ? `<source media="(max-width: 767px)" srcset="${safeMobileUrl}">` : ""}<img class="land-video" src="${safeUrl}"${safeAlt ? ` alt="${safeAlt}"` : ' alt=""'}></picture>`;
+  return `<picture>${safeMobileUrl ? `<source media="(max-width: 767px)" srcset="${safeMobileUrl}">` : ""}<img class="${escapeHtml(className)}" src="${safeUrl}"${safeAlt ? ` alt="${safeAlt}"` : ' alt=""'}${safePoster ? ` data-poster="${safePoster}"` : ""}></picture>`;
 }
 
 export function renderDocument(title, content) {
@@ -37,8 +55,12 @@ export function renderDocument(title, content) {
 <title>${escapeHtml(title)} — Detailed Group</title>
 <link rel="icon" href="/favicon_io/favicon-32x32.png">
 <link rel="preconnect" href="https://res.cloudinary.com">
+<link rel="preconnect" href="https://res.cloudinary.com" crossorigin>
+<link rel="stylesheet" href="/assets/lenis/lenis.css">
 <link rel="stylesheet" href="/ouro/assets/ouro.css">
-<script defer src="/ouro/assets/ouro.js?v=35"></script>
+<script defer src="/assets/lenis/lenis.min.js"></script>
+<script defer src="/assets/smooth-scroll.js"></script>
+<script defer src="/scripts/case-studies/assets/interactions.js"></script>
 </head>
 <body class="is-landing">
 ${content}
