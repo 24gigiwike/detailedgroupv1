@@ -20,7 +20,7 @@
     "heroMediaUrl": "https://res.cloudinary.com/dtkluxukm/video/upload/v1792075835/OURO_hero_Video_converted_xjca8t.webm"
   },
   "brandIdentity": {
-    "enabled": true,
+    "enabled": false,
     "heading": "A recognizable identity, built around the product.",
     "heroHeading": "BRAND IDENTITY",
     "intro": "Building a recognizable visual identity for OURO.",
