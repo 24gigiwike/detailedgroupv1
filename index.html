@@ -259,7 +259,7 @@
             transition: opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1), transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.5s ease, color 0.5s ease;
             margin-top: 2rem;
             width: 100%;
-            text-align: center;
+            text-align: left;
             border: 1px solid rgba(255, 255, 255, 0.2);
             padding: 1rem 1.5rem;
             font-size: 0.8125rem;
@@ -722,25 +722,8 @@
   }
 }
 
-@media (min-width: 768px) {
-  main.editorial-alignment h1,
-  main.editorial-alignment h2,
-  main.editorial-alignment h3,
-  main.editorial-alignment h4,
-  main.editorial-alignment p {
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
-  }
-}
-@media (max-width: 767px) {
-  main.editorial-alignment h1,
-  main.editorial-alignment h2,
-  main.editorial-alignment h3,
-  main.editorial-alignment h4,
-  main.editorial-alignment p {
-    text-align: left;
-  }
+main.editorial-alignment {
+  text-align: left;
 }
     </style>
 
@@ -828,7 +811,7 @@
         We craft launch narratives—product and company launches, keynotes, strategic announcements, and leadership transitions. Clear, aligned, decisive communication when it matters most.
             </p>
 <div class="flex flex-col sm:flex-row sm:items-center gap-4 md:gap-8 reveal" style="transition-delay: 0.4s;">
-<a href="#contact" class="bg-white text-black font-label-md text-label-md uppercase tracking-widest px-8 md:px-12 py-4 md:py-5 font-semibold hover:opacity-90 transition-opacity text-center">Book A Consultation</a>
+<a href="#contact" class="bg-white text-black font-label-md text-label-md uppercase tracking-widest px-8 md:px-12 py-4 md:py-5 font-semibold hover:opacity-90 transition-opacity text-left">Book A Consultation</a>
 <a href="/ouro/" class="group inline-flex items-center justify-center gap-3 border border-white/50 text-white font-label-md text-label-md uppercase tracking-widest px-8 py-4 md:py-5 transition-all duration-300 hover:bg-white hover:text-black active:scale-[0.98]">
 <span>Case Studies</span><span aria-hidden="true" class="transition-transform duration-300 group-hover:translate-x-1">→</span>
 </a>
@@ -1010,7 +993,7 @@
 <!-- Services Section -->
 <section class="py-section-gap-mobile md:py-section-gap bg-surface-container px-margin-mobile md:px-margin-desktop reveal" id="services">
 <div class="max-w-container-max mx-auto">
-<div class="mb-12 md:mb-24 reveal text-center">
+<div class="mb-12 md:mb-24 reveal">
 <span class="font-label-sm text-label-sm uppercase tracking-[0.3em] text-silver/40 block mb-6">Expertise</span>
 <h2 class="font-display-xl text-[40px] md:text-[64px] mb-8 text-white">Core Competencies</h2>
 <div class="w-16 h-[1px] bg-white/30 mx-auto"></div>
@@ -1197,35 +1180,35 @@
 <!-- Process Section -->
 <section class="py-section-gap-mobile md:py-section-gap px-margin-mobile md:px-margin-desktop bg-surface-container border-y border-white/5 reveal" id="process">
 <div class="max-w-container-max mx-auto">
-<h2 class="font-display-xl text-[40px] md:text-[64px] mb-12 md:mb-24 reveal text-white text-center">How We Prepare for High‑Stakes Communication</h2>
-<p class="text-silver/60 max-w-3xl mx-auto mb-12">Visual storytelling, executive slide systems, presentation frameworks, and strategic visuals—our approach prepares leaders with communication assets that command attention, build trust, and ensure messages are understood and remembered.</p>
+<h2 class="font-display-xl text-[40px] md:text-[64px] mb-12 md:mb-24 reveal text-white">How We Prepare for High‑Stakes Communication</h2>
+<p class="text-silver/60 max-w-3xl mb-12">Visual storytelling, executive slide systems, presentation frameworks, and strategic visuals—our approach prepares leaders with communication assets that command attention, build trust, and ensure messages are understood and remembered.</p>
 <div class="relative">
 <div class="hidden lg:block absolute top-[40px] left-0 w-full h-[1px] bg-white/10"></div>
 <div class="how-we-work-track flex md:grid md:grid-cols-2 lg:grid-cols-5 gap-6 md:gap-12 relative z-10 overflow-x-auto md:overflow-visible -mx-margin-mobile px-margin-mobile md:mx-0 md:px-0 scroll-smooth" id="how-we-work-carousel" data-lenis-prevent>
 <div class="how-we-work-slide reveal flex-shrink-0 w-[min(85vw,320px)] md:w-auto border border-white/10 md:border-0 p-8 md:p-0">
 <div class="w-16 h-16 md:w-20 md:h-20 bg-white mb-8 md:mb-12 mx-auto sm:mx-0" aria-hidden="true"></div>
-<h4 class="font-label-md text-label-md uppercase tracking-[0.2em] mb-4 md:mb-6 text-white text-center sm:text-left">Discovery</h4>
-<p class="text-silver/50 font-body-md text-center sm:text-left">In-depth stakeholder analysis and narrative audit.</p>
+<h4 class="font-label-md text-label-md uppercase tracking-[0.2em] mb-4 md:mb-6 text-white text-left">Discovery</h4>
+<p class="text-silver/50 font-body-md text-left">In-depth stakeholder analysis and narrative audit.</p>
 </div>
 <div class="how-we-work-slide reveal flex-shrink-0 w-[min(85vw,320px)] md:w-auto border border-white/10 md:border-0 p-8 md:p-0">
 <div class="w-16 h-16 md:w-20 md:h-20 bg-white mb-8 md:mb-12 mx-auto sm:mx-0" aria-hidden="true"></div>
-<h4 class="font-label-md text-label-md uppercase tracking-[0.2em] mb-4 md:mb-6 text-white text-center sm:text-left">Synthesis</h4>
-<p class="text-silver/50 font-body-md text-center sm:text-left">Distilling complex objectives into strategic pillars.</p>
+<h4 class="font-label-md text-label-md uppercase tracking-[0.2em] mb-4 md:mb-6 text-white text-left">Synthesis</h4>
+<p class="text-silver/50 font-body-md text-left">Distilling complex objectives into strategic pillars.</p>
 </div>
 <div class="how-we-work-slide reveal flex-shrink-0 w-[min(85vw,320px)] md:w-auto border border-white/10 md:border-0 p-8 md:p-0">
 <div class="w-16 h-16 md:w-20 md:h-20 bg-white mb-8 md:mb-12 mx-auto sm:mx-0" aria-hidden="true"></div>
-<h4 class="font-label-md text-label-md uppercase tracking-[0.2em] mb-4 md:mb-6 text-white text-center sm:text-left">Architecture</h4>
-<p class="text-silver/50 font-body-md text-center sm:text-left">Building the structural framework for the message.</p>
+<h4 class="font-label-md text-label-md uppercase tracking-[0.2em] mb-4 md:mb-6 text-white text-left">Architecture</h4>
+<p class="text-silver/50 font-body-md text-left">Building the structural framework for the message.</p>
 </div>
 <div class="how-we-work-slide reveal flex-shrink-0 w-[min(85vw,320px)] md:w-auto border border-white/10 md:border-0 p-8 md:p-0">
 <div class="w-16 h-16 md:w-20 md:h-20 bg-white mb-8 md:mb-12 mx-auto sm:mx-0" aria-hidden="true"></div>
-<h4 class="font-label-md text-label-md uppercase tracking-[0.2em] mb-4 md:mb-6 text-white text-center sm:text-left">Refinement</h4>
-<p class="text-silver/50 font-body-md text-center sm:text-left">Iterative precision-tuning for maximum impact.</p>
+<h4 class="font-label-md text-label-md uppercase tracking-[0.2em] mb-4 md:mb-6 text-white text-left">Refinement</h4>
+<p class="text-silver/50 font-body-md text-left">Iterative precision-tuning for maximum impact.</p>
 </div>
 <div class="how-we-work-slide reveal flex-shrink-0 w-[min(85vw,320px)] md:w-auto border border-white/10 md:border-0 p-8 md:p-0">
 <div class="w-16 h-16 md:w-20 md:h-20 bg-white mb-8 md:mb-12 mx-auto sm:mx-0" aria-hidden="true"></div>
-<h4 class="font-label-md text-label-md uppercase tracking-[0.2em] mb-4 md:mb-6 text-white text-center sm:text-left">Deployment</h4>
-<p class="text-silver/50 font-body-md text-center sm:text-left">Seamless execution across all leadership channels.</p>
+<h4 class="font-label-md text-label-md uppercase tracking-[0.2em] mb-4 md:mb-6 text-white text-left">Deployment</h4>
+<p class="text-silver/50 font-body-md text-left">Seamless execution across all leadership channels.</p>
 </div>
 </div>
 <div class="how-we-work-dots md:hidden" id="how-we-work-dots" aria-hidden="true"></div>
@@ -1276,7 +1259,7 @@
   </div>
 </section>
 <!-- Statement Section -->
-<section class="min-h-[70vh] md:min-h-screen flex items-center justify-center bg-white text-black px-margin-mobile md:px-margin-desktop text-center relative overflow-hidden py-16 md:py-0 reveal" id="statement-section">
+<section class="min-h-[70vh] md:min-h-screen flex items-center justify-center bg-white text-black px-margin-mobile md:px-margin-desktop relative overflow-hidden py-16 md:py-0 reveal" id="statement-section">
 <div aria-hidden="true" class="dot-field-container absolute inset-0 z-0 pointer-events-none" id="statement-dot-field"></div>
 <h2 class="font-display-xl text-[36px] sm:text-[48px] md:text-[64px] lg:text-[100px] max-w-6xl leading-[0.95] reveal relative z-10 font-bold uppercase tracking-tighter">
     We Architect and Deliver the Narratives Behind an Organization’s Most Important Moments.
