@@ -54,8 +54,8 @@ export function renderDocument(title, content) {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${escapeHtml(title)} — Detailed Group</title>
 <link rel="icon" href="/favicon_io/favicon-32x32.png">
-<link rel="preconnect" href="https://res.cloudinary.com">
-<link rel="preconnect" href="https://res.cloudinary.com" crossorigin>
+<link rel="preconnect" href="https://media.broadbrand.com.ng">
+<link rel="preconnect" href="https://media.broadbrand.com.ng" crossorigin>
 <link rel="stylesheet" href="/assets/lenis/lenis.css">
 <link rel="stylesheet" href="/ouro/assets/ouro.css">
 <script defer src="/assets/lenis/lenis.min.js"></script>

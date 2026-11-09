@@ -6,53 +6,53 @@
 // =========================================================================
 const ouroMedia = {
   // [LAUNCH_HERO_MEDIA_URL] - Launch Communications Hero Video
-  launchHero: "https://res.cloudinary.com/dtkluxukm/video/upload/v1792483605/OPENING_FILM_converted_1_otfynh.webm",
+  launchHero: "https://media.broadbrand.com.ng/video/OPENING_FILM_converted_1_otfynh.webm",
 
   // [BRAND_HERO_MEDIA_URL] - Brand Identity Hero Background Video/Image
-  brandHero: "https://res.cloudinary.com/dtkluxukm/video/upload/v1792948648/VID_i2hl0y.mp4",
-  BRAND_IDENTITY_MOBILE_HERO_VIDEO_URL: "https://res.cloudinary.com/dtkluxukm/video/upload/v1793096258/hgjhbjnkml_ka71i6.mp4",
+  brandHero: "https://media.broadbrand.com.ng/video/VID_i2hl0y.mp4",
+  BRAND_IDENTITY_MOBILE_HERO_VIDEO_URL: "https://media.broadbrand.com.ng/video/hgjhbjnkml_ka71i6.mp4",
 
   // [EVENT_HERO_MEDIA_URL] - Event Brand Identity Hero Background Video/Image
-  eventHero: "https://res.cloudinary.com/dtkluxukm/video/upload/v1793020793/1012_uehfly.webm",
+  eventHero: "https://media.broadbrand.com.ng/video/1012_uehfly.webm",
 
   // [INVESTOR_HERO_IMAGE_URL] - Investor Communications static hero image
-  investorHero: "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010915/SLIDE_3_ytoouv.png",
+  investorHero: "https://media.broadbrand.com.ng/image/SLIDE_3_ytoouv.png",
 
   investorDeck: [
-    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010916/SLIDE_1_av2ch4.png",
-    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010917/SLIDE_2_y58w9w.png",
-    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010915/SLIDE_3_ytoouv.png",
-    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010915/SLIDE_4_vbt64l.png",
-    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010915/SLIDE_5_hkuvkw.png",
-    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010916/SLIDE_6_nyebrq.png",
-    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010916/SLIDE_7_ntfck3.png",
-    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010914/SLIDE_8_zsm4n1.png",
-    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010915/SLIDE_9_oajmjc.png",
-    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010916/SLIDE_10_hkrgsv.png",
-    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010916/SLIDE_11_k5i05u.png",
-    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010916/SLIDE_12_sgllp2.png",
-    "https://res.cloudinary.com/dtkluxukm/image/upload/v1793010916/SLIDE_13_zlxlrt.png"
+    "https://media.broadbrand.com.ng/image/SLIDE_1_av2ch4.png",
+    "https://media.broadbrand.com.ng/image/SLIDE_2_y58w9w.png",
+    "https://media.broadbrand.com.ng/image/SLIDE_3_ytoouv.png",
+    "https://media.broadbrand.com.ng/image/SLIDE_4_vbt64l.png",
+    "https://media.broadbrand.com.ng/image/SLIDE_5_hkuvkw.png",
+    "https://media.broadbrand.com.ng/image/SLIDE_6_nyebrq.png",
+    "https://media.broadbrand.com.ng/image/SLIDE_7_ntfck3.png",
+    "https://media.broadbrand.com.ng/image/SLIDE_8_zsm4n1.png",
+    "https://media.broadbrand.com.ng/image/SLIDE_9_oajmjc.png",
+    "https://media.broadbrand.com.ng/image/SLIDE_10_hkrgsv.png",
+    "https://media.broadbrand.com.ng/image/SLIDE_11_k5i05u.png",
+    "https://media.broadbrand.com.ng/image/SLIDE_12_sgllp2.png",
+    "https://media.broadbrand.com.ng/image/SLIDE_13_zlxlrt.png"
   ],
 
   keynote: {
     // [KEYNOTE_SLIDE_01_MEDIA_URL] - Slide 01: Opening Film
-    openingFilm: "https://res.cloudinary.com/dtkluxukm/video/upload/v1792483605/OPENING_FILM_converted_1_otfynh.webm",
+    openingFilm: "https://media.broadbrand.com.ng/video/OPENING_FILM_converted_1_otfynh.webm",
 
     // Slides 02–12: Genuinely pending unique media assets (left empty to display clean placeholders)
-    next26: "https://res.cloudinary.com/dtkluxukm/image/upload/v1792478377/next26one_bax8kv.jpg",
-    futureNotLouder: "https://res.cloudinary.com/dtkluxukm/image/upload/v1792952042/2_1_pvka94.png",
-    designedAroundLife: "https://res.cloudinary.com/dtkluxukm/video/upload/v1792951626/designed_around_life_pjxyzg.mp4",
-    oneQuestion: "https://res.cloudinary.com/dtkluxukm/image/upload/v1792951947/3_1_xpfbk4.png",
-    personalAudioQuestion: "https://res.cloudinary.com/dtkluxukm/image/upload/v1792951947/3_1_xpfbk4.png",
-    builtWithIntention: "https://res.cloudinary.com/dtkluxukm/image/upload/v1792951904/4_1_yb2xsg.png",
-    productFilm: "https://res.cloudinary.com/dtkluxukm/video/upload/v1792075835/OURO_hero_Video_converted_xjca8t.webm",
-    productReveal: "https://res.cloudinary.com/dtkluxukm/image/upload/v1792478854/OURO_CEO_LAUNCH_KEYNOTE.002_pe3k3w.png",
-    designedToDisappear: "https://res.cloudinary.com/dtkluxukm/image/upload/v1792951776/OURO_CEO_LAUNCH_KEYNOTE.001_1_ivgaai.png",
-    craftsmanship: "https://res.cloudinary.com/dtkluxukm/image/upload/v1792951723/OURO_CEO_LAUNCH_KEYNOTE.006_cvnxrg.png",
-    companionApp: "https://res.cloudinary.com/dtkluxukm/image/upload/v1792478377/launch_visuals_one_ggdl7n.jpg",
+    next26: "https://media.broadbrand.com.ng/image/next26one_bax8kv.jpg",
+    futureNotLouder: "https://media.broadbrand.com.ng/image/2_1_pvka94.png",
+    designedAroundLife: "https://media.broadbrand.com.ng/video/designed_around_life_pjxyzg.mp4",
+    oneQuestion: "https://media.broadbrand.com.ng/image/3_1_xpfbk4.png",
+    personalAudioQuestion: "https://media.broadbrand.com.ng/image/3_1_xpfbk4.png",
+    builtWithIntention: "https://media.broadbrand.com.ng/image/4_1_yb2xsg.png",
+    productFilm: "https://media.broadbrand.com.ng/video/OURO_hero_Video_converted_xjca8t.webm",
+    productReveal: "https://media.broadbrand.com.ng/image/OURO_CEO_LAUNCH_KEYNOTE.002_pe3k3w.png",
+    designedToDisappear: "https://media.broadbrand.com.ng/image/OURO_CEO_LAUNCH_KEYNOTE.001_1_ivgaai.png",
+    craftsmanship: "https://media.broadbrand.com.ng/image/OURO_CEO_LAUNCH_KEYNOTE.006_cvnxrg.png",
+    companionApp: "https://media.broadbrand.com.ng/image/launch_visuals_one_ggdl7n.jpg",
 
     // [KEYNOTE_CLOSING_IMAGE_URL] - Slide 13: Closing
-    closing: "https://res.cloudinary.com/dtkluxukm/image/upload/v1792478377/next26one_bax8kv.jpg"
+    closing: "https://media.broadbrand.com.ng/image/next26one_bax8kv.jpg"
   }
 };
 
